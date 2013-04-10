@@ -502,20 +502,20 @@ SYSTEM snake_system
             }
             Entry jtag_uart_0/avalon_jtag_slave
             {
-               address = "0x00101040";
+               address = "0x00101048";
                span = "0x00000008";
                is_bridge = "0";
             }
             Entry ps2/s1
             {
-               address = "0x00000000";
+               address = "0x00101040";
                span = "0x00000008";
                is_bridge = "0";
             }
             Entry vga/avalon_slave_0
             {
-               address = "0x00000010";
-               span = "0x00000010";
+               address = "0x00101000";
+               span = "0x00000040";
                is_bridge = "0";
             }
          }
@@ -1532,13 +1532,13 @@ SYSTEM snake_system
             MASTERED_BY cpu_0/data_master
             {
                priority = "1";
-               Offset_Address = "0x00101040";
+               Offset_Address = "0x00101048";
             }
             IRQ_MASTER cpu_0/data_master
             {
                IRQ_Number = "0";
             }
-            Base_Address = "0x00101040";
+            Base_Address = "0x00101048";
             Address_Group = "0";
          }
       }
@@ -1760,9 +1760,9 @@ SYSTEM snake_system
             MASTERED_BY cpu_0/data_master
             {
                priority = "1";
-               Offset_Address = "0x00000000";
+               Offset_Address = "0x00101040";
             }
-            Base_Address = "0x00000000";
+            Base_Address = "0x00101040";
             Address_Group = "1";
             Has_Clock = "1";
             Has_Base_Address = "1";
@@ -1905,21 +1905,21 @@ SYSTEM snake_system
             PORT address
             {
                type = "address";
-               width = "3";
+               width = "4";
                direction = "input";
                Is_Enabled = "1";
             }
             PORT readdata
             {
                type = "readdata";
-               width = "16";
+               width = "32";
                direction = "output";
                Is_Enabled = "1";
             }
             PORT writedata
             {
                type = "writedata";
-               width = "16";
+               width = "32";
                direction = "input";
                Is_Enabled = "1";
             }
@@ -1935,7 +1935,7 @@ SYSTEM snake_system
             Address_Alignment = "dynamic";
             Well_Behaved_Waitrequest = "0";
             Is_Nonvolatile_Storage = "0";
-            Address_Span = "16";
+            Address_Span = "64";
             Read_Latency = "0";
             Is_Memory_Device = "0";
             Maximum_Pending_Read_Transactions = "0";
@@ -1943,8 +1943,8 @@ SYSTEM snake_system
             Accepts_Internal_Connections = "1";
             Write_Latency = "0";
             Is_Flash = "0";
-            Data_Width = "16";
-            Address_Width = "3";
+            Data_Width = "32";
+            Address_Width = "4";
             Maximum_Burst_Size = "1";
             Register_Incoming_Signals = "0";
             Register_Outgoing_Signals = "0";
@@ -1957,9 +1957,9 @@ SYSTEM snake_system
             MASTERED_BY cpu_0/data_master
             {
                priority = "1";
-               Offset_Address = "0x00000010";
+               Offset_Address = "0x00101000";
             }
-            Base_Address = "0x00000010";
+            Base_Address = "0x00101000";
             Address_Group = "0";
             IRQ_MASTER cpu_0/data_master
             {
@@ -2054,7 +2054,7 @@ SYSTEM snake_system
       }
       HDL_INFO 
       {
-         Simulation_HDL_Files = "__PROJECT_DIRECTORY__/de2_vga_controller.vhd";
+         Simulation_HDL_Files = "__PROJECT_DIRECTORY__/de2_vga_controller.vhd,__PROJECT_DIRECTORY__/vga.vhd";
       }
       WIZARD_SCRIPT_ARGUMENTS 
       {

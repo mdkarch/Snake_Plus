@@ -2,68 +2,65 @@ Altera SOPC Builder Version 12.10 Build 177
 Copyright (c) 1999-2009 Altera Corporation.  All rights reserved.
 
 
-# 2013.04.03 11:55:21 (*) mk_custom_sdk starting
-# 2013.04.03 11:55:21 (*) Reading project /home/user4/spring13/mdk2133/Desktop/Snake_Plus/snake_system.ptf.
+# 2013.04.10 13:54:16 (*) mk_custom_sdk starting
+# 2013.04.10 13:54:16 (*) Reading project /user3/spring13/ie2147/Desktop/Git/Snake_Plus/snake_system.ptf.
 
-# 2013.04.03 11:55:22 (*) Finding all CPUs
-# 2013.04.03 11:55:22 (*) Finding all available components
-# 2013.04.03 11:55:22 (*) Reading /home/user4/spring13/mdk2133/Desktop/Snake_Plus/.sopc_builder/install.ptf
+# 2013.04.10 13:54:16 (*) Finding all CPUs
+# 2013.04.10 13:54:16 (*) Finding all available components
+# 2013.04.10 13:54:16 (*) Reading /user3/spring13/ie2147/Desktop/Git/Snake_Plus/.sopc_builder/install.ptf
 
-# 2013.04.03 11:55:22 (*) Found 54 components
+# 2013.04.10 13:54:16 (*) Found 64 components
 
-# 2013.04.03 11:55:23 (*) Finding all peripherals
+# 2013.04.10 13:54:17 (*) Finding all peripherals
 
-# 2013.04.03 11:55:23 (*) Finding software components
+# 2013.04.10 13:54:17 (*) Finding software components
 
-# 2013.04.03 11:55:23 (*) (Legacy SDK Generation Skipped)
-# 2013.04.03 11:55:23 (*) (All TCL Script Generation Skipped)
-# 2013.04.03 11:55:23 (*) (No Libraries Built)
-# 2013.04.03 11:55:23 (*) (Contents Generation Skipped)
-# 2013.04.03 11:55:23 (*) mk_custom_sdk finishing
-# 2013.04.03 11:55:23 (*) Starting generation for system: snake_system.
+# 2013.04.10 13:54:17 (*) (Legacy SDK Generation Skipped)
+# 2013.04.10 13:54:17 (*) (All TCL Script Generation Skipped)
+# 2013.04.10 13:54:17 (*) (No Libraries Built)
+# 2013.04.10 13:54:17 (*) (Contents Generation Skipped)
+# 2013.04.10 13:54:17 (*) mk_custom_sdk finishing
+# 2013.04.10 13:54:17 (*) Starting generation for system: snake_system.
 
 .
 .
 .
 
-# 2013.04.03 11:55:24 (*) Running Generator Program for cpu_0
+# 2013.04.10 13:54:18 (*) Running Generator Program for cpu_0
 
-# 2013.04.03 11:55:25 (*) Starting Nios II generation
-# 2013.04.03 11:55:25 (*)   Checking for plaintext license.
-# 2013.04.03 11:55:27 (*)   Couldn't query license setup in Quartus directory /opt/altera/altera12.1/quartus
-# 2013.04.03 11:55:27 (*)   Defaulting to contents of LM_LICENSE_FILE environment variable
-# 2013.04.03 11:55:27 (*)   Plaintext license not found.
-# 2013.04.03 11:55:27 (*)   No license required to generate encrypted Nios II/e.
-# 2013.04.03 11:55:27 (*)   Getting CPU configuration settings
-# 2013.04.03 11:55:27 (*)   Elaborating CPU configuration settings
-# 2013.04.03 11:55:27 (*)   Creating all objects for CPU
-# 2013.04.03 11:55:29 (*)   Generating HDL from CPU objects
-# 2013.04.03 11:55:29 (*)   Creating plain-text HDL
-# 2013.04.03 11:55:35 (*) Done Nios II generation
+# 2013.04.10 13:54:20 (*) Starting Nios II generation
+# 2013.04.10 13:54:20 (*)   Checking for plaintext license.
+# 2013.04.10 13:54:22 (*)   Plaintext license not found.
+# 2013.04.10 13:54:22 (*)   No license required to generate encrypted Nios II/e.
+# 2013.04.10 13:54:22 (*)   Getting CPU configuration settings
+# 2013.04.10 13:54:22 (*)   Elaborating CPU configuration settings
+# 2013.04.10 13:54:22 (*)   Creating all objects for CPU
+# 2013.04.10 13:54:24 (*)   Generating HDL from CPU objects
+# 2013.04.10 13:54:24 (*)   Creating plain-text HDL
+# 2013.04.10 13:54:30 (*) Done Nios II generation
 
-# 2013.04.03 11:55:36 (*) Running Generator Program for jtag_uart_0
+# 2013.04.10 13:54:31 (*) Running Generator Program for jtag_uart_0
 
-# 2013.04.03 11:55:37 (*) Running Generator Program for ps2
+# 2013.04.10 13:54:32 (*) Running Generator Program for ps2
 
 
-# 2013.04.03 11:55:38 (*) Making arbitration and system (top) modules.
+# 2013.04.10 13:54:33 (*) Making arbitration and system (top) modules.
 
-# 2013.04.03 11:55:42 (*) Generating Quartus symbol for top level: snake_system
+# 2013.04.10 13:54:37 (*) Generating Quartus symbol for top level: snake_system
 
-# 2013.04.03 11:55:42 (*) Generating Symbol /home/user4/spring13/mdk2133/Desktop/Snake_Plus/snake_system.bsf
+# 2013.04.10 13:54:37 (*) Symbol /user3/spring13/ie2147/Desktop/Git/Snake_Plus/snake_system.bsf already exists, no need to regenerate
+# 2013.04.10 13:54:37 (*) Creating command-line system-generation script: /user3/spring13/ie2147/Desktop/Git/Snake_Plus/snake_system_generation_script
 
-# 2013.04.03 11:55:42 (*) Creating command-line system-generation script: /home/user4/spring13/mdk2133/Desktop/Snake_Plus/snake_system_generation_script
-
-# 2013.04.03 11:55:42 (*) Running setup for HDL simulator: modelsim
+# 2013.04.10 13:54:37 (*) Running setup for HDL simulator: modelsim
 
 
-# 2013.04.03 11:55:42 (*) Completed generation for system: snake_system.
-# 2013.04.03 11:55:42 (*) THE FOLLOWING SYSTEM ITEMS HAVE BEEN GENERATED:
-  SOPC Builder database : /home/user4/spring13/mdk2133/Desktop/Snake_Plus/snake_system.ptf 
-  System HDL Model : /home/user4/spring13/mdk2133/Desktop/Snake_Plus/snake_system.vhd 
-  System Generation Script : /home/user4/spring13/mdk2133/Desktop/Snake_Plus/snake_system_generation_script 
+# 2013.04.10 13:54:37 (*) Completed generation for system: snake_system.
+# 2013.04.10 13:54:37 (*) THE FOLLOWING SYSTEM ITEMS HAVE BEEN GENERATED:
+  SOPC Builder database : /user3/spring13/ie2147/Desktop/Git/Snake_Plus/snake_system.ptf 
+  System HDL Model : /user3/spring13/ie2147/Desktop/Git/Snake_Plus/snake_system.vhd 
+  System Generation Script : /user3/spring13/ie2147/Desktop/Git/Snake_Plus/snake_system_generation_script 
 
-# 2013.04.03 11:55:42 (*) SUCCESS: SYSTEM GENERATION COMPLETED.
+# 2013.04.10 13:54:37 (*) SUCCESS: SYSTEM GENERATION COMPLETED.
 
 
 Press 'Exit' to exit.

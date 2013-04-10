@@ -1,5 +1,5 @@
 EDA Netlist Writer report for snakeplus
-Wed Apr  3 12:27:28 2013
+Wed Apr 10 14:06:53 2013
 Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Full Version
 
 
@@ -36,7 +36,7 @@ applicable agreement for further details.
 +-------------------------------------------------------------------+
 ; EDA Netlist Writer Summary                                        ;
 +---------------------------+---------------------------------------+
-; EDA Netlist Writer Status ; Successful - Wed Apr  3 12:27:28 2013 ;
+; EDA Netlist Writer Status ; Successful - Wed Apr 10 14:06:53 2013 ;
 ; Revision Name             ; snakeplus                             ;
 ; Top-level Entity Name     ; snakeplus                             ;
 ; Family                    ; Cyclone II                            ;
@@ -66,16 +66,16 @@ applicable agreement for further details.
 +---------------------------------------------------------------------------------------------------+------------------------+
 
 
-+--------------------------------------------------------------------------------------------+
-; Simulation Generated Files                                                                 ;
-+--------------------------------------------------------------------------------------------+
-; Generated Files                                                                            ;
-+--------------------------------------------------------------------------------------------+
-; /home/user4/spring13/mdk2133/Desktop/Snake_Plus/simulation/modelsim/snakeplus.vho          ;
-; /home/user4/spring13/mdk2133/Desktop/Snake_Plus/simulation/modelsim/snakeplus_fast.vho     ;
-; /home/user4/spring13/mdk2133/Desktop/Snake_Plus/simulation/modelsim/snakeplus_vhd.sdo      ;
-; /home/user4/spring13/mdk2133/Desktop/Snake_Plus/simulation/modelsim/snakeplus_vhd_fast.sdo ;
-+--------------------------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------------------+
+; Simulation Generated Files                                                                    ;
++-----------------------------------------------------------------------------------------------+
+; Generated Files                                                                               ;
++-----------------------------------------------------------------------------------------------+
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus.vho          ;
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus_fast.vho     ;
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus_vhd.sdo      ;
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus_vhd_fast.sdo ;
++-----------------------------------------------------------------------------------------------+
 
 
 +-----------------------------+
@@ -84,12 +84,12 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II 32-bit EDA Netlist Writer
     Info: Version 12.1 Build 177 11/07/2012 SJ Full Version
-    Info: Processing started: Wed Apr  3 12:27:24 2013
+    Info: Processing started: Wed Apr 10 14:06:48 2013
 Info: Command: quartus_eda --read_settings_files=off --write_settings_files=off snakeplus -c snakeplus
-Info (204026): Generated files "snakeplus.vho", "snakeplus_fast.vho", "snakeplus_vhd.sdo" and "snakeplus_vhd_fast.sdo" in directory "/home/user4/spring13/mdk2133/Desktop/Snake_Plus/simulation/modelsim/" for EDA simulation tool
+Info (204026): Generated files "snakeplus.vho", "snakeplus_fast.vho", "snakeplus_vhd.sdo" and "snakeplus_vhd_fast.sdo" in directory "/home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/" for EDA simulation tool
 Info: Quartus II 32-bit EDA Netlist Writer was successful. 0 errors, 0 warnings
-    Info: Peak virtual memory: 324 megabytes
-    Info: Processing ended: Wed Apr  3 12:27:29 2013
+    Info: Peak virtual memory: 333 megabytes
+    Info: Processing ended: Wed Apr 10 14:06:53 2013
     Info: Elapsed time: 00:00:05
     Info: Total CPU time (on all processors): 00:00:04
 

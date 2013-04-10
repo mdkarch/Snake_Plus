@@ -4,6 +4,19 @@
 --
 -- Stephen A. Edwards
 -- sedwards@cs.columbia.edu
+
+
+
+
+-- PROTOCOL:
+			--9-0: Y (LSB)
+			--19-10: X
+			--24-20: SPRITE SELECT
+			--25: 1=ADD, 0=REMOVE
+			--26-27: Which segment referring to
+			--			00=head, 01=second to head
+			--			10=second to tail 11=tail
+			--26-31: UNUSED (MSB)
 --
 -------------------------------------------------------------------------------
 library ieee;
@@ -15,6 +28,10 @@ entity de2_vga_raster is
   port (
     reset : in std_logic;
     clk   : in std_logic;                    -- Should be 25.125 MHz
+	 
+	 --TILE_IN : in array(39 downto 0, 29 downto 0) of std_logic_vector(7 downto 0);
+	 --SNAKE1_IN : in array(1200 downto 0) of std_logic_vector(32 downto 0);
+	 --SNAKE2_IN : in array(1200 downto 0) of std_logic_vector(32 downto 0);
 
     VGA_CLK,                         -- Clock
     VGA_HS,                          -- H_SYNC
@@ -68,6 +85,9 @@ architecture rtl of de2_vga_raster is
 	signal circle_vsquared : integer;
 	signal hcount_temp, vcount_temp : integer;
 	signal circle_h, circle_v, circle : std_logic; -- circle area
+	
+	type ram_type is array(5 downto 0) of std_logic_vector(255 downto 0);
+	signal SPRITES : ram_type;
 
 begin
   
@@ -269,4 +289,14 @@ begin
   VGA_SYNC <= '0';
   VGA_BLANK <= not (vga_hsync or vga_vsync);
 
-end rtl;
+
+  
+  
+  
+  -- Sprite Definitions
+
+	
+	SPRITES(0) <= (others => '0');
+  
+  end rtl;
+

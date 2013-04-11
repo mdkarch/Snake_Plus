@@ -1,0 +1,32 @@
+--------------------------------------
+-- SUBCOMPONENTS FOR VGA CONTROLLER---
+--------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.definitions.all;
+
+entity add_remove_snake_part is
+
+	port(
+		clk		: in std_logic;
+		enabled	: in std_logic;
+		data_in	: in std_logic_vector(31 downto 0);
+		snake1 	: in array(1200 downto 0) of
+							std_logic_vector(15 downto 0)
+	);
+
+end add_remove_snake_part;
+
+architecture arsp of add_remove_snake_part is
+
+begin
+
+	process (clk)
+	begin
+		if enabled = '1' then
+		end if;
+	end process;
+
+end arsp;

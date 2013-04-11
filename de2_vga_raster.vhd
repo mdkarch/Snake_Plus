@@ -22,6 +22,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.definitions.all;
 
 entity de2_vga_raster is
   
@@ -29,9 +30,9 @@ entity de2_vga_raster is
     reset : in std_logic;
     clk   : in std_logic;                    -- Should be 25.125 MHz
 	 
-	 --TILE_IN : in array(39 downto 0, 29 downto 0) of std_logic_vector(7 downto 0);
-	 --SNAKE1_IN : in array(1200 downto 0) of std_logic_vector(32 downto 0);
-	 --SNAKE2_IN : in array(1200 downto 0) of std_logic_vector(32 downto 0);
+	 TILES_IN : in tiles_ram;
+	 SNAKE1_IN : in snake_ram;
+	 SNAKE2_IN : in snake_ram;
 
     VGA_CLK,                         -- Clock
     VGA_HS,                          -- H_SYNC

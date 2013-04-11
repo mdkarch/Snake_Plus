@@ -4,11 +4,11 @@ use ieee.std_logic_1164.all;
 package DEFINITIONS is
 
 	--Type Definitions
-	  type tiles_ram is array(1 downto 0, 1 downto 0) of
+	  type tiles_ram is array(39 downto 0, 29 downto 0) of
 							std_logic_vector(7 downto 0);
 
 	   type snake_ram is array(1200 downto 0) of
-							std_logic_vector(15 downto 0);
+							std_logic_vector(31 downto 0);
 	
 	--Snake constants
 		constant MAX_SNAKE_SIZE	: integer := 1200;	

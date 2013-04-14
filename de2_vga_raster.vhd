@@ -86,12 +86,18 @@ architecture rtl of de2_vga_raster is
 	signal circle_vsquared : integer;
 	signal hcount_temp, vcount_temp : integer;
 	signal circle_h, circle_v, circle : std_logic; -- circle area
+	signal green, green_h, green_v : std_logic;
+	signal blue, blue_h, blue_v : std_logic;
+	signal red, red_h, red_v : std_logic;
+	signal sprite_h_pos, sprite_v_pos : integer;
+	signal black, white : std_logic;
+	signal pink, gray, yellow, brown, tan	: std_logic;
 	
 	type ram_type is array(5 downto 0) of std_logic_vector(255 downto 0);
 	signal SPRITES : ram_type;
 
 	-- sprites
-	type array_type_16x16 is array (15 downto 0) of unsigned (15 downto 0);
+	type array_type_16x16 is array (0 to 15) of unsigned (0 to 15);
 	
 	-- snake head colorings
 	signal sprite_snake_head_g 	: array_type_16x16;
@@ -825,6 +831,68 @@ begin
       end if;
     end if;
   end process VBlankGen;
+  
+  --testing sprite generator
+  SpriteGen : process (clk)
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			brown <= '0';
+			red <= '0';
+			white <= '0';
+		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 55) 
+				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 71) 
+				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
+				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
+			 sprite_h_pos <= to_integer(Hcount) - (HSYNC + HBACK_PORCH + 55);
+			 sprite_v_pos <= to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78) - 1;
+			 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
+				brown <= '1';
+				red <= '0';
+				black <= '0';
+				white <= '0';
+			 end if;
+			 if sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
+			   black <= '1';
+				brown <= '0';
+				red <= '0';
+				white <= '0';
+			 end if;
+			 if sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
+			   red <= '1';
+				brown <= '0';
+				black <= '0';
+				white <= '0';
+			 end if;
+			 if sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
+			   white <= '1';
+				brown <= '0';
+				black <= '0';
+				red <= '0';
+			 end if;
+		else
+			brown <= '0';
+			black <= '0';
+			red <= '0';
+			white <= '0';
+		end if;
+	end if;		
+  end process SpriteGen;
+  
+--  SpriteVGen : process (clk)
+--  begin
+--	if rising_edge(clk) then
+--		if reset = '1' then
+--			green_v <= '0';
+--		elsif EndOfLine = '1' then
+--			if Vcount = VSYNC + VBACK_PORCH - 1 + 78 then
+--				green_v <= '1';
+--			elsif Vcount = VSYNC + VBACK_PORCH - 1 + 94 then
+--				green_v <= '0';
+--			end if;
+--		end if;
+--	end if;
+--  end process SpriteVGen;
 
 -- Rectangle generator
 --  RectangleHGen : process (clk)
@@ -907,10 +975,46 @@ begin
       VGA_G <= "0000000000";
       VGA_B <= "0000000000";
     elsif clk'event and clk = '1' then
-      if rectangle = '0' then
-        VGA_R <= "1111111111";
+      if green = '1' then
+        VGA_R <= "0000000000";
         VGA_G <= "1111111111";
-        VGA_B <= "1111111111";
+        VGA_B <= "0000000000";
+		elsif blue = '1' then
+		  VGA_R <= "0000000000";
+		  VGA_G <= "0000000000";
+		  VGA_B <= "1111111111";
+		elsif red = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "0000000000";
+		  VGA_B <= "0000000000";
+		elsif black = '1' then
+		  VGA_R <= "0000000000";
+		  VGA_G <= "0000000000";
+		  VGA_B <= "0000000000";
+		elsif white = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "1111111111";
+		elsif pink = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "0110000000";
+		  VGA_B <= "0110100000";
+		elsif gray = '1' then
+		  VGA_R <= "0110000000";
+		  VGA_G <= "0110000000";
+		  VGA_B <= "0110000000";
+		elsif yellow = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "0000000000";
+		elsif brown = '1' then
+		  VGA_R <= "0100001001";
+		  VGA_G <= "0010000100";
+		  VGA_B <= "0000010011";
+		elsif tan = '1' then
+		  VGA_R <= "0110100000";
+		  VGA_G <= "0101110000";
+		  VGA_B <= "0100001010";
       elsif vga_hblank = '0' and vga_vblank ='0' then
         VGA_R <= "0000000000";
         VGA_G <= "0000000000";

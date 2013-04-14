@@ -837,41 +837,44 @@ begin
   begin
 	if rising_edge(clk) then	
 		if reset = '1' then
-			brown <= '0';
+			green <= '0';
 			red <= '0';
 			white <= '0';
+			black <= '0';
 		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 55) 
 				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 71) 
 				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
 				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
 			 sprite_h_pos <= to_integer(Hcount) - (HSYNC + HBACK_PORCH + 55);
-			 sprite_v_pos <= to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78) - 1;
+			 sprite_v_pos <= to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
 			 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
-				brown <= '1';
+				green <= '1';
 				red <= '0';
 				black <= '0';
 				white <= '0';
-			 end if;
-			 if sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
+			 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
 			   black <= '1';
-				brown <= '0';
+				green <= '0';
 				red <= '0';
 				white <= '0';
-			 end if;
-			 if sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
+			 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
 			   red <= '1';
-				brown <= '0';
+				green <= '0';
 				black <= '0';
 				white <= '0';
-			 end if;
-			 if sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
+			 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
 			   white <= '1';
-				brown <= '0';
+				green <= '0';
+				black <= '0';
+				red <= '0';
+			 else
+				white <= '0';
+				green <= '0';
 				black <= '0';
 				red <= '0';
 			 end if;
 		else
-			brown <= '0';
+			green <= '0';
 			black <= '0';
 			red <= '0';
 			white <= '0';
@@ -975,14 +978,19 @@ begin
       VGA_G <= "0000000000";
       VGA_B <= "0000000000";
     elsif clk'event and clk = '1' then
-      if green = '1' then
-        VGA_R <= "0000000000";
-        VGA_G <= "1111111111";
-        VGA_B <= "0000000000";
-		elsif blue = '1' then
+--      --if green = '1' then
+--        VGA_R <= "0000000000";
+--        VGA_G <= "1111111111";
+--        VGA_B <= "0000000000";
+--		els
+		if blue = '1' then
 		  VGA_R <= "0000000000";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "1111111111";
+		elsif green = '1' then
+		  VGA_R <= "0000000000";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "0000000000";
 		elsif red = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0000000000";

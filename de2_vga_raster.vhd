@@ -843,6 +843,7 @@ begin
   -- snake sprite head generation
   SnakeHeadSpriteGen : process (clk)
   variable sprite_h_pos, sprite_v_pos : integer;
+  variable x, y : integer;
   begin
 	if rising_edge(clk) then	
 		if reset = '1' then
@@ -850,43 +851,50 @@ begin
 			snake_head_r <= '0';
 			snake_head_w <= '0';
 			snake_head_b <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 55) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 70) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 55);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
-			 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
-				snake_head_g <= '1';
-				snake_head_r <= '0';
-				snake_head_w <= '0';
-				snake_head_b <= '0';
-			 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
-			   snake_head_g <= '0';
-				snake_head_r <= '0';
-				snake_head_w <= '0';
-				snake_head_b <= '1';
-			 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
-			   snake_head_g <= '0';
-				snake_head_r <= '1';
-				snake_head_w <= '0';
-				snake_head_b <= '0';
-			 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
-			   snake_head_g <= '0';
-				snake_head_r <= '0';
-				snake_head_w <= '1';
-				snake_head_b <= '0';
-			 else
-				snake_head_g <= '0';
-				snake_head_r <= '0';
-				snake_head_w <= '0';
-				snake_head_b <= '0';
-			 end if;
 		else
-			snake_head_g <= '0';
-			snake_head_r <= '0';
-			snake_head_w <= '0';
-			snake_head_b <= '0';
+			for i in 1200 downto 0 loop
+				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
+				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
+				
+				if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+						and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
+						and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+						and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
+					 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
+					 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
+					 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_g <= '1';
+						snake_head_r <= '0';
+						snake_head_w <= '0';
+						snake_head_b <= '0';
+					 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_g <= '0';
+						snake_head_r <= '0';
+						snake_head_w <= '0';
+						snake_head_b <= '1';
+					 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_g <= '0';
+						snake_head_r <= '1';
+						snake_head_w <= '0';
+						snake_head_b <= '0';
+					 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_g <= '0';
+						snake_head_r <= '0';
+						snake_head_w <= '1';
+						snake_head_b <= '0';
+					 else
+						snake_head_g <= '0';
+						snake_head_r <= '0';
+						snake_head_w <= '0';
+						snake_head_b <= '0';
+					 end if;
+				else
+					snake_head_g <= '0';
+					snake_head_r <= '0';
+					snake_head_w <= '0';
+					snake_head_b <= '0';
+				end if;
+			end loop;
 		end if;
 	end if;		
   end process SnakeHeadSpriteGen;
@@ -1308,57 +1316,6 @@ begin
 		end if;		
   end process FreezeSpriteGen;
 	
-	
-	-- growth power up generation
-  RabbitSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			rabbit_y <= '0';
-			rabbit_b <= '0';
-			rabbit_w <= '0';
-			rabbit_p <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 90) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
-			 if sprite_food_rabbit_y(sprite_v_pos)(sprite_h_pos) = '1' then
-				rabbit_y <= '1';
-				rabbit_p <= '0';
-				rabbit_w <= '0';
-				rabbit_b <= '0';
-			 elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
-			   rabbit_y <= '0';
-				rabbit_p <= '0';
-				rabbit_w <= '0';
-				rabbit_b <= '1';
-			 elsif sprite_food_rabbit_p(sprite_v_pos)(sprite_h_pos) = '1' then
-			   rabbit_y <= '0';
-				rabbit_p <= '1';
-				rabbit_w <= '0';
-				rabbit_b <= '0';
-			 elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
-			   rabbit_y <= '0';
-				rabbit_p <= '0';
-				rabbit_w <= '1';
-				rabbit_b <= '0';
-			 else
-				rabbit_y <= '0';
-				rabbit_p <= '0';
-				rabbit_w <= '0';
-				rabbit_b <= '0';
-			 end if;
-		else
-			rabbit_y <= '0';
-			rabbit_p <= '0';
-			rabbit_w <= '0';
-			rabbit_b <= '0';
-		end if;
-	end if;		
-  end process RabbitSpriteGen;
 	
   -- Registered video signals going to the video DAC
   VideoOut: process (clk, reset)

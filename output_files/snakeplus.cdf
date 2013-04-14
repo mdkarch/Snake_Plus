@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP2C35F672) Path("/home/user4/spring13/mdk2133/Desktop/Snake_Plus/output_files/") File("snakeplus.sof") MfrSpec(OpMask(1));
+		Device PartName(EP2C35F672) Path("/home/user4/spring13/nb2555/Snake_Plus/output_files/") File("snakeplus.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

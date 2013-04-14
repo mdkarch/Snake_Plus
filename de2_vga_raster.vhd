@@ -89,9 +89,11 @@ architecture rtl of de2_vga_raster is
 	signal green, green_h, green_v : std_logic;
 	signal blue, blue_h, blue_v : std_logic;
 	signal red, red_h, red_v : std_logic;
-	signal sprite_h_pos, sprite_v_pos : integer;
+	--signal sprite_h_pos, sprite_v_pos : integer;
 	signal black, white : std_logic;
 	signal pink, gray, yellow, brown, tan	: std_logic;
+	signal snake_body, snake_tail : std_logic;
+	signal snake_head_g, snake_head_r, snake_head_w, snake_head_b : std_logic;
 	
 	type ram_type is array(5 downto 0) of std_logic_vector(255 downto 0);
 	signal SPRITES : ram_type;
@@ -833,54 +835,79 @@ begin
   end process VBlankGen;
   
   --testing sprite generator
-  SpriteGen : process (clk)
+  SnakeHeadSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
   begin
 	if rising_edge(clk) then	
 		if reset = '1' then
-			green <= '0';
-			red <= '0';
-			white <= '0';
-			black <= '0';
+			snake_head_g <= '0';
+			snake_head_r <= '0';
+			snake_head_w <= '0';
+			snake_head_b <= '0';
 		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 55) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 71) 
+				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 70) 
 				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
 				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
-			 sprite_h_pos <= to_integer(Hcount) - (HSYNC + HBACK_PORCH + 55);
-			 sprite_v_pos <= to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
+			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 55);
+			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
 			 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
-				green <= '1';
-				red <= '0';
-				black <= '0';
-				white <= '0';
+				snake_head_g <= '1';
+				snake_head_r <= '0';
+				snake_head_w <= '0';
+				snake_head_b <= '0';
 			 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
-			   black <= '1';
-				green <= '0';
-				red <= '0';
-				white <= '0';
+			   snake_head_g <= '0';
+				snake_head_r <= '0';
+				snake_head_w <= '0';
+				snake_head_b <= '1';
 			 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
-			   red <= '1';
-				green <= '0';
-				black <= '0';
-				white <= '0';
+			   snake_head_g <= '0';
+				snake_head_r <= '1';
+				snake_head_w <= '0';
+				snake_head_b <= '0';
 			 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
-			   white <= '1';
-				green <= '0';
-				black <= '0';
-				red <= '0';
+			   snake_head_g <= '0';
+				snake_head_r <= '0';
+				snake_head_w <= '1';
+				snake_head_b <= '0';
 			 else
-				white <= '0';
-				green <= '0';
-				black <= '0';
-				red <= '0';
+				snake_head_g <= '0';
+				snake_head_r <= '0';
+				snake_head_w <= '0';
+				snake_head_b <= '0';
 			 end if;
 		else
-			green <= '0';
-			black <= '0';
-			red <= '0';
-			white <= '0';
+			snake_head_g <= '0';
+			snake_head_r <= '0';
+			snake_head_w <= '0';
+			snake_head_b <= '0';
 		end if;
 	end if;		
-  end process SpriteGen;
+  end process SnakeHeadSpriteGen;
+  
+  SnakeBodySpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			snake_body <= '0';
+		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
+				and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 111) 
+				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 400) 
+				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 416) then
+			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
+			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 400);
+			 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
+				snake_body <= '1';
+			 else
+				snake_body <= '0';
+			 end if;
+		else
+			snake_body <= '0';
+		end if;
+	end if;		
+  end process SnakeBodySpriteGen;
+  
   
 --  SpriteVGen : process (clk)
 --  begin
@@ -978,28 +1005,23 @@ begin
       VGA_G <= "0000000000";
       VGA_B <= "0000000000";
     elsif clk'event and clk = '1' then
---      --if green = '1' then
---        VGA_R <= "0000000000";
---        VGA_G <= "1111111111";
---        VGA_B <= "0000000000";
---		els
 		if blue = '1' then
 		  VGA_R <= "0000000000";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "1111111111";
-		elsif green = '1' then
+		elsif green = '1' or snake_body = '1' or snake_head_g = '1' then
 		  VGA_R <= "0000000000";
 		  VGA_G <= "1111111111";
 		  VGA_B <= "0000000000";
-		elsif red = '1' then
+		elsif red = '1' or snake_head_r = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";
-		elsif black = '1' then
+		elsif black = '1' or snake_head_b = '1' then
 		  VGA_R <= "0000000000";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";
-		elsif white = '1' then
+		elsif white = '1' or snake_head_w = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "1111111111";
 		  VGA_B <= "1111111111";
@@ -1023,11 +1045,11 @@ begin
 		  VGA_R <= "0110100000";
 		  VGA_G <= "0101110000";
 		  VGA_B <= "0100001010";
-      elsif vga_hblank = '0' and vga_vblank ='0' then
+      elsif vga_hblank = '0' and vga_vblank ='0' then -- black background
         VGA_R <= "0000000000";
         VGA_G <= "0000000000";
-        VGA_B <= "1111111111";
-      else
+        VGA_B <= "0000000000";
+      else -- black
         VGA_R <= "0000000000";
         VGA_G <= "0000000000";
         VGA_B <= "0000000000";    

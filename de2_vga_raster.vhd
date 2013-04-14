@@ -451,7 +451,7 @@ begin
 	sprite_food_edwards_l(5) 			<=	"0000000000000000";
 	sprite_food_edwards_l(6) 			<=	"0010011001100100";
 	sprite_food_edwards_l(7) 			<=	"0001100110011000";
-	sprite_food_edwardss_l(8) 			<=	"0000100110010000";
+	sprite_food_edwards_l(8) 			<=	"0000100110010000";
 	sprite_food_edwards_l(9) 			<=	"0000100110010000";
 	sprite_food_edwards_l(10) 			<=	"0000011001100000";
 	sprite_food_edwards_l(11) 			<=	"0000000000000000";
@@ -826,79 +826,77 @@ begin
     end if;
   end process VBlankGen;
 
-  -- Rectangle generator
-
-  RectangleHGen : process (clk)
-  begin
-    if rising_edge(clk) then     
-      if reset = '1' or Hcount = HSYNC + HBACK_PORCH + RECTANGLE_HSTART then
-        rectangle_h <= '1';
-      elsif Hcount = HSYNC + HBACK_PORCH + RECTANGLE_HEND then
-        rectangle_h <= '0';
-      end if;      
-    end if;
-  end process RectangleHGen;
-
-  RectangleVGen : process (clk)
-  begin
-    if rising_edge(clk) then
-      if reset = '1' then       
-        rectangle_v <= '0';
-      elsif EndOfLine = '1' then
-        if Vcount = VSYNC + VBACK_PORCH - 1 + RECTANGLE_VSTART then
-          rectangle_v <= '1';
-        elsif Vcount = VSYNC + VBACK_PORCH - 1 + RECTANGLE_VEND then
-          rectangle_v <= '0';
-        end if;
-      end if;      
-    end if;
-  end process RectangleVGen;
-
-  rectangle <= rectangle_h and rectangle_v;
+-- Rectangle generator
+--  RectangleHGen : process (clk)
+--  begin
+--    if rising_edge(clk) then     
+--      if reset = '1' or Hcount = HSYNC + HBACK_PORCH + RECTANGLE_HSTART then
+--        rectangle_h <= '1';
+--      elsif Hcount = HSYNC + HBACK_PORCH + RECTANGLE_HEND then
+--        rectangle_h <= '0';
+--      end if;      
+--    end if;
+--  end process RectangleHGen;
+--
+--  RectangleVGen : process (clk)
+--  begin
+--    if rising_edge(clk) then
+--      if reset = '1' then       
+--        rectangle_v <= '0';
+--      elsif EndOfLine = '1' then
+--        if Vcount = VSYNC + VBACK_PORCH - 1 + RECTANGLE_VSTART then
+--          rectangle_v <= '1';
+--        elsif Vcount = VSYNC + VBACK_PORCH - 1 + RECTANGLE_VEND then
+--          rectangle_v <= '0';
+--        end if;
+--      end if;      
+--    end if;
+--  end process RectangleVGen;
+--
+--  rectangle <= rectangle_h and rectangle_v;
   
   
   -- Circle Generator
-  
-  CircleHGen : process (clk)
-  begin
-    if rising_edge(clk) then
-		if Hcount  >= (circle_center_h - CIRCLE_RADIUS + HSYNC + HBACK_PORCH - 1) and
-			Hcount  <= (circle_center_h + CIRCLE_RADIUS + HSYNC + HBACK_PORCH - 1) then
-			
-				hcount_temp <= to_integer(Hcount) - circle_center_h - HSYNC - HBACK_PORCH - 1;
-				circle_hsquared <= (hcount_temp) * (hcount_temp);
-				if reset = '1' or circle_hsquared + circle_vsquared < CIRCLE_RSQUARED then
-				  circle_h <= '1';
-				else
-				  circle_h <= '0';
-				end if;
-		else
-			circle_h <= '0';
-		end if;
-    end if;
-  end process CircleHGen;
-
-  CircleVGen : process (clk)
-  begin
-    if rising_edge(clk) then
-      if reset = '1' then       
-        circle_v <= '0';
-		  vcount_temp <= 0;
-      elsif EndOfLine = '1' then
-			if Vcount >= circle_center_v - CIRCLE_RADIUS + VSYNC + VBACK_PORCH - 1  and
-				Vcount <= circle_center_v + CIRCLE_RADIUS + VSYNC + VBACK_PORCH - 1  then
-					
-					vcount_temp <= to_integer(Vcount) - circle_center_v - VSYNC - VBACK_PORCH - 1;
-					circle_vsquared <= (vcount_temp) * (vcount_temp);
-					circle_v <= '1';
-			else
-					circle_v <= '0';
-			end if;
-      end if;      
-    end if;
-  end process CircleVGen;
-  
-  circle <= circle_v and circle_h;
+--  CircleHGen : process (clk)
+--  begin
+--    if rising_edge(clk) then
+--		if Hcount  >= (circle_center_h - CIRCLE_RADIUS + HSYNC + HBACK_PORCH - 1) and
+--			Hcount  <= (circle_center_h + CIRCLE_RADIUS + HSYNC + HBACK_PORCH - 1) then
+--			
+--				hcount_temp <= to_integer(Hcount) - circle_center_h - HSYNC - HBACK_PORCH - 1;
+--				circle_hsquared <= (hcount_temp) * (hcount_temp);
+--				if reset = '1' or circle_hsquared + circle_vsquared < CIRCLE_RSQUARED then
+--				  circle_h <= '1';
+--				else
+--				  circle_h <= '0';
+--				end if;
+--		else
+--			circle_h <= '0';
+--		end if;
+--    end if;
+--  end process CircleHGen;
+--
+--  CircleVGen : process (clk)
+--  begin
+--    if rising_edge(clk) then
+--      if reset = '1' then       
+--        circle_v <= '0';
+--		  vcount_temp <= 0;
+--      elsif EndOfLine = '1' then
+--			if Vcount >= circle_center_v - CIRCLE_RADIUS + VSYNC + VBACK_PORCH - 1  and
+--				Vcount <= circle_center_v + CIRCLE_RADIUS + VSYNC + VBACK_PORCH - 1  then
+--					
+--					vcount_temp <= to_integer(Vcount) - circle_center_v - VSYNC - VBACK_PORCH - 1;
+--					circle_vsquared <= (vcount_temp) * (vcount_temp);
+--					circle_v <= '1';
+--			else
+--					circle_v <= '0';
+--			end if;
+--      end if;      
+--    end if;
+--  end process CircleVGen;
+--  
+--  circle <= circle_v and circle_h;
 
   -- Registered video signals going to the video DAC
 
@@ -909,7 +907,7 @@ begin
       VGA_G <= "0000000000";
       VGA_B <= "0000000000";
     elsif clk'event and clk = '1' then
-      if rectangle = '1' then
+      if rectangle = '0' then
         VGA_R <= "1111111111";
         VGA_G <= "1111111111";
         VGA_B <= "1111111111";

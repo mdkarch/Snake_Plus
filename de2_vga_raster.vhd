@@ -941,56 +941,56 @@ begin
   end process SnakeTailSpriteGen;
 
 	
---	-- rabbit sprite generation
---  RabbitSpriteGen : process (clk)
---  variable sprite_h_pos, sprite_v_pos : integer;
---  begin
---	if rising_edge(clk) then	
---		if reset = '1' then
---			rabbit_y <= '0';
---			rabbit_b <= '0';
---			rabbit_w <= '0';
---			rabbit_p <= '0';
---		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
---				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 90) 
---				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
---				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
---			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
---			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
---			 if sprite_food_rabbit_y(sprite_v_pos)(sprite_h_pos) = '1' then
---				rabbit_y <= '1';
---				rabbit_p <= '0';
---				rabbit_w <= '0';
---				rabbit_b <= '0';
---			 elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
---			   rabbit_y <= '0';
---				rabbit_p <= '0';
---				rabbit_w <= '0';
---				rabbit_b <= '1';
---			 elsif sprite_food_rabbit_p(sprite_v_pos)(sprite_h_pos) = '1' then
---			   rabbit_y <= '0';
---				rabbit_p <= '1';
---				rabbit_w <= '0';
---				rabbit_b <= '0';
---			 elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
---			   rabbit_y <= '0';
---				rabbit_p <= '0';
---				rabbit_w <= '1';
---				rabbit_b <= '0';
---			 else
---				rabbit_y <= '0';
---				rabbit_p <= '0';
---				rabbit_w <= '0';
---				rabbit_b <= '0';
---			 end if;
---		else
---			rabbit_y <= '0';
---			rabbit_p <= '0';
---			rabbit_w <= '0';
---			rabbit_b <= '0';
---		end if;
---	end if;		
---  end process RabbitSpriteGen;
+	-- rabbit sprite generation
+  RabbitSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			rabbit_y <= '0';
+			rabbit_b <= '0';
+			rabbit_w <= '0';
+			rabbit_p <= '0';
+		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
+				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 90) 
+				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
+				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
+			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
+			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
+			 if sprite_food_rabbit_y(sprite_v_pos)(sprite_h_pos) = '1' then
+				rabbit_y <= '1';
+				rabbit_p <= '0';
+				rabbit_w <= '0';
+				rabbit_b <= '0';
+			 elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
+			   rabbit_y <= '0';
+				rabbit_p <= '0';
+				rabbit_w <= '0';
+				rabbit_b <= '1';
+			 elsif sprite_food_rabbit_p(sprite_v_pos)(sprite_h_pos) = '1' then
+			   rabbit_y <= '0';
+				rabbit_p <= '1';
+				rabbit_w <= '0';
+				rabbit_b <= '0';
+			 elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
+			   rabbit_y <= '0';
+				rabbit_p <= '0';
+				rabbit_w <= '1';
+				rabbit_b <= '0';
+			 else
+				rabbit_y <= '0';
+				rabbit_p <= '0';
+				rabbit_w <= '0';
+				rabbit_b <= '0';
+			 end if;
+		else
+			rabbit_y <= '0';
+			rabbit_p <= '0';
+			rabbit_w <= '0';
+			rabbit_b <= '0';
+		end if;
+	end if;		
+  end process RabbitSpriteGen;
 	
 	
 --	-- mouse sprite generation
@@ -1224,7 +1224,7 @@ begin
 					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
 					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
 				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 300);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 150);
+				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
 				 if sprite_exclam(sprite_v_pos)(sprite_h_pos) = '1' then
 					exclam <= '1';
 				 else
@@ -1248,7 +1248,7 @@ begin
 					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
 					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
 				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 350);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 150);
+				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
 				 if sprite_wall(sprite_v_pos)(sprite_h_pos) = '1' then
 					wall <= '1';
 				 else
@@ -1260,30 +1260,105 @@ begin
 		end if;		
   end process BrickWallSpriteGen;
   
-   -- brick wall sprite generation
-	BrickWallSpriteGen : process (clk)
+   -- speed powerup sprite generation
+	SpeedSpriteGen : process (clk)
 	  variable sprite_h_pos, sprite_v_pos : integer;
 	  begin
 		if rising_edge(clk) then	
 			if reset = '1' then
-				wall <= '0';
+				speed <= '0';
 			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 350) 
 					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 366) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
+					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
+					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
 				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 350);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 150);
-				 if sprite_wall(sprite_v_pos)(sprite_h_pos) = '1' then
-					wall <= '1';
+				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
+				 if sprite_powup_speed(sprite_v_pos)(sprite_h_pos) = '1' then
+					speed <= '1';
 				 else
-					wall <= '0';
+					speed <= '0';
 				 end if;
 			else
-				wall <= '0';
+				speed <= '0';
 			end if;
 		end if;		
-  end process BrickWallSpriteGen;
+  end process SpeedSpriteGen;
+  
+   -- freeze powerup sprite generation
+	FreezeSpriteGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				freeze <= '0';
+			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 350) 
+					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 366) 
+					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 150) 
+					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 166) then
+				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 350);
+				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 150);
+				 if sprite_powup_freeze(sprite_v_pos)(sprite_h_pos) = '1' then
+					freeze <= '1';
+				 else
+					freeze <= '0';
+				 end if;
+			else
+				freeze <= '0';
+			end if;
+		end if;		
+  end process FreezeSpriteGen;
 	
+	
+	-- growth power up generation
+  RabbitSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			rabbit_y <= '0';
+			rabbit_b <= '0';
+			rabbit_w <= '0';
+			rabbit_p <= '0';
+		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
+				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 90) 
+				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 78) 
+				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 94) then
+			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
+			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 78);
+			 if sprite_food_rabbit_y(sprite_v_pos)(sprite_h_pos) = '1' then
+				rabbit_y <= '1';
+				rabbit_p <= '0';
+				rabbit_w <= '0';
+				rabbit_b <= '0';
+			 elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
+			   rabbit_y <= '0';
+				rabbit_p <= '0';
+				rabbit_w <= '0';
+				rabbit_b <= '1';
+			 elsif sprite_food_rabbit_p(sprite_v_pos)(sprite_h_pos) = '1' then
+			   rabbit_y <= '0';
+				rabbit_p <= '1';
+				rabbit_w <= '0';
+				rabbit_b <= '0';
+			 elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
+			   rabbit_y <= '0';
+				rabbit_p <= '0';
+				rabbit_w <= '1';
+				rabbit_b <= '0';
+			 else
+				rabbit_y <= '0';
+				rabbit_p <= '0';
+				rabbit_w <= '0';
+				rabbit_b <= '0';
+			 end if;
+		else
+			rabbit_y <= '0';
+			rabbit_p <= '0';
+			rabbit_w <= '0';
+			rabbit_b <= '0';
+		end if;
+	end if;		
+  end process RabbitSpriteGen;
 	
   -- Registered video signals going to the video DAC
   VideoOut: process (clk, reset)
@@ -1323,10 +1398,10 @@ begin
 		  VGA_G <= "0110000000";
 		  VGA_B <= "0110100000";
 		elsif gray = '1'  or rabbit_y = '1' then
-		  VGA_R <= "0110000000";
-		  VGA_G <= "0110000000";
-		  VGA_B <= "0110000000";
-		elsif yellow = '1' then
+		  VGA_R <= "0011000000";
+		  VGA_G <= "0011000000";
+		  VGA_B <= "0011000000";
+		elsif yellow = '1' or speed = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "1111111111";
 		  VGA_B <= "0000000000";

@@ -86,16 +86,16 @@ static void moveDown(){
 static void movement(alt_u8 key, struct Node *snake[], struct Node *food[]){
 	/* put this case stmt in a function called setDirection()*/
 	switch(key){
-		case 'a':
+		case 0x1C://'a'
 			moveLeft();
 			break;
-		case 's':
+		case 0x1B://'s'
 			moveDown();
 			break;
-		case 'd':
+		case 0x23://'d'
 			moveRight();
 			break;
-		case 'w':
+		case 0x1D://'w'
 			moveUp();
 			break;
 		default:

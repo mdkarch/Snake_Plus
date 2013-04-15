@@ -2,6 +2,7 @@
 #include <alt_types.h>
 #include "alt_up_ps2_port.h"
 #include "ps2_keyboard.h"
+#include "list.h"
 
 #define WRITE_SPRITE(select,data) \
 IOWR_32DIRECT(VGA_BASE, select * 2, data)

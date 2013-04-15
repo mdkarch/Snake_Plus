@@ -4,7 +4,10 @@
 #include "ps2_keyboard.h"
 
 #define WRITE_SPRITE(select,data) \
-IOWR_32DIRECT(VGA_BASE, select * 2, data)
+IOWR_32DIRECT(VGA_BASE, select * 4, data)
+
+#define READ_SNAKE1_HEAD() \
+IORD_32DIRECT(VGA_BASE, 0)
 
 
 #define LEFT_BOUND	0
@@ -147,6 +150,7 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
 }
 
 int main(){
+
 	alt_u8 key = 0;
 	/* Initialize the keyboard */
 	printf("Pretty please wait three seconds to initialize keyboard\n");
@@ -163,7 +167,12 @@ int main(){
 	}
 	//alt_irq_register(PS2_0_IRQ, NULL, (void*)kb_interrupt_handler);
 	
-	WRITE_SPRITE(2,0xFFFFFFFF);
+	while(1){
+		//WRITE_SPRITE(4, 0xFFFFFFF0);
+		IOWR_32DIRECT(VGA_BASE, 4 * 4, 0x00000000);
+
+		printf("Head: %x", READ_SNAKE1_HEAD());
+	}
 
 	while(1) {
 		status = read_make_code_with_timeout(&decode_mode, &key);

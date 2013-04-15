@@ -19,6 +19,12 @@ use work.definitions.all;
 			--			10=second to tail 11=tail
 			--			( only used for snakes, not tiles )
 			--28-31: UNUSED (MSB)
+			
+		--Tiles protocol ( in tiles_ram, from controller to raster)
+			-- 8 bits
+			-- 5-0: Sprite select
+			-- 7-6: unused
+			-- 8	: Enabled/Active signal 
 --
 
 entity snake_plus_vga is
@@ -49,6 +55,7 @@ end snake_plus_vga;
 
 architecture rtl of snake_plus_vga is
 
+	signal reset				: std_logic;
 
   -- Main memory elements
   signal tiles 				: tiles_ram;
@@ -88,6 +95,9 @@ architecture rtl of snake_plus_vga is
 
 begin
   
+  reset <= not(reset_n);
+  leds(14) <= reset;
+  
   --VGA stuff
   
   process (clk)
@@ -104,7 +114,9 @@ begin
   begin
     if rising_edge(clk) then
 	 
-      if reset_n = '0' then
+	 readdata <= writedata;
+	 
+      if reset = '1' then
 			readdata <= (others => '0');
       else
         if chipselect = '1' then -- This chip is right one
@@ -132,6 +144,9 @@ begin
 					else
 						tiles_enabled <= '0';
 					end if;
+					
+					leds(10 downto 7) <= address;
+					leds(6 downto 0) <= writedata(20 downto 14);
 				
 				-- Read --
 				elsif read = '1' then
@@ -150,9 +165,10 @@ begin
 						readdata_temp <= snake2_length;
 					end if;
 					
-					readdata <= std_logic_vector( to_unsigned( readdata_temp, readdata'length ) );
 					
-				end if; -- end write
+					--readdata <= std_logic_vector( to_unsigned( readdata_temp, readdata'length ) );
+					
+				end if; -- end write/read
 				
           end if; -- end chipselect
         end if; --end reset
@@ -163,7 +179,7 @@ begin
 
 
 V1: entity work.de2_vga_raster port map (
-    reset => '0',
+    reset => reset,
     clk => clk25,
     VGA_CLK => VGA_CLK,
     VGA_HS => VGA_HS,
@@ -184,7 +200,7 @@ V1: entity work.de2_vga_raster port map (
 DD1: entity work.manage_tiles port map(
 
 		clk 					=> clk,
-		reset					=> reset_n,
+		reset					=> reset,
 		enabled 				=> tiles_enabled,
 		data_in 				=> writedata,
 		tiles 				=> tiles
@@ -194,7 +210,7 @@ DD1: entity work.manage_tiles port map(
 AD1: entity work.add_remove_snake_part port map (
 
 		clk 					=> clk,
-		reset					=> reset_n,
+		reset					=> reset,
 		enabled 				=> snake1_enabled,
 		data_in 				=> writedata,
 		snake 				=> snake1,
@@ -206,7 +222,7 @@ AD1: entity work.add_remove_snake_part port map (
 AD2: entity work.add_remove_snake_part port map (
 
 		clk 					=> clk,
-		reset					=> reset_n,
+		reset					=> reset,
 		enabled 				=> snake2_enabled,
 		data_in 				=> writedata,
 		snake 				=> snake2,
@@ -264,13 +280,12 @@ signal x_index			: integer;
 
 begin
 
-
 	process (clk)
 	begin
 	if rising_edge(clk) then
 	
 		-- Reset --
-		if reset = '0' then
+		if reset = '1' then
 			tiles <= (others=>(others=>(others=>'0')));
 			
 		-- Enabled --
@@ -283,12 +298,19 @@ begin
 			segment			<= 	data_in(27 downto 26);
 			unused			<= 	data_in(31 downto 28);
 			
+			-- Temp signals for conversion purposes
 			y_index <= to_integer( unsigned( y_val ) );
 			x_index <= to_integer( unsigned( x_val ) );
 			
-			tiles( x_index, y_index ) <= add_remove & "0" & sprite_select;
+												--1=active	-Unused	-Check definitions file
+			tiles( x_index, y_index ) <= add_remove & "00" & sprite_select;
 		
-		end if; -- reset/ nabled
+		end if; -- reset/ enabled
+		
+		tiles( 30, 1 ) <= '1' & "00" & RABBIT_CODE;
+		tiles( 10, 1 ) <= '1' & "00" & MOUSE_CODE;
+		tiles( 15, 20 ) <= '1' & "00" & WALL_CODE;
+
 		
 	end if; -- rising edge
 	end process; -- end clk
@@ -313,7 +335,7 @@ use work.definitions.all;
 entity add_remove_snake_part is
 
 	port(
-		clk			: in std_logic;
+		clk					: in std_logic;
 		reset 				: in std_logic;
 		enabled				: in std_logic;
 		data_in				: in std_logic_vector(31 downto 0);
@@ -352,7 +374,7 @@ begin
 	if rising_edge(clk) then
 	
 		-- Reset --
-		if reset = '0' then
+		if reset = '1' then
 			snake <= (others=>(others=>'0'));
 		
 		-- Only do something if it was directed at this snake	--
@@ -392,6 +414,9 @@ begin
 				--Increment head pointer --
 				head_index <= head_index + 1;
 				
+				--Increment snake length
+				snake_length <= snake_length + 1;
+				
 				-- Check for wrap around --
 				if head_index > MAX_SNAKE_SIZE - 1 then
 					head_index <= 0;
@@ -403,6 +428,9 @@ begin
 				
 				-- Increment tail pointer --
 				tail_index <= tail_index + 1;
+				
+				-- Decrement snake length
+				snake_length <= snake_length - 1;
 				
 				-- Check for wrap around --
 				if tail_index > MAX_SNAKE_SIZE - 1 then
@@ -420,6 +448,13 @@ begin
 										& segment & unused;
 			
 		end if; -- end if reset/enabled --
+		
+		
+	snake(1) <= "0000000001" & "0000000001" & SNAKE_HEAD_RIGHT 
+													& add_remove & segment & unused;
+													
+	head_index <= to_integer( unsigned( data_in ) );
+		
 	end if; -- end rising edge --
 	end process;
 

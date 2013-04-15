@@ -35,3 +35,457 @@ Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.pa
 
 !ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:33:06.894
 !MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:54:04.592
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:54:07.338
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:54:07.465
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:54:10.168
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:54:10.175
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:54:59.708
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:55:02.346
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:55:02.460
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:55:05.146
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:55:05.151
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:57:17.797
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:57:20.444
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:57:20.559
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:57:23.285
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:57:23.289
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:57:58.969
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:58:01.649
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 12:58:01.762
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:58:04.438
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 12:58:04.443
+!MESSAGE Downloading ELF Process failed
+!SESSION 2013-04-15 13:00:53.233 -----------------------------------------------
+eclipse.buildId=M20120208-0800
+java.version=1.6.0_23
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.cpp.product -perspective com.altera.sbtgui.ui.cPerspective
+Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.package.cpp.product -data /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software -perspective com.altera.sbtgui.ui.cPerspective
+
+!ENTRY org.eclipse.core.resources 2 10035 2013-04-15 13:00:55.071
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:02:22.727
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:02:24.189
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:02:24.298
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:02:26.989
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, --accept-bad-sysid, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:02:26.995
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:06:03.238
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:06:04.706
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:06:04.824
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:11:13.091
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:11:14.594
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:11:14.736
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:11:22.089
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, --accept-bad-sysid, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 4, 'other error'
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:11:22.093
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:18:27.125
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:18:28.648
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:18:28.879
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:19:46.932
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:19:48.476
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:19:48.629
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:20:16.062
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:20:17.657
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:20:17.789
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:23:31.525
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:23:33.135
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:23:33.259
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:24:20.482
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:24:22.111
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:24:22.371
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:26:32.032
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:26:33.632
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:26:33.780
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:27:18.886
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:27:20.468
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:27:20.614
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:29:23.022
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:29:24.597
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:29:24.735
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:38:24.518
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:38:26.087
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:38:26.239
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:38:56.933
+!MESSAGE Terminated Launch with connection: 10USB-Blaster on localhost [USB 10-2]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:38:57.284
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:38:58.890
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:38:59.038
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:44:56.230
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:44:57.794
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:44:57.950
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:48:37.836
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:48:39.391
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:48:39.543
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:53:36.114
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:53:37.705
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:53:37.894
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:55:40.324
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:55:41.920
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:55:42.240
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:56:51.040
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:56:52.584
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:56:56.992
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:58:03.450
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:58:05.061
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:58:05.223
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:59:02.295
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:59:03.926
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:59:08.548
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:59:33.784
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 13:59:35.341
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 13:59:35.451
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:01:33.598
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 14:01:35.160
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:01:35.287
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:05:36.182
+!MESSAGE Terminated Launch with connection: 10USB-Blaster on localhost [USB 10-2]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:05:36.348
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 14:05:37.934
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:05:38.179
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:06:39.966
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 14:06:41.496
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 14:06:41.603
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:40:19.666
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:40:21.183
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:40:21.286
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:46:33.702
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:46:35.261
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:46:35.402
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:51:30.228
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:51:31.784
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:51:31.946
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:52:36.841
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:52:38.417
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:52:38.545
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:54:29.177
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:54:30.699
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:54:30.816
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:54:58.214
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:54:59.736
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:54:59.857
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:58:17.764
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:58:19.288
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:58:19.412
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:58:26.073
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --go, --accept-bad-sysid, /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:58:26.077
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:59:06.815
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:59:08.347
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:59:13.186
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:59:45.854
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 15:59:47.438
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 15:59:47.652
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:01:30.443
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:01:31.997
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:01:32.121
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:02:45.977
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:02:47.537
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:02:47.654
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:05:34.775
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:05:36.356
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:05:36.463
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:06:08.731
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:06:10.280
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:06:10.414
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:10:37.408
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:10:39.063
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:10:39.183
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:11:42.349
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:11:43.993
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:11:44.102
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:12:45.292
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:12:46.925
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:12:47.033
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]

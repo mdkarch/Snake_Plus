@@ -27,21 +27,21 @@ use work.definitions.all;
 entity de2_vga_raster is
   
   port (
-    reset : in std_logic;
-    clk   : in std_logic;                    -- Should be 25.125 MHz
+    reset 					: in std_logic;
+    clk   					: in std_logic;                    -- Should be 25.125 MHz
 	 
-	 TILES_IN : in tiles_ram;
-	 SNAKE1_IN : in snake_ram;
-	 SNAKE2_IN : in snake_ram;
+	 TILES_IN 				: in tiles_ram;
+	 SNAKE1_IN 				: in snake_ram;
+	 SNAKE2_IN 				: in snake_ram;
 
-    VGA_CLK,                         -- Clock
-    VGA_HS,                          -- H_SYNC
-    VGA_VS,                          -- V_SYNC
-    VGA_BLANK,                       -- BLANK
-    VGA_SYNC : out std_logic;        -- SYNC
-    VGA_R,                           -- Red[9:0]
-    VGA_G,                           -- Green[9:0]
-    VGA_B : out std_logic_vector(9 downto 0) -- Blue[9:0]
+    VGA_CLK,                         				-- Clock
+    VGA_HS,                          				-- H_SYNC
+    VGA_VS,                          				-- V_SYNC
+    VGA_BLANK,                       				-- BLANK
+    VGA_SYNC 				: out std_logic;        -- SYNC
+    VGA_R,                           				-- Red[9:0]
+    VGA_G,                           				-- Green[9:0]
+    VGA_B 					: out std_logic_vector(9 downto 0) -- Blue[9:0]
     );
 
 end de2_vga_raster;
@@ -62,14 +62,6 @@ architecture rtl of de2_vga_raster is
   constant VACTIVE      : integer := 480;
   constant VFRONT_PORCH : integer := 10;
 
-  constant RECTANGLE_HSTART : integer := 100;
-  constant RECTANGLE_HEND   : integer := 540;
-  constant RECTANGLE_VSTART : integer := 100;
-  constant RECTANGLE_VEND   : integer := 380;
-  
-  constant CIRCLE_RADIUS	: integer := 50;
-  constant CIRCLE_RSQUARED : integer := CIRCLE_RADIUS * CIRCLE_RADIUS;
-
   -- Signals for the video controller
   signal Hcount : unsigned(9 downto 0);  -- Horizontal position (0-800)
   signal Vcount : unsigned(9 downto 0);  -- Vertical position (0-524)
@@ -78,19 +70,30 @@ architecture rtl of de2_vga_raster is
   signal vga_hblank, vga_hsync,
     vga_vblank, vga_vsync : std_logic;  -- Sync. signals
 
-  signal rectangle_h, rectangle_v, rectangle : std_logic;  -- rectangle area
-  
-	signal circle_center_h : integer;
-	signal circle_center_v : integer;
-	signal circle_hsquared : integer;
-	signal circle_vsquared : integer;
-	signal hcount_temp, vcount_temp : integer;
-	signal circle_h, circle_v, circle : std_logic; -- circle area
 	
-	type ram_type is array(5 downto 0) of std_logic_vector(255 downto 0);
-	signal SPRITES : ram_type;
-
-	-- sprites
+	signal inner_tile_h_pos			: integer;
+	signal inner_tile_v_pos			: integer;
+	signal tiles_h_pos				: integer;
+	signal tiles_v_pos				: integer;
+	signal sprite_select				: std_logic_vector(7 downto 0);
+	
+	
+	
+	
+			-- process signals
+	signal green, blue, red, black, tan 										: std_logic;
+	signal white, pink, gray, yellow, brown									: std_logic;
+	signal snake_head_g, snake_head_r, snake_head_w, snake_head_b 		: std_logic;
+	signal snake_body, snake_tail													: std_logic;
+	signal rabbit_y, rabbit_b, rabbit_w, rabbit_p							: std_logic;
+	signal mouse_y, mouse_p, mouse_l, mouse_b_eye, mouse_w_eye			: std_logic;
+	signal edwards_t, edwards_br, edwards_bl, edwards_p, ed_b_eye, ed_w_eye	: std_logic;
+	signal speed, growth_y, growth_r, freeze									: std_logic;
+	signal wall																			: std_logic;
+	signal P, one, two, W, I, N, S, exclam										: std_logic;
+	signal pause, play																: std_logic;
+	
+		-- sprites
 	type array_type_16x16 is array (0 to 15) of unsigned (0 to 15);
 	
 	-- snake head colorings
@@ -149,25 +152,846 @@ architecture rtl of de2_vga_raster is
 	signal sprite_pause			: array_type_16x16;
 	signal sprite_play			: array_type_16x16;
 	
-	-- process signals
-	signal green, blue, red, black, tan 		: std_logic;
-	signal white, pink, gray, yellow, brown	: std_logic;
-	signal snake_head_g, snake_head_r, snake_head_w, snake_head_b : std_logic;
-	signal snake_body, snake_tail					: std_logic;
-	signal rabbit_y, rabbit_b, rabbit_w, rabbit_p	:std_logic;
-	signal mouse_y, mouse_p, mouse_l, mouse_b_eye, mouse_w_eye			: std_logic;
-	signal edwards_t, edwards_br, edwards_bl, edwards_p, ed_b_eye, ed_w_eye	: std_logic;
-	signal speed, growth_y, growth_r, freeze					: std_logic;
-	signal wall											: std_logic;
-	signal P, one, two, W, I, N, S, exclam			: std_logic;
-	signal pause, play								: std_logic;
-	
 	
 begin
   
-  -- sprite definitions
+    -- Horizontal and vertical counters
   
-  -- sprite snake head coloring
+  HCounter : process (clk)
+  begin
+    if rising_edge(clk) then      
+      if reset = '1' then
+        Hcount <= (others => '0');
+      elsif EndOfLine = '1' then
+        Hcount <= (others => '0');
+      else
+        Hcount <= Hcount + 1;
+      end if;      
+    end if;
+  end process HCounter;
+
+  EndOfLine <= '1' when Hcount = HTOTAL - 1 else '0';
+  
+  VCounter: process (clk)
+  begin
+    if rising_edge(clk) then      
+      if reset = '1' then
+        Vcount <= (others => '0');
+      elsif EndOfLine = '1' then
+        if EndOfField = '1' then
+          Vcount <= (others => '0');
+        else
+          Vcount <= Vcount + 1;
+        end if;
+      end if;
+    end if;
+  end process VCounter;
+
+  EndOfField <= '1' when Vcount = VTOTAL - 1 else '0';
+
+  -- State machines to generate HSYNC, VSYNC, HBLANK, and VBLANK
+
+  HSyncGen : process (clk)
+  begin
+    if rising_edge(clk) then     
+      if reset = '1' or EndOfLine = '1' then
+        vga_hsync <= '1';
+      elsif Hcount = HSYNC - 1 then
+        vga_hsync <= '0';
+      end if;
+    end if;
+  end process HSyncGen;
+  
+  HBlankGen : process (clk)
+  begin
+    if rising_edge(clk) then
+      if reset = '1' then
+        vga_hblank <= '1';
+      elsif Hcount = HSYNC + HBACK_PORCH then
+        vga_hblank <= '0';
+      elsif Hcount = HSYNC + HBACK_PORCH + HACTIVE then
+        vga_hblank <= '1';
+      end if;      
+    end if;
+  end process HBlankGen;
+
+  VSyncGen : process (clk)
+  begin
+    if rising_edge(clk) then
+      if reset = '1' then
+        vga_vsync <= '1';
+      elsif EndOfLine ='1' then
+        if EndOfField = '1' then
+          vga_vsync <= '1';
+        elsif Vcount = VSYNC - 1 then
+          vga_vsync <= '0';
+        end if;
+      end if;      
+    end if;
+  end process VSyncGen;
+
+  VBlankGen : process (clk)
+  begin
+    if rising_edge(clk) then    
+      if reset = '1' then
+        vga_vblank <= '1';
+      elsif EndOfLine = '1' then
+        if Vcount = VSYNC + VBACK_PORCH - 1 then
+          vga_vblank <= '0';
+        elsif Vcount = VSYNC + VBACK_PORCH + VACTIVE - 1 then
+          vga_vblank <= '1';
+        end if;
+      end if;
+    end if;
+  end process VBlankGen;
+  
+  
+  
+  
+  
+  ----------------------------------------------------------------------
+  ------------- Special Snake_Plus Tile Calculation Logic --------------
+  ----------------------------------------------------------------------
+  
+  InnerTileH : process (clk)
+  begin
+		if rising_edge(clk) then
+			if reset = '1' then
+				inner_tile_h_pos <= 0;
+				tiles_h_pos <= 0;
+			elsif EndOfLine = '1' then
+				inner_tile_h_pos <= 0;
+				tiles_h_pos <= 0;
+			elsif 	HCount >= HSYNC + HBACK_PORCH - 1 and 
+						HCount <= HSYNC + HBACK_PORCH + HACTIVE - 1 then
+				inner_tile_h_pos <= inner_tile_h_pos + 1;
+				if inner_tile_h_pos >= 16 then -- 0-15 should be used
+					inner_tile_h_pos <= 0;
+					tiles_h_pos <= tiles_h_pos + 1;
+				end if;--end inner_tile_h_pos
+			end if; -- reset/endofline/hcount
+		end if; --end clk
+  end process InnerTileH;
+  
+  
+  InnerTileV : process (clk)
+  begin
+		if rising_edge(clk) then
+			if reset = '1' then
+				inner_tile_v_pos <= 0;
+				tiles_v_pos <= 0;
+			elsif EndOfField = '1' then
+				inner_tile_v_pos <= 0;
+				tiles_v_pos <= 0;
+			elsif 	VCount >= VSYNC + VBACK_PORCH - 1 and 
+						VCount <= VSYNC + VBACK_PORCH + VACTIVE - 1 and
+						EndOfLine = '1' then
+				inner_tile_v_pos <= inner_tile_v_pos + 1;
+				if inner_tile_v_pos >= 16 then -- 0-15 should be used
+					inner_tile_v_pos <= 0;
+					tiles_v_pos <= tiles_v_pos + 1;
+				end if;--end inner_tile_v_pos
+			end if; -- reset/endofline/hcount
+		end if; --end clk
+  end process InnerTileV;
+  
+  sprite_select <= TILES_IN(tiles_h_pos,tiles_v_pos);
+  
+  
+  --This is garbage right now
+  SpriteSelect : process(clk)
+  begin
+		if rising_edge(clk) then
+			if reset = '1' then
+				--sprite_select <= (others => '0');
+			else
+				
+			end if; --reset
+		end if; --reset
+  end process SpriteSelect;
+  
+  
+  
+  ---------------------------------------------------------------
+  ------------ End Tile Calculation Logic -----------------------
+  ---------------------------------------------------------------
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  ---------------------------------------------------------------
+  ----------- Begin Sprite Display Logic ------------------------
+  ---------------------------------------------------------------
+  
+  
+	-- snake sprite head generation
+  SnakeHeadSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  variable x, y : integer;
+  variable orient : std_logic_vector(4 downto 0);
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			snake_head_g 	<= '0';
+			snake_head_r 	<= '0';
+			snake_head_w 	<= '0';
+			snake_head_b 	<= '0';
+			snake_body 		<= '0';
+		else
+			for i in 1200 downto 0 loop
+				orient := SNAKE1_IN(i)(24 downto 20);
+				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
+				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
+				
+				if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+						and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
+						and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+						and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
+						
+						sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
+						sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
+					 
+						-- Snake head color signals
+						snake_head_g 	<= '0';
+						snake_head_r 	<= '0';
+						snake_head_w 	<= '0';
+						snake_head_b 	<= '0';
+						
+						-- Snake body color signals
+						snake_body 		<= '0';
+						
+						-- Right orientation for snake head
+						if orient = SNAKE_HEAD_RIGHT then 
+							 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_g <= '1';
+							 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_b <= '1';
+							 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_r <= '1';
+							 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_w <= '1';
+							 end if; -- end sprite snake head
+						
+						elsif orient = SNAKE_BODY_SELECT then 
+							 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body <= '1';
+							 end if; -- end sprite snake body
+						end if; -- orient
+					
+					 -- PUT IN OTHER THREE DIRECTIONS
+
+				else
+					snake_head_g 	<= '0';
+					snake_head_r 	<= '0';
+					snake_head_w 	<= '0';
+					snake_head_b 	<= '0';
+					snake_body 		<= '0';
+				end if;
+			end loop;
+		end if;
+	end if;		
+  end process SnakeHeadSpriteGen;
+  
+  
+  
+  
+  	-- snake sprite tail generation
+  SnakeTailSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  variable x, y : integer;
+  variable orient : std_logic_vector(4 downto 0);
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			snake_tail <= '0';
+		else
+			for i in 1200 downto 0 loop
+				orient := SNAKE1_IN(i)(24 downto 20);
+				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
+				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
+				
+				if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+						and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
+						and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+						and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
+						
+						sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
+						sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
+					 
+						-- Snake tail color signals
+						snake_tail 	<= '0';
+						
+						-- Right orientation for snake tail
+						if orient = SNAKE_TAIL_RIGHT then 
+							 if sprite_snake_tail(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_tail <= '1';
+							 end if; -- end sprite snake head
+						end if; -- orient
+					
+					 -- PUT IN OTHER THREE DIRECTIONS
+
+				else
+					snake_tail <= '0';
+				end if;
+			end loop;
+		end if;
+	end if;		
+  end process SnakeTailSpriteGen;
+  
+  
+  
+  
+   -- rabbit sprite generation
+  RabbitSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			rabbit_y <= '0';
+			rabbit_b <= '0';
+			rabbit_w <= '0';
+			rabbit_p <= '0';
+			
+		elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = RABBIT_CODE then
+		
+			sprite_h_pos := inner_tile_h_pos; 
+			sprite_v_pos := inner_tile_v_pos;
+			 
+			rabbit_y <= '0';
+			rabbit_b <= '0';
+			rabbit_w <= '0';
+			rabbit_p <= '0';
+			 
+			if sprite_food_rabbit_y(sprite_v_pos)(sprite_h_pos) = '1' then
+				rabbit_y <= '1';
+			elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
+				rabbit_b <= '1';
+			elsif sprite_food_rabbit_p(sprite_v_pos)(sprite_h_pos) = '1' then
+				rabbit_p <= '1';
+			elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
+				rabbit_w <= '1';
+			end if;
+		else
+			rabbit_y <= '0';
+			rabbit_p <= '0';
+			rabbit_w <= '0';
+			rabbit_b <= '0';
+		end if;
+	end if;		
+  end process RabbitSpriteGen;
+  
+  -- mouse sprite generation
+  MouseSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			mouse_y <= '0';
+			mouse_l <= '0';
+			mouse_p <= '0';
+			mouse_b_eye <= '0';
+			mouse_w_eye <= '0';
+		elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = MOUSE_CODE  then
+		
+			sprite_h_pos := inner_tile_h_pos; 
+			sprite_v_pos := inner_tile_v_pos;
+			
+			mouse_y <= '0';
+			mouse_l <= '0';
+			mouse_p <= '0';
+			mouse_b_eye <= '0';
+			mouse_w_eye <= '0';
+			
+			if sprite_food_mouse_y(sprite_v_pos)(sprite_h_pos) = '1' then
+				mouse_y <= '1';
+			elsif sprite_food_mouse_l(sprite_v_pos)(sprite_h_pos) = '1' then
+				mouse_l <= '1';
+			elsif sprite_food_mouse_p(sprite_v_pos)(sprite_h_pos) = '1' then
+				mouse_p <= '1';
+			elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
+				mouse_b_eye <= '1';
+			elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
+				mouse_w_eye <= '1';
+			end if;
+		else
+			mouse_y <= '0';
+			mouse_l <= '0';
+			mouse_p <= '0';
+			mouse_b_eye <= '0';
+			mouse_w_eye <= '0';
+		end if; --
+	end if;		
+  end process MouseSpriteGen;
+  
+  -- edwards sprite generation
+  EdwardsSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			edwards_t <= '0';
+			edwards_bl <= '0';
+			edwards_br <= '0';
+			edwards_p <= '0';
+			ed_w_eye <= '0';
+			ed_b_eye <= '0';
+		elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = EDWARDS_CODE then
+				
+				sprite_h_pos := inner_tile_h_pos; 
+				sprite_v_pos := inner_tile_v_pos;
+				
+				edwards_t <= '0';
+				edwards_bl <= '0';
+				edwards_br <= '0';
+				edwards_p <= '0';
+				ed_w_eye <= '0';
+				ed_b_eye <= '0';
+				
+			 if sprite_food_edwards_t(sprite_v_pos)(sprite_h_pos) = '1' then
+				edwards_t <= '1';
+			 elsif sprite_food_edwards_l(sprite_v_pos)(sprite_h_pos) = '1' then
+				edwards_bl <= '1';
+			 elsif sprite_food_edwards_n(sprite_v_pos)(sprite_h_pos) = '1' then
+				edwards_br <= '1';
+			 elsif sprite_food_edwards_p(sprite_v_pos)(sprite_h_pos) = '1' then
+				edwards_p <= '1';
+			elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
+				ed_w_eye <= '1';
+			elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
+				ed_b_eye <= '1';
+			end if;
+		else
+			edwards_t <= '0';
+			edwards_bl <= '0';
+			edwards_br <= '0';
+			edwards_p <= '0';
+			ed_w_eye <= '0';
+			ed_b_eye <= '0';
+		end if;
+	end if;		
+  end process EdwardsSpriteGen;
+  
+  
+     -- brick wall sprite generation
+	BrickWallSpriteGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				wall <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = WALL_CODE then
+			
+				sprite_h_pos := inner_tile_h_pos; 
+				sprite_v_pos := inner_tile_v_pos;
+				 
+				 if sprite_wall(sprite_v_pos)(sprite_h_pos) = '1' then
+					wall <= '1';
+				 else
+					wall <= '0';
+				 end if;
+			else
+				wall <= '0';
+			end if;
+		end if;		
+  end process BrickWallSpriteGen;
+  
+   -- speed powerup sprite generation
+	SpeedSpriteGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				speed <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = SPEED_CODE then
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+				 if sprite_powup_speed(sprite_v_pos)(sprite_h_pos) = '1' then
+					speed <= '1';
+				 else
+					speed <= '0';
+				 end if;
+			else
+				speed <= '0';
+			end if;
+		end if;		
+  end process SpeedSpriteGen;
+  
+   -- freeze powerup sprite generation
+	FreezeSpriteGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				freeze <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = FREEZE_CODE  then
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+				 if sprite_powup_freeze(sprite_v_pos)(sprite_h_pos) = '1' then
+					freeze <= '1';
+				 else
+					freeze <= '0';
+				 end if;
+			else
+				freeze <= '0';
+			end if;
+		end if;		
+  end process FreezeSpriteGen;
+	
+	
+  -- growth power up generation
+  GrowthSpriteGen : process (clk)
+  variable sprite_h_pos, sprite_v_pos : integer;
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			growth_y <= '0';
+			growth_r <= '0';
+		elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = GROWTH_CODE then
+				
+				sprite_h_pos := inner_tile_h_pos; 
+				sprite_v_pos := inner_tile_v_pos;
+				
+				growth_y <= '0';
+				growth_r <= '0';
+				
+			 if sprite_powup_growth_y(sprite_v_pos)(sprite_h_pos) = '1' then
+				growth_y <= '1';
+			 elsif sprite_powup_growth_r(sprite_v_pos)(sprite_h_pos) = '1' then
+				growth_r <= '1';
+			 else
+				growth_y <= '0';
+				growth_r <= '0';
+			 end if;
+		else
+			growth_y <= '0';
+			growth_r <= '0';
+		end if;
+	end if;		
+  end process GrowthSpriteGen;
+  
+  
+  	-- Number 1 generation
+	Number1Gen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				one <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = ONE_CODE then
+			
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+				
+				 if sprite_1(sprite_v_pos)(sprite_h_pos) = '1' then
+					one <= '1';
+				 else
+					one <= '0';
+				 end if;
+			else
+				one <= '0';
+			end if;
+		end if;		
+  end process Number1Gen;
+  
+   -- Number 2 generation
+	Number2Gen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				two <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = TWO_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_2(sprite_v_pos)(sprite_h_pos) = '1' then
+					two <= '1';
+				 else
+					two <= '0';
+				 end if;
+			else
+				two <= '0';
+			end if;
+		end if;		
+  end process Number2Gen;
+  
+  	-- letter P generation
+	LetterPGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				P <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = P_CODE then
+			
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_P(sprite_v_pos)(sprite_h_pos) = '1' then
+					P <= '1';
+				 else
+					P <= '0';
+				 end if;
+			else
+				P <= '0';
+			end if;
+		end if;		
+  end process LetterPGen;
+  
+   -- Letter W generation
+	LetterWGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				W <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = W_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_W(sprite_v_pos)(sprite_h_pos) = '1' then
+					W <= '1';
+				 else
+					W <= '0';
+				 end if;
+			else
+				W <= '0';
+			end if;
+		end if;		
+  end process LetterWGen;
+  
+   -- Letter I generation
+	LetterIGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				I <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = I_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_I(sprite_v_pos)(sprite_h_pos) = '1' then
+					I <= '1';
+				 else
+					I <= '0';
+				 end if;
+			else
+				I <= '0';
+			end if;
+		end if;		
+  end process LetterIGen;
+  
+   -- Letter N generation
+	LetterNGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				N <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = N_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_N(sprite_v_pos)(sprite_h_pos) = '1' then
+					N <= '1';
+				 else
+					N <= '0';
+				 end if;
+			else
+				N <= '0';
+			end if;
+		end if;		
+  end process LetterNGen;
+  
+   -- Letter S generation
+	LetterSGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				S <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = S_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_S(sprite_v_pos)(sprite_h_pos) = '1' then
+					S <= '1';
+				 else
+					S <= '0';
+				 end if;
+			else
+				S <= '0';
+			end if;
+		end if;		
+  end process LetterSGen;
+  
+   -- Exclamation point generation
+	ExclamGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				exclam <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = EXC_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_exclam(sprite_v_pos)(sprite_h_pos) = '1' then
+					exclam <= '1';
+				 else
+					exclam <= '0';
+				 end if;
+			else
+				exclam <= '0';
+			end if;
+		end if;		
+  end process ExclamGen;
+  
+   -- Play button sprite generation
+	PlayButtonSpriteGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				play <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = PLAY_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_play(sprite_v_pos)(sprite_h_pos) = '1' then
+					play <= '1';
+				 else
+					play <= '0';
+				 end if;
+			else
+				play <= '0';
+			end if;
+		end if;		
+  end process PlayButtonSpriteGen;
+  
+   -- Pause button sprite generation
+	PauseButtonSpriteGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				pause <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = PAUSE_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_pause(sprite_v_pos)(sprite_h_pos) = '1' then
+					pause <= '1';
+				 else
+					pause <= '0';
+				 end if;
+			else
+				pause <= '0';
+			end if;
+		end if;		
+  end process PauseButtonSpriteGen;
+  
+	
+  -- Registered video signals going to the video DAC
+  VideoOut: process (clk, reset)
+  begin
+    if reset = '1' then
+      VGA_R <= "0000000000";
+      VGA_G <= "0000000000";
+      VGA_B <= "0000000000";
+    elsif clk'event and clk = '1' then
+		if blue = '1' or rabbit_b = '1'  or freeze = '1' 
+							or mouse_b_eye = '1' then
+		  VGA_R <= "0000000000";
+		  VGA_G <= "0000000000";
+		  VGA_B <= "1111111111";
+		elsif green = '1' or snake_body = '1' or snake_head_g = '1' 
+								or snake_tail = '1' or ed_b_eye = '1' then
+		  VGA_R <= "0000000000";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "0000000000";
+		elsif red = '1' or snake_head_r = '1' or wall = '1' 
+								or growth_r = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "0000000000";
+		  VGA_B <= "0000000000";
+		elsif black = '1' or snake_head_b = '1' or mouse_l = '1' 
+								or edwards_bl = '1' then
+		  VGA_R <= "0000000000";
+		  VGA_G <= "0000000000";
+		  VGA_B <= "0000000000";
+		elsif white = '1' or snake_head_w = '1' or rabbit_w = '1' 
+								or one = '1' or P = '1' or two = '1' 
+								or I = '1' or N = '1' or S = '1' 
+								or exclam = '1' or pause = '1' or ed_w_eye = '1'
+								or play = '1'  or W = '1' or mouse_w_eye = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "1111111111";
+		elsif pink = '1' or rabbit_p = '1' or mouse_p = '1' 
+								or edwards_p = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "0110000000";
+		  VGA_B <= "0110100000";
+		elsif gray = '1'  or rabbit_y = '1' or growth_y = '1'  
+								or mouse_y = '1' then
+		  VGA_R <= "1100000000";
+		  VGA_G <= "1100000000";
+		  VGA_B <= "1100000000";
+		elsif yellow = '1' or speed = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "0000000000";
+		elsif brown = '1' or edwards_br = '1' then
+		  VGA_R <= "0100001001";
+		  VGA_G <= "0010000100";
+		  VGA_B <= "0000010011";
+		elsif tan = '1' or edwards_t = '1' then
+		  VGA_R <= "0011111111";
+		  VGA_G <= "0011101111";
+		  VGA_B <= "0011010101";
+      elsif vga_hblank = '0' and vga_vblank ='0' then -- blue background
+        VGA_R <= "0000000000";
+        VGA_G <= "0000000000";
+        VGA_B <= "0000000000";
+      else -- black
+        VGA_R <= "0000000000";
+        VGA_G <= "0000000000";
+        VGA_B <= "0000000000";    
+      end if;
+    end if;
+  end process VideoOut;
+
+  VGA_CLK <= clk;
+  VGA_HS <= not vga_hsync;
+  VGA_VS <= not vga_vsync;
+  VGA_SYNC <= '0';
+  VGA_BLANK <= not (vga_hsync or vga_vsync);
+
+
+  
+  
+  
+  -- Sprite Definitions
+
+	
+	-- sprite snake head coloring
   sprite_snake_head_g(0) 			<=	"0000111100000000";
   sprite_snake_head_g(1) 			<=	"0001111111000000";
   sprite_snake_head_g(2) 			<=	"0011111111110000";
@@ -746,830 +1570,6 @@ begin
 	sprite_play(14) 	  		<=	"0001110000000000";
 	sprite_play(15)			<=	"0001100000000000";
 	  
-  
-  circle_center_h <= 350;
-  circle_center_v <= 240;
-
-    -- Horizontal and vertical counters
-  
-  HCounter : process (clk)
-  begin
-    if rising_edge(clk) then      
-      if reset = '1' then
-        Hcount <= (others => '0');
-      elsif EndOfLine = '1' then
-        Hcount <= (others => '0');
-      else
-        Hcount <= Hcount + 1;
-      end if;      
-    end if;
-  end process HCounter;
-
-  EndOfLine <= '1' when Hcount = HTOTAL - 1 else '0';
-  
-  VCounter: process (clk)
-  begin
-    if rising_edge(clk) then      
-      if reset = '1' then
-        Vcount <= (others => '0');
-      elsif EndOfLine = '1' then
-        if EndOfField = '1' then
-          Vcount <= (others => '0');
-        else
-          Vcount <= Vcount + 1;
-        end if;
-      end if;
-    end if;
-  end process VCounter;
-
-  EndOfField <= '1' when Vcount = VTOTAL - 1 else '0';
-
-  -- State machines to generate HSYNC, VSYNC, HBLANK, and VBLANK
-
-  HSyncGen : process (clk)
-  begin
-    if rising_edge(clk) then     
-      if reset = '1' or EndOfLine = '1' then
-        vga_hsync <= '1';
-      elsif Hcount = HSYNC - 1 then
-        vga_hsync <= '0';
-      end if;
-    end if;
-  end process HSyncGen;
-  
-  HBlankGen : process (clk)
-  begin
-    if rising_edge(clk) then
-      if reset = '1' then
-        vga_hblank <= '1';
-      elsif Hcount = HSYNC + HBACK_PORCH then
-        vga_hblank <= '0';
-      elsif Hcount = HSYNC + HBACK_PORCH + HACTIVE then
-        vga_hblank <= '1';
-      end if;      
-    end if;
-  end process HBlankGen;
-
-  VSyncGen : process (clk)
-  begin
-    if rising_edge(clk) then
-      if reset = '1' then
-        vga_vsync <= '1';
-      elsif EndOfLine ='1' then
-        if EndOfField = '1' then
-          vga_vsync <= '1';
-        elsif Vcount = VSYNC - 1 then
-          vga_vsync <= '0';
-        end if;
-      end if;      
-    end if;
-  end process VSyncGen;
-
-  VBlankGen : process (clk)
-  begin
-    if rising_edge(clk) then    
-      if reset = '1' then
-        vga_vblank <= '1';
-      elsif EndOfLine = '1' then
-        if Vcount = VSYNC + VBACK_PORCH - 1 then
-          vga_vblank <= '0';
-        elsif Vcount = VSYNC + VBACK_PORCH + VACTIVE - 1 then
-          vga_vblank <= '1';
-        end if;
-      end if;
-    end if;
-  end process VBlankGen;
-  
--- snake sprite head generation
-  SnakeHeadSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  variable x, y : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			snake_head_g <= '0';
-			snake_head_r <= '0';
-			snake_head_w <= '0';
-			snake_head_b <= '0';
-		else
-			for i in 1200 downto 0 loop
-				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
-				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
-				
-				if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
-						and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
-						and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
-						and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
-					 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
-					 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
-					 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
-						snake_head_g <= '1';
-						snake_head_r <= '0';
-						snake_head_w <= '0';
-						snake_head_b <= '0';
-					 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
-						snake_head_g <= '0';
-						snake_head_r <= '0';
-						snake_head_w <= '0';
-						snake_head_b <= '1';
-					 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
-						snake_head_g <= '0';
-						snake_head_r <= '1';
-						snake_head_w <= '0';
-						snake_head_b <= '0';
-					 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
-						snake_head_g <= '0';
-						snake_head_r <= '0';
-						snake_head_w <= '1';
-						snake_head_b <= '0';
-					 else
-						snake_head_g <= '0';
-						snake_head_r <= '0';
-						snake_head_w <= '0';
-						snake_head_b <= '0';
-					 end if;
-				else
-					snake_head_g <= '0';
-					snake_head_r <= '0';
-					snake_head_w <= '0';
-					snake_head_b <= '0';
-				end if;
-			end loop;
-		end if;
-	end if;		
-  end process SnakeHeadSpriteGen;
-  
-   -- rabbit sprite generation
-  RabbitSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			rabbit_y <= '0';
-			rabbit_b <= '0';
-			rabbit_w <= '0';
-			rabbit_p <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 10) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 26) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 80) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 96) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 26);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 80);
-			 if sprite_food_rabbit_y(sprite_v_pos)(sprite_h_pos) = '1' then
-				rabbit_y <= '1';
-				rabbit_p <= '0';
-				rabbit_w <= '0';
-				rabbit_b <= '0';
-			 elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
-			   rabbit_y <= '0';
-				rabbit_p <= '0';
-				rabbit_w <= '0';
-				rabbit_b <= '1';
-			 elsif sprite_food_rabbit_p(sprite_v_pos)(sprite_h_pos) = '1' then
-			   rabbit_y <= '0';
-				rabbit_p <= '1';
-				rabbit_w <= '0';
-				rabbit_b <= '0';
-			 elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
-			   rabbit_y <= '0';
-				rabbit_p <= '0';
-				rabbit_w <= '1';
-				rabbit_b <= '0';
-			 else
-				rabbit_y <= '0';
-				rabbit_p <= '0';
-				rabbit_w <= '0';
-				rabbit_b <= '0';
-			 end if;
-		else
-			rabbit_y <= '0';
-			rabbit_p <= '0';
-			rabbit_w <= '0';
-			rabbit_b <= '0';
-		end if;
-	end if;		
-  end process RabbitSpriteGen;
-  
-  -- mouse sprite generation
-  MouseSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			mouse_y <= '0';
-			mouse_l <= '0';
-			mouse_p <= '0';
-			mouse_b_eye <= '0';
-			mouse_w_eye <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 100) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 116) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 10) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 26) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 100);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 10);
-			 if sprite_food_mouse_y(sprite_v_pos)(sprite_h_pos) = '1' then
-				mouse_y <= '1';
-				mouse_l <= '0';
-				mouse_p <= '0';
-				mouse_b_eye <= '0';
-				mouse_w_eye <= '0';
-			 elsif sprite_food_mouse_l(sprite_v_pos)(sprite_h_pos) = '1' then
-			   mouse_y <= '0';
-				mouse_l <= '1';
-				mouse_p <= '0';
-				mouse_b_eye <= '0';
-				mouse_w_eye <= '0';
-			 elsif sprite_food_mouse_p(sprite_v_pos)(sprite_h_pos) = '1' then
-			   mouse_y <= '0';
-				mouse_l <= '0';
-				mouse_p <= '1';
-				mouse_b_eye <= '0';
-				mouse_w_eye <= '0';
-			 elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
-				mouse_y <= '0';
-				mouse_l <= '0';
-				mouse_p <= '0';
-				mouse_b_eye <= '1';
-				mouse_w_eye <= '0';
-				elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
-				mouse_y <= '0';
-				mouse_l <= '0';
-				mouse_p <= '0';
-				mouse_b_eye <= '0';
-				mouse_w_eye <= '1';
-			 else
-				mouse_y <= '0';
-				mouse_l <= '0';
-				mouse_p <= '0';
-				mouse_b_eye <= '0';
-				mouse_w_eye <= '0';
-			 end if;
-		else
-			mouse_y <= '0';
-			mouse_l <= '0';
-			mouse_p <= '0';
-			mouse_b_eye <= '0';
-			mouse_w_eye <= '0';
-		end if;
-	end if;		
-  end process MouseSpriteGen;
-  
-  -- edwards sprite generation
-  EdwardsSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			edwards_t <= '0';
-			edwards_bl <= '0';
-			edwards_br <= '0';
-			edwards_p <= '0';
-			ed_w_eye <= '0';
-			ed_b_eye <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 200) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 216) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 10) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 26) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 200);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 10);
-			 if sprite_food_edwards_t(sprite_v_pos)(sprite_h_pos) = '1' then
-				edwards_t <= '1';
-				edwards_bl <= '0';
-				edwards_br <= '0';
-				edwards_p <= '0';
-				ed_w_eye <= '0';
-				ed_b_eye <= '0';
-			 elsif sprite_food_edwards_l(sprite_v_pos)(sprite_h_pos) = '1' then
-			   edwards_t <= '0';
-				edwards_bl <= '1';
-				edwards_br <= '0';
-				edwards_p <= '0';
-				ed_w_eye <= '0';
-				ed_b_eye <= '0';
-			 elsif sprite_food_edwards_n(sprite_v_pos)(sprite_h_pos) = '1' then
-			   edwards_t <= '0';
-				edwards_bl <= '0';
-				edwards_br <= '1';
-				edwards_p <= '0';
-				ed_w_eye <= '0';
-				ed_b_eye <= '0';
-			 elsif sprite_food_edwards_p(sprite_v_pos)(sprite_h_pos) = '1' then
-				edwards_t <= '0';
-				edwards_bl <= '0';
-				edwards_br <= '0';
-				edwards_p <= '1';
-				ed_w_eye <= '0';
-				ed_b_eye <= '0';
-			elsif sprite_food_rabbit_w(sprite_v_pos)(sprite_h_pos) = '1' then
-				edwards_t <= '0';
-				edwards_bl <= '0';
-				edwards_br <= '0';
-				edwards_p <= '0';
-				ed_w_eye <= '1';
-				ed_b_eye <= '0';
-			elsif sprite_food_rabbit_b(sprite_v_pos)(sprite_h_pos) = '1' then
-				edwards_t <= '0';
-				edwards_bl <= '0';
-				edwards_br <= '0';
-				edwards_p <= '0';
-				ed_w_eye <= '0';
-				ed_b_eye <= '1';
-			 else
-				edwards_t <= '0';
-				edwards_bl <= '0';
-				edwards_br <= '0';
-				edwards_p <= '0';
-				ed_w_eye <= '0';
-				ed_b_eye <= '0';
-			 end if;
-		else
-			edwards_t <= '0';
-			edwards_bl <= '0';
-			edwards_br <= '0';
-			edwards_p <= '0';
-			ed_w_eye <= '0';
-			ed_b_eye <= '0';
-		end if;
-	end if;		
-  end process EdwardsSpriteGen;
-  
-  -- snake sprite body generation
-  SnakeBodySpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			snake_body <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
-				and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 111) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 400) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 416) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 400);
-			 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
-				snake_body <= '1';
-			 else
-				snake_body <= '0';
-			 end if;
-		else
-			snake_body <= '0';
-		end if;
-	end if;		
-  end process SnakeBodySpriteGen;
-  
-  
-	-- snake sprite tail generation
-	SnakeTailSpriteGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				snake_tail <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 111) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 300) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 316) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 300);
-				 if sprite_snake_tail(sprite_v_pos)(sprite_h_pos) = '1' then
-					snake_tail <= '1';
-				 else
-					snake_tail <= '0';
-				 end if;
-			else
-				snake_tail <= '0';
-			end if;
-		end if;		
-  end process SnakeTailSpriteGen;
-
-	-- letter P generation
-	LetterPGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				P <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 111) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
-				 if sprite_P(sprite_v_pos)(sprite_h_pos) = '1' then
-					P <= '1';
-				 else
-					P <= '0';
-				 end if;
-			else
-				P <= '0';
-			end if;
-		end if;		
-  end process LetterPGen;
-  
-  	-- Number 1 generation
-	Number1Gen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				one <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 95) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 111) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 95);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
-				 if sprite_1(sprite_v_pos)(sprite_h_pos) = '1' then
-					one <= '1';
-				 else
-					one <= '0';
-				 end if;
-			else
-				one <= '0';
-			end if;
-		end if;		
-  end process Number1Gen;
-  
-   -- Number 2 generation
-	Number2Gen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				two <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 200) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 216) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 200);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
-				 if sprite_2(sprite_v_pos)(sprite_h_pos) = '1' then
-					two <= '1';
-				 else
-					two <= '0';
-				 end if;
-			else
-				two <= '0';
-			end if;
-		end if;		
-  end process Number2Gen;
-  
-   -- Letter W generation
-	LetterWGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				W <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 280) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 296) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 280);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
-				 if sprite_W(sprite_v_pos)(sprite_h_pos) = '1' then
-					W <= '1';
-				 else
-					W <= '0';
-				 end if;
-			else
-				W <= '0';
-			end if;
-		end if;		
-  end process LetterWGen;
-  
-   -- Letter I generation
-	LetterIGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				I <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 250) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 266) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 250);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
-				 if sprite_I(sprite_v_pos)(sprite_h_pos) = '1' then
-					I <= '1';
-				 else
-					I <= '0';
-				 end if;
-			else
-				I <= '0';
-			end if;
-		end if;		
-  end process LetterIGen;
-  
-   -- Letter N generation
-	LetterNGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				N <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 300) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 316) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 300);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
-				 if sprite_N(sprite_v_pos)(sprite_h_pos) = '1' then
-					N <= '1';
-				 else
-					N <= '0';
-				 end if;
-			else
-				N <= '0';
-			end if;
-		end if;		
-  end process LetterNGen;
-  
-   -- Letter S generation
-	LetterSGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				S <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 300) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 316) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 150) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 166) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 300);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 150);
-				 if sprite_S(sprite_v_pos)(sprite_h_pos) = '1' then
-					S <= '1';
-				 else
-					S <= '0';
-				 end if;
-			else
-				S <= '0';
-			end if;
-		end if;		
-  end process LetterSGen;
-  
-   -- Exclamation point generation
-	ExclamGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				exclam <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 300) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 316) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 300);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
-				 if sprite_exclam(sprite_v_pos)(sprite_h_pos) = '1' then
-					exclam <= '1';
-				 else
-					exclam <= '0';
-				 end if;
-			else
-				exclam <= '0';
-			end if;
-		end if;		
-  end process ExclamGen;
-  
-   -- Play button sprite generation
-	PlayButtonSpriteGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				play <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 20) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 36) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 20);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
-				 if sprite_play(sprite_v_pos)(sprite_h_pos) = '1' then
-					play <= '1';
-				 else
-					play <= '0';
-				 end if;
-			else
-				play <= '0';
-			end if;
-		end if;		
-  end process PlayButtonSpriteGen;
-  
-   -- Pause button sprite generation
-	PauseButtonSpriteGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				pause <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 120) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 136) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 120);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
-				 if sprite_pause(sprite_v_pos)(sprite_h_pos) = '1' then
-					pause <= '1';
-				 else
-					pause <= '0';
-				 end if;
-			else
-				pause <= '0';
-			end if;
-		end if;		
-  end process PauseButtonSpriteGen;
-  
-   -- brick wall sprite generation
-	BrickWallSpriteGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				wall <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 350) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 366) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 200) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 216) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 350);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 200);
-				 if sprite_wall(sprite_v_pos)(sprite_h_pos) = '1' then
-					wall <= '1';
-				 else
-					wall <= '0';
-				 end if;
-			else
-				wall <= '0';
-			end if;
-		end if;		
-  end process BrickWallSpriteGen;
-  
-   -- speed powerup sprite generation
-	SpeedSpriteGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				speed <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 350) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 366) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 100) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 116) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 350);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 100);
-				 if sprite_powup_speed(sprite_v_pos)(sprite_h_pos) = '1' then
-					speed <= '1';
-				 else
-					speed <= '0';
-				 end if;
-			else
-				speed <= '0';
-			end if;
-		end if;		
-  end process SpeedSpriteGen;
-  
-   -- freeze powerup sprite generation
-	FreezeSpriteGen : process (clk)
-	  variable sprite_h_pos, sprite_v_pos : integer;
-	  begin
-		if rising_edge(clk) then	
-			if reset = '1' then
-				freeze <= '0';
-			elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 350) 
-					and (to_integer(Hcount) < HSYNC + HBACK_PORCH + 366) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 150) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 166) then
-				 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 350);
-				 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 150);
-				 if sprite_powup_freeze(sprite_v_pos)(sprite_h_pos) = '1' then
-					freeze <= '1';
-				 else
-					freeze <= '0';
-				 end if;
-			else
-				freeze <= '0';
-			end if;
-		end if;		
-  end process FreezeSpriteGen;
-	
-	
-  -- growth power up generation
-  GrowthSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			growth_y <= '0';
-			growth_r <= '0';
-		elsif (to_integer(Hcount) >= HSYNC + HBACK_PORCH + 5) 
-				and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + 21) 
-				and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + 10) 
-				and (to_integer(Vcount) <= VSYNC + VBACK_PORCH - 1 + 26) then
-			 sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + 5);
-			 sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + 10);
-			 if sprite_powup_growth_y(sprite_v_pos)(sprite_h_pos) = '1' then
-				growth_y <= '1';
-				growth_r <= '0';
-			 elsif sprite_powup_growth_r(sprite_v_pos)(sprite_h_pos) = '1' then
-			   growth_y <= '0';
-				growth_r <= '1';
-			 else
-				growth_y <= '0';
-				growth_r <= '0';
-			 end if;
-		else
-			growth_y <= '0';
-			growth_r <= '0';
-		end if;
-	end if;		
-  end process GrowthSpriteGen;
-	
-  -- Registered video signals going to the video DAC
-  VideoOut: process (clk, reset)
-  begin
-    if reset = '1' then
-      VGA_R <= "0000000000";
-      VGA_G <= "0000000000";
-      VGA_B <= "0000000000";
-    elsif clk'event and clk = '1' then
-		if blue = '1' or rabbit_b = '1'  or freeze = '1' 
-							or mouse_b_eye = '1' then
-		  VGA_R <= "0000000000";
-		  VGA_G <= "0000000000";
-		  VGA_B <= "1111111111";
-		elsif green = '1' or snake_body = '1' or snake_head_g = '1' 
-								or snake_tail = '1' or ed_b_eye = '1' then
-		  VGA_R <= "0000000000";
-		  VGA_G <= "1111111111";
-		  VGA_B <= "0000000000";
-		elsif red = '1' or snake_head_r = '1' or wall = '1' 
-								or growth_r = '1' then
-		  VGA_R <= "1111111111";
-		  VGA_G <= "0000000000";
-		  VGA_B <= "0000000000";
-		elsif black = '1' or snake_head_b = '1' or mouse_l = '1' 
-								or edwards_bl = '1' then
-		  VGA_R <= "0000000000";
-		  VGA_G <= "0000000000";
-		  VGA_B <= "0000000000";
-		elsif white = '1' or snake_head_w = '1' or rabbit_w = '1' 
-								or one = '1' or P = '1' or two = '1' 
-								or I = '1' or N = '1' or S = '1' 
-								or exclam = '1' or pause = '1' or ed_w_eye = '1'
-								or play = '1'  or W = '1' or mouse_w_eye = '1' then
-		  VGA_R <= "1111111111";
-		  VGA_G <= "1111111111";
-		  VGA_B <= "1111111111";
-		elsif pink = '1' or rabbit_p = '1' or mouse_p = '1' 
-								or edwards_p = '1' then
-		  VGA_R <= "1111111111";
-		  VGA_G <= "0110000000";
-		  VGA_B <= "0110100000";
-		elsif gray = '1'  or rabbit_y = '1' or growth_y = '1'  
-								or mouse_y = '1' then
-		  VGA_R <= "1100000000";
-		  VGA_G <= "1100000000";
-		  VGA_B <= "1100000000";
-		elsif yellow = '1' or speed = '1' then
-		  VGA_R <= "1111111111";
-		  VGA_G <= "1111111111";
-		  VGA_B <= "0000000000";
-		elsif brown = '1' or edwards_br = '1' then
-		  VGA_R <= "0100001001";
-		  VGA_G <= "0010000100";
-		  VGA_B <= "0000010011";
-		elsif tan = '1' or edwards_t = '1' then
-		  VGA_R <= "0011111111";
-		  VGA_G <= "0011101111";
-		  VGA_B <= "0011010101";
-      elsif vga_hblank = '0' and vga_vblank ='0' then -- blue background
-        VGA_R <= "0000000000";
-        VGA_G <= "0000000000";
-        VGA_B <= "0000000000";
-      else -- black
-        VGA_R <= "0000000000";
-        VGA_G <= "0000000000";
-        VGA_B <= "0000000000";    
-      end if;
-    end if;
-  end process VideoOut;
-
-  VGA_CLK <= clk;
-  VGA_HS <= not vga_hsync;
-  VGA_VS <= not vga_vsync;
-  VGA_SYNC <= '0';
-  VGA_BLANK <= not (vga_hsync or vga_vsync);
-
-
-  
-  
-  
-  -- Sprite Definitions
-
-	
-	SPRITES(0) <= (others => '0');
   
   end rtl;
 

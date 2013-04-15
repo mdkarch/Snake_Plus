@@ -1,5 +1,5 @@
 EDA Netlist Writer report for snakeplus
-Sun Apr 14 18:58:04 2013
+Mon Apr 15 15:50:52 2013
 Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Full Version
 
 
@@ -36,7 +36,7 @@ applicable agreement for further details.
 +-------------------------------------------------------------------+
 ; EDA Netlist Writer Summary                                        ;
 +---------------------------+---------------------------------------+
-; EDA Netlist Writer Status ; Successful - Sun Apr 14 18:58:04 2013 ;
+; EDA Netlist Writer Status ; Successful - Mon Apr 15 15:50:52 2013 ;
 ; Revision Name             ; snakeplus                             ;
 ; Top-level Entity Name     ; snakeplus                             ;
 ; Family                    ; Cyclone II                            ;
@@ -66,16 +66,16 @@ applicable agreement for further details.
 +---------------------------------------------------------------------------------------------------+------------------------+
 
 
-+-----------------------------------------------------------------------------------+
-; Simulation Generated Files                                                        ;
-+-----------------------------------------------------------------------------------+
-; Generated Files                                                                   ;
-+-----------------------------------------------------------------------------------+
-; /home/user4/spring13/nb2555/Snake_Plus/simulation/modelsim/snakeplus.vho          ;
-; /home/user4/spring13/nb2555/Snake_Plus/simulation/modelsim/snakeplus_fast.vho     ;
-; /home/user4/spring13/nb2555/Snake_Plus/simulation/modelsim/snakeplus_vhd.sdo      ;
-; /home/user4/spring13/nb2555/Snake_Plus/simulation/modelsim/snakeplus_vhd_fast.sdo ;
-+-----------------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------------------+
+; Simulation Generated Files                                                                    ;
++-----------------------------------------------------------------------------------------------+
+; Generated Files                                                                               ;
++-----------------------------------------------------------------------------------------------+
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus.vho          ;
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus_fast.vho     ;
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus_vhd.sdo      ;
+; /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/snakeplus_vhd_fast.sdo ;
++-----------------------------------------------------------------------------------------------+
 
 
 +-----------------------------+
@@ -84,13 +84,13 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II 32-bit EDA Netlist Writer
     Info: Version 12.1 Build 177 11/07/2012 SJ Full Version
-    Info: Processing started: Sun Apr 14 18:58:00 2013
+    Info: Processing started: Mon Apr 15 15:50:46 2013
 Info: Command: quartus_eda --read_settings_files=off --write_settings_files=off snakeplus -c snakeplus
-Info (204026): Generated files "snakeplus.vho", "snakeplus_fast.vho", "snakeplus_vhd.sdo" and "snakeplus_vhd_fast.sdo" in directory "/home/user4/spring13/nb2555/Snake_Plus/simulation/modelsim/" for EDA simulation tool
+Info (204026): Generated files "snakeplus.vho", "snakeplus_fast.vho", "snakeplus_vhd.sdo" and "snakeplus_vhd_fast.sdo" in directory "/home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/simulation/modelsim/" for EDA simulation tool
 Info: Quartus II 32-bit EDA Netlist Writer was successful. 0 errors, 0 warnings
     Info: Peak virtual memory: 328 megabytes
-    Info: Processing ended: Sun Apr 14 18:58:04 2013
-    Info: Elapsed time: 00:00:04
-    Info: Total CPU time (on all processors): 00:00:03
+    Info: Processing ended: Mon Apr 15 15:50:53 2013
+    Info: Elapsed time: 00:00:07
+    Info: Total CPU time (on all processors): 00:00:04
 
 

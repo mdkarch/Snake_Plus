@@ -169,14 +169,14 @@ int main(){
 	
 	while(1){
 		//WRITE_SPRITE(4, 0xFFFFFFF0);
-		IOWR_32DIRECT(VGA_BASE, 4 * 4, 0x00000000);
+		IOWR_32DIRECT(VGA_BASE, 4 * 4, 4294967295);
 
 		printf("Head: %x", READ_SNAKE1_HEAD());
 	}
 
 	while(1) {
 		status = read_make_code_with_timeout(&decode_mode, &key);
-		 if (status == PS2_SUCCESS && key != 0) 
+		 if (status == PS2_SUCCESS && key != 0)
 				printf("key:%c -- %x\n", key, key);
 		movement(key);
 	}

@@ -489,3 +489,12 @@ Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.pa
 
 !ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:12:47.033
 !MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:27:58.851
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --stop --accept-bad-sysid --sidp=Not Found]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2013-04-15 16:28:00.500
+!MESSAGE Failed Executing: [nios2-download, '--cable=USB-Blaster on localhost [USB 10-2]', --device=1, --instance=0, --stop, --accept-bad-sysid, --sidp=Not Found] return code: 8
+
+!ENTRY com.altera.sbtgui.launch 1 0 2013-04-15 16:28:00.635
+!MESSAGE Executing: [/bin/bash, -c, nios2-download '--cable=USB-Blaster on localhost [USB 10-2]' --device=1 --instance=0 --go --accept-bad-sysid /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software/snake_software.elf]

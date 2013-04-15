@@ -2462,3 +2462,199 @@ make --no-print-directory -C ../snake_software_bsp/
 [snake_software build complete]
 
 **** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../snake_software_bsp//HAL/inc -I../snake_software_bsp/ -I../snake_software_bsp//drivers/inc  -DSYSTEM_BUS_WIDTH=32 -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -EL -mno-hw-div -mno-hw-mul -mno-hw-mulx  -o obj/default/main.o main.c
+In file included from main.c:5:
+list.h: In function 'initSnake':
+list.h:28: error: 'for' loop initial declaration used outside C99 mode
+list.h: In function 'updateBody':
+list.h:82: error: 'for' loop initial declaration used outside C99 mode
+In file included from main.c:6:
+food.h: At top level:
+food.h:3: error: redefinition of 'SIZE'
+list.h:6: error: previous definition of 'SIZE' was here
+food.h: In function 'initFood':
+food.h:14: error: 'for' loop initial declaration used outside C99 mode
+main.c: In function 'movement':
+main.c:120: warning: implicit declaration of function 'checkFood'
+main.c: In function 'read_make_code_with_timeout':
+main.c:170: warning: implicit declaration of function 'get_next_state'
+main.c: In function 'checkFood':
+main.c:180: error: 'for' loop initial declaration used outside C99 mode
+main.c:185: warning: passing argument 1 of 'removeFood' makes pointer from integer without a cast
+main.c:185: error: too few arguments to function 'removeFood'
+main.c: In function 'main':
+main.c:210: error: expected expression before '<<' token
+main.c:221: error: expected expression before '>>' token
+main.c:224: error: 'snake' undeclared (first use in this function)
+main.c:224: error: (Each undeclared identifier is reported only once
+main.c:224: error: for each function it appears in.)
+main.c:226: warning: passing argument 1 of 'initFood' from incompatible pointer type
+main.c:232: warning: passing argument 3 of 'movement' from incompatible pointer type
+make: *** [obj/default/main.o] Error 1
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../snake_software_bsp//HAL/inc -I../snake_software_bsp/ -I../snake_software_bsp//drivers/inc  -DSYSTEM_BUS_WIDTH=32 -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -EL -mno-hw-div -mno-hw-mul -mno-hw-mulx  -o obj/default/main.o main.c
+In file included from main.c:5:
+list.h: In function 'initSnake':
+list.h:28: error: 'for' loop initial declaration used outside C99 mode
+list.h: In function 'updateBody':
+list.h:82: error: 'for' loop initial declaration used outside C99 mode
+In file included from main.c:6:
+food.h: At top level:
+food.h:3: error: redefinition of 'SIZE'
+list.h:6: error: previous definition of 'SIZE' was here
+food.h: In function 'initFood':
+food.h:14: error: 'for' loop initial declaration used outside C99 mode
+main.c: In function 'movement':
+main.c:120: warning: implicit declaration of function 'checkFood'
+main.c: In function 'read_make_code_with_timeout':
+main.c:170: warning: implicit declaration of function 'get_next_state'
+main.c: In function 'checkFood':
+main.c:180: error: 'for' loop initial declaration used outside C99 mode
+main.c:185: warning: passing argument 1 of 'removeFood' makes pointer from integer without a cast
+main.c:185: error: too few arguments to function 'removeFood'
+main.c: In function 'main':
+main.c:210: error: expected expression before '<<' token
+main.c:221: error: expected expression before '>>' token
+main.c:224: error: 'snake' undeclared (first use in this function)
+main.c:224: error: (Each undeclared identifier is reported only once
+main.c:224: error: for each function it appears in.)
+main.c:226: warning: passing argument 1 of 'initFood' from incompatible pointer type
+main.c:232: warning: passing argument 3 of 'movement' from incompatible pointer type
+make: *** [obj/default/main.o] Error 1
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../snake_software_bsp//HAL/inc -I../snake_software_bsp/ -I../snake_software_bsp//drivers/inc  -DSYSTEM_BUS_WIDTH=32 -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -EL -mno-hw-div -mno-hw-mul -mno-hw-mulx  -o obj/default/main.o main.c
+In file included from main.c:5:
+list.h: In function 'initSnake':
+list.h:28: error: 'for' loop initial declaration used outside C99 mode
+list.h: In function 'updateBody':
+list.h:82: error: 'for' loop initial declaration used outside C99 mode
+In file included from main.c:6:
+food.h: At top level:
+food.h:3: error: redefinition of 'SIZE'
+list.h:6: error: previous definition of 'SIZE' was here
+food.h: In function 'initFood':
+food.h:14: error: 'for' loop initial declaration used outside C99 mode
+main.c: In function 'movement':
+main.c:120: warning: implicit declaration of function 'checkFood'
+main.c: In function 'read_make_code_with_timeout':
+main.c:170: warning: implicit declaration of function 'get_next_state'
+main.c: In function 'checkFood':
+main.c:180: error: 'for' loop initial declaration used outside C99 mode
+main.c:185: warning: passing argument 1 of 'removeFood' makes pointer from integer without a cast
+main.c:185: error: too few arguments to function 'removeFood'
+main.c: In function 'main':
+main.c:210: error: expected expression before '<<' token
+main.c:221: error: expected expression before '>>' token
+main.c:224: error: 'snake' undeclared (first use in this function)
+main.c:224: error: (Each undeclared identifier is reported only once
+main.c:224: error: for each function it appears in.)
+main.c:226: warning: passing argument 1 of 'initFood' from incompatible pointer type
+main.c:232: warning: passing argument 3 of 'movement' from incompatible pointer type
+make: *** [obj/default/main.o] Error 1
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software_bsp ****
+
+make all 
+[BSP build complete]
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../snake_software_bsp//HAL/inc -I../snake_software_bsp/ -I../snake_software_bsp//drivers/inc  -DSYSTEM_BUS_WIDTH=32 -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -EL -mno-hw-div -mno-hw-mul -mno-hw-mulx  -o obj/default/main.o main.c
+main.c: In function 'read_make_code_with_timeout':
+main.c:146: warning: implicit declaration of function 'get_next_state'
+main.c:172:36: error: invalid suffix "x" on integer constant
+make: *** [obj/default/main.o] Error 1
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software_bsp ****
+
+make all 
+[BSP build complete]
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../snake_software_bsp//HAL/inc -I../snake_software_bsp/ -I../snake_software_bsp//drivers/inc  -DSYSTEM_BUS_WIDTH=32 -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -EL -mno-hw-div -mno-hw-mul -mno-hw-mulx  -o obj/default/main.o main.c
+Info: Linking snake_software.elf
+nios2-elf-g++  -T'../snake_software_bsp//linker.x' -msys-crt0='../snake_software_bsp//obj/HAL/src/crt0.o' -msys-lib=hal_bsp -L../snake_software_bsp/   -Wl,-Map=snake_software.map   -O0 -g -Wall   -EL -mno-hw-div -mno-hw-mul -mno-hw-mulx  -o snake_software.elf obj/default/PS2.o obj/default/alt_up_ps2_port.o obj/default/hello_world.o obj/default/main.o obj/default/ps2_keyboard.o obj/default/snake.o -lm 
+main.c: In function 'read_make_code_with_timeout':
+main.c:146: warning: implicit declaration of function 'get_next_state'
+main.c: In function 'main':
+main.c:172: warning: this decimal constant is unsigned only in ISO C90
+nios2-elf-insert snake_software.elf --thread_model hal --cpu_name cpu_0 --simulation_enabled false --stderr_dev jtag_uart_0 --stdin_dev jtag_uart_0 --stdout_dev jtag_uart_0 --sopc_system_name snake_system --quartus_project_dir "/home/user3/spring13/ie2147/Desktop/Git/Snake_Plus" --jdi /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software_bsp/../../snakeplus.jdi --sopcinfo /home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software_bsp/../../snake_system.sopcinfo
+Info: (snake_software.elf) 62 KBytes program size (code + initialized data).
+Info:                      442 KBytes free for stack + heap.
+Info: Creating snake_software.objdump
+nios2-elf-objdump --disassemble --syms --all-header --source snake_software.elf >snake_software.objdump
+[snake_software build complete]
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software_bsp ****
+
+make all 
+[BSP build complete]
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+[snake_software build complete]
+
+**** Build Finished ****
+
+**** Build of configuration Nios II for project snake_software ****
+
+make all 
+Info: Building ../snake_software_bsp/
+make --no-print-directory -C ../snake_software_bsp/
+[BSP build complete]
+[snake_software build complete]
+
+**** Build Finished ****

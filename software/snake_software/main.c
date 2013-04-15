@@ -101,6 +101,9 @@ static void movement(alt_u8 key, struct Node *snake[], struct Node *food[]){
 		default:
 			break;
 	}
+	/*
+	 * if going right cant go left, vice versa, same thing with up and down	
+	 */	
 	if(right){
 		xCoor++;
 		if(xCoor >= RIGHT_BOUND){

@@ -2,7 +2,7 @@
 #include <alt_types.h>
 #include "alt_up_ps2_port.h"
 #include "ps2_keyboard.h"
-#include "list.h"
+#include "llist.h"
 #include "food.h"
 
 #define WRITE_SPRITE(select,data) \
@@ -14,8 +14,8 @@ IOWR_32DIRECT(VGA_BASE, select * 2, data)
 #define TOP_BOUND	480
 #define BOT_BOUND	0
 #define LENGTH		1200
-#define MAX_FOOD	5
-#define col_offset  	14
+#define MAX_FOOD	1
+#define col_offset  14
 #define left_dir	0
 #define right_dir	1
 #define up_dir		2
@@ -23,8 +23,8 @@ IOWR_32DIRECT(VGA_BASE, select * 2, data)
 
 /* will be put in a struct eventually*/
 /* start at location (0,0) */
-int xCoor = 0;
-int yCoor = 0;
+int xCoor = 16;
+int yCoor = 8;
 
 /* flags to determine the direction of the snake */
 /* maybe put this init in an init func */
@@ -82,9 +82,30 @@ static void moveDown(){
 	up = 0;
 	down = 1;
 }
-/* track snake movement */
-static void movement(alt_u8 key, struct Node *snake[], struct Node *food[]){
-	/* put this case stmt in a function called setDirection()*/
+
+int checkFood(struct Snake *snake[], struct Food *food[], int dir)
+{
+	//struct Snake *head = snake[0];
+	int j;
+	for(j = 0; j < MAX_FOOD; j++){
+			if(food[j]->enable){
+				int xDiff = abs(snake[0]->xCoord - food[j]->xCoord);
+				int yDiff = abs(snake[0]->yCoord - food[j]->yCoord);
+				printf("snake x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
+				printf("food x: %d y: %d\n",food[j]->xCoord, food[j]->yCoord);
+				if(xDiff <= col_offset && yDiff <= col_offset){
+					printf("Eating Food!");
+					removeFood(food,j);
+					addEnd(snake, dir);
+					break;
+				}
+			}
+	}
+	return 0;
+}
+
+// track snake movement
+static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 	switch(key){
 		case 0x1C://'a'
 			if(up || down)
@@ -105,41 +126,38 @@ static void movement(alt_u8 key, struct Node *snake[], struct Node *food[]){
 		default:
 			break;
 	}
-	/*
-	 * if going right cant go left, vice versa, same thing with up and down	
-	 */	
 	if(right){
 		xCoor++;
 		if(xCoor >= RIGHT_BOUND){
-			/* collision */
+			// collision
 		}
 		updateSnake(snake, xCoor, yCoor);
 		checkFood(snake, food, left_dir);
 	}else if(left){
 		xCoor--;
 		if(xCoor <= LEFT_BOUND){
-			/* collision */
+			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);
 		checkFood(snake, food, right_dir);
 	}else if(up){
 		yCoor++;
 		if(yCoor <= TOP_BOUND){
-			/* collision */
+			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);
 		checkFood(snake, food, up_dir);
 	}else if(down){
 		yCoor--;
 		if(yCoor >= BOT_BOUND){
-			/* collision */
+			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);
 		checkFood(snake, food, down_dir);
 	}
 	printf("x: %d y: %d\n", xCoor, yCoor);
-	//usleep(500000);
 }
+
 
 typedef enum
   {
@@ -170,23 +188,6 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
   return PS2_SUCCESS;
 }
 
-int checkFood(struct Node *snake[], struct Food *food[], int dir)
-{
-	struct Node *head = snake[0];
-
-	for(int j = 0; j < MAX_FOOD; j++){
-			int xDiff = abs(head->xCoord - food[j]->xCoord);
-			int yDiff = abs(head->yCoord - food[j]->yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
-				printf("Eating Food!");
-				removeFood(j);
-				addEnd(snake, dir);
-				break;
-			}
-	}
-	return 0;
-}
-
 int main(){
 	alt_u8 key = 0;
 	/* Initialize the keyboard */
@@ -204,12 +205,13 @@ int main(){
 	}
 	//alt_irq_register(PS2_0_IRQ, NULL, (void*)kb_interrupt_handler);
 
-	WRITE_SPRITE(2,0xFFFFFFFF);
+	//WRITE_SPRITE(2,0xFFFFFFFF);
 
-	struct Node snake[LENGTH];
+	struct Snake *snake[18];
 	initSnake(snake);
-	struct Food food[MAX_FOOD];
+	struct Food *food[MAX_FOOD];
 	initFood(food);
+
 
 	while(1) {
 		status = read_make_code_with_timeout(&decode_mode, &key);

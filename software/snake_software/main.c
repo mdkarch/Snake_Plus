@@ -2,18 +2,24 @@
 #include <alt_types.h>
 #include "alt_up_ps2_port.h"
 #include "ps2_keyboard.h"
+#include "list.h"
+#include "food.h"
 
 #define WRITE_SPRITE(select,data) \
-IOWR_32DIRECT(VGA_BASE, select * 4, data)
-
-#define READ_SNAKE1_HEAD() \
-IORD_32DIRECT(VGA_BASE, 0)
+IOWR_32DIRECT(VGA_BASE, select * 2, data)
 
 
 #define LEFT_BOUND	0
 #define RIGHT_BOUND	640
 #define TOP_BOUND	480
 #define BOT_BOUND	0
+#define LENGTH		1200
+#define MAX_FOOD	5
+#define col_offset  	14
+#define left_dir	0
+#define right_dir	1
+#define up_dir		2
+#define down_dir	3
 
 /* will be put in a struct eventually*/
 /* start at location (0,0) */
@@ -77,44 +83,59 @@ static void moveDown(){
 	down = 1;
 }
 /* track snake movement */
-static void movement(alt_u8 key){
+static void movement(alt_u8 key, struct Node *snake[], struct Node *food[]){
 	/* put this case stmt in a function called setDirection()*/
 	switch(key){
-		case 'a':
-			moveLeft();
+		case 0x1C://'a'
+			if(up || down)
+				moveLeft();
 			break;
-		case 's':
-			moveDown();
+		case 0x1B://'s'
+			if(left || right)
+				moveDown();
 			break;
-		case 'd':
-			moveRight();
+		case 0x23://'d'
+			if(up || down)
+				moveRight();
 			break;
-		case 'w':
-			moveUp();
+		case 0x1D://'w'
+			if(left || right)
+				moveUp();
 			break;
 		default:
 			break;
 	}
+	/*
+	 * if going right cant go left, vice versa, same thing with up and down	
+	 */	
 	if(right){
 		xCoor++;
 		if(xCoor >= RIGHT_BOUND){
 			/* collision */
 		}
+		updateSnake(snake, xCoor, yCoor);
+		checkFood(snake, food, left_dir);
 	}else if(left){
 		xCoor--;
 		if(xCoor <= LEFT_BOUND){
 			/* collision */
 		}
+		updateSnake(snake, xCoor, yCoor);
+		checkFood(snake, food, right_dir);
 	}else if(up){
 		yCoor++;
 		if(yCoor <= TOP_BOUND){
 			/* collision */
 		}
+		updateSnake(snake, xCoor, yCoor);
+		checkFood(snake, food, up_dir);
 	}else if(down){
 		yCoor--;
 		if(yCoor >= BOT_BOUND){
 			/* collision */
 		}
+		updateSnake(snake, xCoor, yCoor);
+		checkFood(snake, food, down_dir);
 	}
 	printf("x: %d y: %d\n", xCoor, yCoor);
 	//usleep(500000);
@@ -149,8 +170,24 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
   return PS2_SUCCESS;
 }
 
-int main(){
+int checkFood(struct Node *snake[], struct Food *food[], int dir)
+{
+	struct Node *head = snake[0];
 
+	for(int j = 0; j < MAX_FOOD; j++){
+			int xDiff = abs(head->xCoord - food[j]->xCoord);
+			int yDiff = abs(head->yCoord - food[j]->yCoord);
+			if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Eating Food!");
+				removeFood(j);
+				addEnd(snake, dir);
+				break;
+			}
+	}
+	return 0;
+}
+
+int main(){
 	alt_u8 key = 0;
 	/* Initialize the keyboard */
 	printf("Pretty please wait three seconds to initialize keyboard\n");
@@ -166,19 +203,19 @@ int main(){
 			break;
 	}
 	//alt_irq_register(PS2_0_IRQ, NULL, (void*)kb_interrupt_handler);
-	
-	while(1){
-		//WRITE_SPRITE(4, 0xFFFFFFF0);
-		IOWR_32DIRECT(VGA_BASE, 4 * 4, 4294967295);
 
-		printf("Head: %x", READ_SNAKE1_HEAD());
-	}
+	WRITE_SPRITE(2,0xFFFFFFFF);
+
+	struct Node snake[LENGTH];
+	initSnake(snake);
+	struct Food food[MAX_FOOD];
+	initFood(food);
 
 	while(1) {
 		status = read_make_code_with_timeout(&decode_mode, &key);
 		 if (status == PS2_SUCCESS && key != 0)
 				printf("key:%c -- %x\n", key, key);
-		movement(key);
+		movement(key, snake, food);
 	}
 
 

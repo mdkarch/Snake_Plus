@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu_0' in SOPC Builder design 'snake_system'
  * SOPC Builder design path: ../../snake_system.sopcinfo
  *
- * Generated: Wed Apr 03 12:29:03 EDT 2013
+ * Generated: Mon Apr 15 11:51:47 EDT 2013
  */
 
 /*
@@ -146,19 +146,19 @@
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
 #define ALT_STDERR "/dev/jtag_uart_0"
-#define ALT_STDERR_BASE 0x101040
+#define ALT_STDERR_BASE 0x101048
 #define ALT_STDERR_DEV jtag_uart_0
 #define ALT_STDERR_IS_JTAG_UART
 #define ALT_STDERR_PRESENT
 #define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDIN "/dev/jtag_uart_0"
-#define ALT_STDIN_BASE 0x101040
+#define ALT_STDIN_BASE 0x101048
 #define ALT_STDIN_DEV jtag_uart_0
 #define ALT_STDIN_IS_JTAG_UART
 #define ALT_STDIN_PRESENT
 #define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDOUT "/dev/jtag_uart_0"
-#define ALT_STDOUT_BASE 0x101040
+#define ALT_STDOUT_BASE 0x101048
 #define ALT_STDOUT_DEV jtag_uart_0
 #define ALT_STDOUT_IS_JTAG_UART
 #define ALT_STDOUT_PRESENT
@@ -182,7 +182,7 @@
  */
 
 #define ALT_MODULE_CLASS_jtag_uart_0 altera_avalon_jtag_uart
-#define JTAG_UART_0_BASE 0x101040
+#define JTAG_UART_0_BASE 0x101048
 #define JTAG_UART_0_IRQ 0
 #define JTAG_UART_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define JTAG_UART_0_NAME "/dev/jtag_uart_0"
@@ -200,7 +200,7 @@
  */
 
 #define ALT_MODULE_CLASS_ps2 de2_ps2
-#define PS2_BASE 0x0
+#define PS2_BASE 0x101040
 #define PS2_IRQ -1
 #define PS2_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define PS2_NAME "/dev/ps2"
@@ -228,11 +228,11 @@
  */
 
 #define ALT_MODULE_CLASS_vga de2_vga_controller
-#define VGA_BASE 0x10
+#define VGA_BASE 0x101000
 #define VGA_IRQ -1
 #define VGA_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define VGA_NAME "/dev/vga"
-#define VGA_SPAN 16
+#define VGA_SPAN 64
 #define VGA_TYPE "de2_vga_controller"
 
 #endif /* __SYSTEM_H_ */

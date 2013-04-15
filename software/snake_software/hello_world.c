@@ -17,6 +17,7 @@
 #include <stdio.h>
 char* getInput();
 
+/*
 int main()
 {
   printf("Hello from Nios II!\n");
@@ -24,3 +25,4 @@ int main()
   while(1) getInput();
   return 0;
 }
+*/

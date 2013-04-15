@@ -4,6 +4,7 @@
 int head;
 int tail;
 int SIZE = 1200;
+/* */
 int offset = 16;
 
 
@@ -44,11 +45,13 @@ void traverseList(struct Node *snake[])
 {
 	struct Node *head = snake[0];
 	int count = 1;
+	/* collision offset - distance between two pieces to be considered a collision */
+	int col_offset = 14;
 	while(snake[count]->enable)
 	{
 		int xDiff = abs(head->xCoord - snake[count]->xCoord);
 		int yDiff = abs(head->yCoord - snake[count]->yCoord);
-		if(xDiff <= offset && yDiff <= offset){
+		if(xDiff <= col_offset && yDiff <= col_offset){
 			printf("Collision!");
 		}
 		count++;
@@ -73,7 +76,6 @@ void addEnd(struct Node *snake[], int dir)
 		snake[tail]->xCoord = snake[tail-1]->xCoord;
 		snake[tail]->yCoord = snake[tail-1]->yCoord - offset;
 	}
-
 }
 
 void updateBody(struct Node *snake[]){

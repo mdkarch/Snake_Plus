@@ -205,7 +205,8 @@ int main(){
 	}
 	//alt_irq_register(PS2_0_IRQ, NULL, (void*)kb_interrupt_handler);
 
-	//WRITE_SPRITE(2,0xFFFFFFFF);
+	WRITE_SPRITE(0,0x2137CF0);
+	WRITE_SPRITE(0,0x2137C0F);
 
 	struct Snake snake[1200];
 	initSnake(&snake, xCoor, yCoor);

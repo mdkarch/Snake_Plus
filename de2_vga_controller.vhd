@@ -103,9 +103,6 @@ architecture rtl of snake_plus_vga is
 begin
   
   reset <= not(reset_n);
-  leds(14) <= reset;
-  
-  leds(4 downto 0) <= snake1(1)(24 downto 20);
   
   --VGA stuff
   
@@ -126,33 +123,31 @@ begin
       if reset = '1' then
 			readdata <= (others => '0');
       else
-        if chipselect = '1' then -- This chip is right one
+			snake1_enabled <= '0';
+			snake2_enabled <= '0';
+			tiles_enabled 	<= '0';
+			if chipselect = '1' then -- This chip is right one
 		  
 				-- Write --
 				if write = '1' then
 				
 					-- Select snake1 --
 					if address = W_SNAKE1_SELECT then
-						snake1_enabled <= '1';
-					else
-						snake1_enabled <= '0';
+						snake1_enabled <= '1';		
 					end if;
 						
 					-- Select snake2 --
 					if address = W_SNAKE2_SELECT then
 						snake2_enabled <= '1';
-					else
-						snake2_enabled <= '0';
 					end if;
 					
 					-- Select tiles --
 					if address = W_TILES_SELECT then
 						tiles_enabled <= '1';
-					else
-						tiles_enabled <= '0';
 					end if;
 					
-					leds(10 downto 7) <= address;
+					leds(15) <= snake1_enabled;
+					leds(14 downto 10) <= snake1(1)(24 downto 20);
 				
 				-- Read --
 				elsif read = '1' then
@@ -365,7 +360,7 @@ signal unused			: std_logic_vector(3 downto 0);	-- 4 bits ---
 
 signal head_index		: integer		:= 0;
 signal tail_index		: integer		:= 0;
-signal snake_length	: integer		:= 0;
+signal snake_length	: integer		:= 1;
 
 --Index that new value will assigned to: head, second head, second tail, tail --
 signal seg_index		: integer;
@@ -383,6 +378,8 @@ begin
 		-- Reset --
 		if reset = '1' then
 			snake <= (others=>(others=>'0'));
+			snake(0) <=  "0000" & "00" & "1" & SNAKE_HEAD_RIGHT 
+											& "0011111111" & "0011111111";
 		
 		-- Only do something if it was directed at this snake	--
 		elsif enabled = '1' then
@@ -464,9 +461,6 @@ begin
 			
 		end if; -- end if reset/enabled --
 		
-		
-	snake(1) <=  unused & segment & add_remove & SNAKE_HEAD_RIGHT 
-													& "0011111111" & "0011111111";
 													
 	head_index <= to_integer( unsigned( data_in ) );
 		

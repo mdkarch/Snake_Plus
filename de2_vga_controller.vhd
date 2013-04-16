@@ -5,9 +5,9 @@ use work.definitions.all;
 
 -- PROTOCOL:
 		-- ADDRESS
-			-- 0000 = SNAKE1
-			-- 0001 = SNAKE2
-			-- 0002 = TILES
+			-- 0001 = SNAKE1
+			-- 0010 = SNAKE2
+			-- 0011 = TILES
 		
 		--WRITEDATA
 			--9-0: Y (LSB)
@@ -445,7 +445,7 @@ begin
 					snake(tail_index - 1) <= data_in;
 					if tail_index - 1 < 0 then
 						tail_index <= MAX_SNAKE_SIZE - 1;
-						snake(0) <= data_in; 
+						snake(MAX_SNAKE_SIZE - 1) <= data_in; 
 					end if;
 					
 				end if; -- segments

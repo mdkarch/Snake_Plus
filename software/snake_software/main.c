@@ -142,14 +142,14 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 		checkFood(snake, food, right_dir);
 	}else if(up){
 		yCoor++;
-		if(yCoor <= TOP_BOUND){
+		if(yCoor >= TOP_BOUND){
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);
 		checkFood(snake, food, up_dir);
 	}else if(down){
 		yCoor--;
-		if(yCoor >= BOT_BOUND){
+		if(yCoor <= BOT_BOUND){
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);

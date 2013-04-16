@@ -359,6 +359,7 @@ begin
 		y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
 		x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
 		
+		snake1_segment <= -1;
 		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
 			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
 			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
@@ -372,9 +373,9 @@ begin
   
   
 	-- snake sprite head generation
-  SnakeHeadSpriteGen : process (clk)
+  SnakeSpriteGen : process (clk)
   variable sprite_h_pos, sprite_v_pos : integer;
- 
+  variable x, y 	: integer;
   variable orient : std_logic_vector(4 downto 0);
   begin
 	if rising_edge(clk) then	
@@ -384,11 +385,13 @@ begin
 			snake_head_w 	<= '0';
 			snake_head_b 	<= '0';
 			snake_body 		<= '0';
+			snake_tail 		<= '0';
 		else
-			if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
-					and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
-					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
-					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
+			if snake1_segment /= -1 then
+			
+					y := to_integer(UNSIGNED(SNAKE1_IN(snake1_segment)(9 downto 0)));
+					x := to_integer(UNSIGNED(SNAKE1_IN(snake1_segment)(19 downto 10)));
+					orient := SNAKE1_IN(snake1_segment)(24 downto 20);
 					
 					sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
 					sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
@@ -401,6 +404,9 @@ begin
 					
 					-- Snake body color signals
 					snake_body 		<= '0';
+					
+					-- Snake tail color signals
+					snake_tail 	<= '0';
 					
 					-- Right orientation for snake head
 					if orient = SNAKE_HEAD_RIGHT then 
@@ -446,14 +452,36 @@ begin
 							elsif sprite_snake_head_w_down(sprite_v_pos)(sprite_h_pos) = '1' then
 								snake_head_w <= '1';
 							end if; -- end sprite snake head
+							
 					
 					elsif orient = SNAKE_BODY_SELECT then 
 						 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
 							snake_body <= '1';
 						 end if; -- end sprite snake body
+					
+					
+					-- Right orientation for snake tail
+					elsif orient = SNAKE_TAIL_RIGHT then 
+						 if sprite_snake_tail(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail <= '1';
+						 end if; -- end sprite snake head
+						 
+					elsif orient = SNAKE_TAIL_LEFT then
+						 if sprite_snake_tail_left(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail <= '1';
+						 end if; -- end sprite snake head
+					
+					elsif orient = SNAKE_TAIL_UP then
+						 if sprite_snake_tail_up(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail <= '1';
+						 end if; -- end sprite snake head
+					
+					elsif orient = SNAKE_TAIL_DOWN then
+						 if sprite_snake_tail_down(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail <= '1';
+						 end if; -- end sprite snake
 					end if; -- orient
-				
-				 -- PUT IN OTHER THREE DIRECTIONS
+
 
 			else
 				snake_head_g 	<= '0';
@@ -461,73 +489,15 @@ begin
 				snake_head_w 	<= '0';
 				snake_head_b 	<= '0';
 				snake_body 		<= '0';
+				snake_tail 		<= '0';
 			end if;
 		end if;
 	end if;		
-  end process SnakeHeadSpriteGen;
+  end process SnakeSpriteGen;
   
   
-  
-  
-  	-- snake sprite tail generation
-  SnakeTailSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  variable x, y : integer;
-  variable orient : std_logic_vector(4 downto 0);
-  begin
-	if rising_edge(clk) then	
-		if reset = '1' then
-			snake_tail <= '0';
-		else
-			for i in MAX_SNAKE_SIZE downto 0 loop
-				orient := SNAKE1_IN(i)(24 downto 20);
-				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
-				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
-				
-				if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
-						and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
-						and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
-						and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
-						
-						sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
-						sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
-					 
-						-- Snake tail color signals
-						snake_tail 	<= '0';
-						
-						-- Right orientation for snake tail
-						if orient = SNAKE_TAIL_RIGHT then 
-							 if sprite_snake_tail(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_tail <= '1';
-							 end if; -- end sprite snake head
-							 
-						elsif orient = SNAKE_TAIL_LEFT then
-							 if sprite_snake_tail_left(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_tail <= '1';
-							 end if; -- end sprite snake head
-						
-						elsif orient = SNAKE_TAIL_UP then
-							 if sprite_snake_tail_up(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_tail <= '1';
-							 end if; -- end sprite snake head
-						
-						elsif orient = SNAKE_TAIL_DOWN then
-							 if sprite_snake_tail_down(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_tail <= '1';
-							 end if; -- end sprite snake
-						end if; -- orient
-
-				else
-					snake_tail <= '0';
-				end if;
-			end loop;
-		end if;
-	end if;		
-  end process SnakeTailSpriteGen;
-  
-  
-  
-  
+ 
+ 
    -- rabbit sprite generation
   RabbitSpriteGen : process (clk)
   variable sprite_h_pos, sprite_v_pos : integer;

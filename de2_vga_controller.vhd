@@ -393,6 +393,9 @@ begin
 			snake <= (others=>(others=>'0'));
 			snake(0) <=  "0000" & "00" & "1" & SNAKE_HEAD_RIGHT 
 											& "0011111111" & "0011111111";
+			head_index		<= 0;
+			tail_index		<= 0;
+			snake_length	<= 1;
 		
 		-- Only do something if it was directed at this snake	--
 		elsif enabled = '1' then
@@ -403,49 +406,56 @@ begin
 				if segment = "00" then
 					--Automatically change second to new head
 					snake(head_index)(24 downto 20) <= SNAKE_BODY_SELECT;
-					--Increment head pointer --
-					head_index <= head_index + 1;
+					
 					--Increment snake length
 					snake_length <= snake_length + 1;
 					
-					-- Set actual snake
-					snake(head_index + 1) <= data_in; 
-			
+					--Increment head pointer --
+					head_index <= head_index + 1;
+					
 					-- Overflow happened
-					if head_index + 1 >= MAX_SNAKE_SIZE - 1 then
-						head_index <= 0;
+					if head_index + 1 > MAX_SNAKE_SIZE - 1 then
 						snake(0) <= data_in;
+						head_index <= 0;
+					else
+						-- Set actual snake
+						snake(head_index + 1) <= data_in ; 
 					end if;
 				
 				-- Second to head
 				elsif segment = "01" then
-					snake(head_index - 1) <= data_in;
 					if head_index - 1 < 0 then
-						head_index <= MAX_SNAKE_SIZE - 1;
 						snake(MAX_SNAKE_SIZE- 1) <= data_in;
+					else
+						snake(head_index - 1) <= data_in;
 					end if;
 					
 				-- Second to tail
 				elsif segment = "10" then
-					snake(tail_index + 1) <= data_in;
 					if tail_index + 1 > MAX_SNAKE_SIZE - 1 then
-						tail_index <= 0;
 						snake(0) <= data_in; 
+					else 
+						snake(tail_index + 1) <= data_in;
 					end if;
 					
 				-- Tail
 				elsif segment = "11" then
 					--Automatically change old tail to body
 					snake(tail_index)(24 downto 20) <= SNAKE_BODY_SELECT;
-					tail_index <= tail_index - 1;
+					
 					--Increment snake length
 					snake_length <= snake_length + 1;
-					--Set Index to correct value for later changing
-					-- Set actual snake
-					snake(tail_index - 1) <= data_in;
+					
+					-- Update index
+					tail_index <= tail_index - 1;
+
+					--Overflow case
 					if tail_index - 1 < 0 then
 						tail_index <= MAX_SNAKE_SIZE - 1;
 						snake(MAX_SNAKE_SIZE - 1) <= data_in; 
+					else
+						-- Set actual snake
+						snake(tail_index - 1) <= data_in;
 					end if;
 					
 				end if; -- segments
@@ -460,6 +470,7 @@ begin
 				elsif segment = "11" then
 					snake(tail_index)(25) <= '0';
 					tail_index <= tail_index + 1;
+					snake_length <= snake_length - 1;
 					if tail_index + 1 > MAX_SNAKE_SIZE - 1 then
 						tail_index <= 0;
 					end if;

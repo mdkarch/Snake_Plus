@@ -4,6 +4,8 @@
 #include "ps2_keyboard.h"
 #include "llist.h"
 #include "food.h"
+#include <system.h>
+#include <unistd.h>
 
 #define WRITE_SPRITE(select,data) \
 IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, select * 4, data)
@@ -155,7 +157,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 		checkFood(snake, food, right_dir);
 	}else if(up){
 		yCoor+=16;
-		if(yCoor >= TOP_BOUND){
+		if(yCoor <= TOP_BOUND){
 			printf("Collision with up boundary!\n");
 			//collision
 		}
@@ -163,7 +165,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 		checkFood(snake, food, up_dir);
 	}else if(down){
 		yCoor-=16;
-		if(yCoor <= BOT_BOUND){
+		if(yCoor >= BOT_BOUND){
 			printf("Collision with bot boundary!\n");
 			//collision
 		}
@@ -224,9 +226,9 @@ void writeToHW(struct Snake *snake[], int dir) {
 
 	WRITE_SPRITE(1,code);
 
-	int code2 = (unused << 28) | (2 << 26) | (1 << 25) | (9 << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
+	int code2 = (unused << 28) | (2 << 26) | (1 << 25) | (12 << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
 
-	int code3 = (unused << 28) | (3 << 26) | (0 << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
+	int code3 = (unused << 28) | (3 << 26) | (0 << 25) | (0 << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
 
 	//WRITE_SPRITE(1,code2);
 	WRITE_SPRITE(1,code3);
@@ -284,6 +286,10 @@ int main(){
 	while(1) {
 		code = kb_input();
 		movement(code, &snake, &food);
+		printf("H: %d\n",READ_SNAKE1_HEAD() );
+		printf("T: %d\n",READ_SNAKE1_TAIL() );
+		printf("L: %d\n",READ_SNAKE1_LENGTH() );
+		usleep(500*1000);
 	}
 
 

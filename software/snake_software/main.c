@@ -24,7 +24,7 @@ IOWR_32DIRECT(VGA_BASE, select * 2, data)
 /* will be put in a struct eventually*/
 /* start at location (0,0) */
 int xCoor = 16;
-int yCoor = 8;
+int yCoor = 50;
 
 /* flags to determine the direction of the snake */
 /* maybe put this init in an init func */
@@ -91,13 +91,13 @@ int checkFood(struct Snake *snake[], struct Food *food[], int dir)
 			if(food[j]->enable){
 				int xDiff = abs(snake[0]->xCoord - food[j]->xCoord);
 				int yDiff = abs(snake[0]->yCoord - food[j]->yCoord);
-				printf("snake x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
-				printf("food x: %d y: %d\n",food[j]->xCoord, food[j]->yCoord);
+				//printf("snake x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
+				//printf("food x: %d y: %d\n",food[j]->xCoord, food[j]->yCoord);
 				if(xDiff <= col_offset && yDiff <= col_offset){
-					printf("Eating Food!");
+					printf("Eating Food!\n");
 					removeFood(food,j);
 					addEnd(snake, dir);
-					break;
+					//break;
 				}
 			}
 	}
@@ -207,17 +207,17 @@ int main(){
 
 	//WRITE_SPRITE(2,0xFFFFFFFF);
 
-	struct Snake *snake[18];
-	initSnake(snake);
-	struct Food *food[MAX_FOOD];
-	initFood(food);
+	struct Snake snake[1200];
+	initSnake(&snake, xCoor, yCoor);
+	struct Food food[MAX_FOOD];
+	initFood(&food);
 
 
 	while(1) {
 		status = read_make_code_with_timeout(&decode_mode, &key);
 		 if (status == PS2_SUCCESS && key != 0)
 				printf("key:%c -- %x\n", key, key);
-		movement(key, snake, food);
+		movement(key, &snake, &food);
 	}
 
 

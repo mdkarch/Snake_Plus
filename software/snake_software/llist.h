@@ -12,7 +12,7 @@ struct Snake{
 	int enable;
 };
 
-void initSnake(struct Snake *snake[]){
+/*void initSnake(struct Snake *snake[]){
 	int x = 50;
 	int y = 50;
 	snake[0]->enable = 1;
@@ -20,15 +20,16 @@ void initSnake(struct Snake *snake[]){
 	snake[0]->yCoord = 8;
 	printf("snake x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
 
-}
-/*
+}*/
+
 void initSnake(struct Snake *snake[], int xCoord, int yCoord){
 	head = 0;
 	tail = 1;
-	snake[0]->xCoord = 16;//xCoord;
-	snake[0]->yCoord = 8;//yCoord;
+	snake[0]->xCoord = xCoord;
+	snake[0]->yCoord = yCoord;
 	snake[0]->enable = 1;
-	printf("IN INIT x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
+	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
+	//printf("IN INIT x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
 
 	snake[tail]->xCoord = 8;
 	snake[tail]->yCoord = 8;
@@ -38,7 +39,7 @@ void initSnake(struct Snake *snake[], int xCoord, int yCoord){
 		snake[i]->enable = 0;
 	}
 }
-*/
+
 int abs(int n)
 {
     if (n < 0)

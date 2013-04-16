@@ -14,8 +14,6 @@ void initFood(struct Food *food[]){
 	food[0]->enable = 1;
 	food[0]->xCoord = 50;
 	food[0]->yCoord = 50;
-	printf("food xDiff: %d yDiff: %d\n",food[0]->xCoord, food[0]->yCoord);
-
 }
 
 void removeFood(struct Food *food[], int index){

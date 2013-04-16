@@ -53,6 +53,7 @@ KB_CODE_TYPE decode_mode;
 
 /* go left */
 static void moveLeft(){
+	printf("Changed direction to left\n");
 	right = 0;
 	left = 1;
 	up = 0;
@@ -61,6 +62,7 @@ static void moveLeft(){
 
 /* go right */
 static void moveRight(){
+	printf("Changed direction to right\n");
 	right = 1;
 	left = 0;
 	up = 0;
@@ -69,6 +71,7 @@ static void moveRight(){
 
 /* go up */
 static void moveUp(){
+	printf("Changed direction to up\n");
 	right = 0;
 	left = 0;
 	up = 1;
@@ -77,6 +80,7 @@ static void moveUp(){
 
 /* go down */
 static void moveDown(){
+	printf("Changed direction to down\n");
 	right = 0;
 	left = 0;
 	up = 0;
@@ -129,6 +133,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 	if(right){
 		xCoor++;
 		if(xCoor >= RIGHT_BOUND){
+			printf("Collision with right boundary!\n");			
 			// collision
 		}
 		updateSnake(snake, xCoor, yCoor);
@@ -136,6 +141,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 	}else if(left){
 		xCoor--;
 		if(xCoor <= LEFT_BOUND){
+			printf("Collision with left boundary!\n");			
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);
@@ -143,6 +149,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 	}else if(up){
 		yCoor++;
 		if(yCoor >= TOP_BOUND){
+			printf("Collision with up boundary!\n");
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);
@@ -150,6 +157,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 	}else if(down){
 		yCoor--;
 		if(yCoor <= BOT_BOUND){
+			printf("Collision with bot boundary!\n");
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor);

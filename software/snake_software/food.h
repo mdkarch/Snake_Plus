@@ -9,6 +9,7 @@ struct Food{
 };
 
 void initFood(struct Food *food[]){
+	printf("Initializing food\n");
 	int x = 50;
 	int y = 50;
 	food[0]->enable = 1;
@@ -17,6 +18,7 @@ void initFood(struct Food *food[]){
 }
 
 void removeFood(struct Food *food[], int index){
+	printf("Removing food\n");
 	food[index]->enable = 0;
 }
 

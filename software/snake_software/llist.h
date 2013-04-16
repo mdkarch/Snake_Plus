@@ -25,8 +25,8 @@ struct Snake{
 void initSnake(struct Snake *snake[], int xCoord, int yCoord){
 	head = 0;
 	tail = 1;
-	snake[0]->xCoord = xCoord;
-	snake[0]->yCoord = yCoord;
+	snake[0]->xCoord = xCoord;//16;
+	snake[0]->yCoord = yCoord;//8;
 	snake[0]->enable = 1;
 	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
 	//printf("IN INIT x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
@@ -70,6 +70,7 @@ void traverseList(struct Snake *snake[])
 
 void addEnd(struct Snake *snake[], int dir)
 {
+	printf("Adding to the end of the snake\n");
 	tail++;
 	snake[tail]->enable = 1;
 
@@ -96,6 +97,7 @@ void updateBody(struct Snake *snake[]){
 }
 
 void updateSnake(struct Snake *snake[], int xCoord, int yCoord){
+	printf("Updating snake\n");
 	updateBody(snake);
 	snake[0]->xCoord = xCoord;
 	snake[0]->yCoord = yCoord;

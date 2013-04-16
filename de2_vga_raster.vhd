@@ -355,17 +355,19 @@ begin
 	variable x, y : integer;
 	begin
   
+  	snake1_segment <= -1;
 	for i in MAX_SNAKE_SIZE downto 0 loop
 		y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
 		x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
 		
-		snake1_segment <= -1;
 		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
 			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
 			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
 			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
 		
-			snake1_segment <= i;
+			if(SNAKE1_IN(i)(25) = '1') then
+				snake1_segment <= i;
+			end if;
 		
 		end if;
 	end loop;

@@ -25,6 +25,13 @@ use work.definitions.all;
 			-- 4-0: Sprite select
 			-- 6-5: unused
 			-- 7	: Enabled/Active signal 
+			
+-- On Add:
+-- 	Adding to head or tail, the hardware automatically changes second to head/tail
+--		No need to send second change
+-- On Remove:
+--		Can only happen on tail
+--		Must send second change to second to tail, with correct tail
 --
 
 entity snake_plus_vga is
@@ -387,67 +394,73 @@ begin
 			segment			<= 	data_in(27 downto 26);
 			unused			<= 	data_in(31 downto 28);
 			
-			
-			---- Get the correct piece of the snake to operate on -----
-			seg_index <= -1;
-			if segment = "00" then
-				seg_index <= head_index;
-			elsif segment = "01" then
-				seg_index <= head_index - 1;
-				if seg_index < 0 then
-					seg_index <= MAX_SNAKE_SIZE - 1;
-				end if;
-			elsif segment = "10" then
-				seg_index <= tail_index + 1;
-				if seg_index >= MAX_SNAKE_SIZE - 1 then
-					seg_index <= 0;
-				end if;
-			elsif segment = "11" then
-				seg_index <= tail_index;
-			end if; -- segments
-			
-			
-			
+
 			---- Add situation -----
 			if add_remove = '1' then
-				
-				--Increment head pointer --
-				tail_index <= tail_index + 1;
-				
-				--Increment snake length
-				snake_length <= snake_length + 1;
-				
-				-- Check for wrap around --
-				if tail_index > MAX_SNAKE_SIZE - 1 then
-					tail_index <= 0;
-				end if;
 			
-				-- Seg index should be update tail_index
-				seg_index <= tail_index;
-			
-			---- Remove situation -----
-			else
-				
-				-- Increment tail pointer --
-				tail_index <= tail_index - 1;
-				
-				-- Decrement snake length
-				snake_length <= snake_length - 1;
-				
-				-- Check for wrap around --
-				if tail_index < 0  then
-					tail_index <= MAX_SNAKE_SIZE - 1;
-				end if;
-				
-				assert tail_index < head_index report "Tail greater than head" severity error;
-				
-			end if; --end add situation --
+				if segment = "00" then
+					--Automatically change second to new head
+					snake(head_index)(24 downto 20) <= SNAKE_BODY_SELECT;
+					--Increment head pointer --
+					head_index <= head_index + 1;
+					if head_index >= MAX_SNAKE_SIZE - 1 then
+						head_index <= 0;
+					end if;
+					--Increment snake length
+					snake_length <= snake_length + 1;
+					--Set Index to correct value for later changing
+					seg_index <= head_index;
 			
 			
+				elsif segment = "01" then
+					seg_index <= head_index - 1;
+					if seg_index < 0 then
+						seg_index <= MAX_SNAKE_SIZE - 1;
+					end if;
+					
+					
+				elsif segment = "10" then
+					seg_index <= tail_index + 1;
+					if seg_index >= MAX_SNAKE_SIZE - 1 then
+						seg_index <= 0;
+					end if;
+					
+					
+				elsif segment = "11" then
+					--Automatically change old tail to body
+					snake(tail_index)(24 downto 20) <= SNAKE_BODY_SELECT;
+					tail_index <= tail_index - 1;
+					if tail_index < 0 then
+						tail_index <= MAX_SNAKE_SIZE - 1;
+					end if;
+					--Increment snake length
+					snake_length <= snake_length + 1;
+					--Set Index to correct value for later changing
+					seg_index <= tail_index;
+					
+				end if; -- segments
+				
 			-- In all cases, set new value to snake(seg_index) --
 			snake(seg_index) <= 	unused & segment 
 										& add_remove & sprite_select
 										& x_val & y_val; 
+										
+										
+			-----------------------------------------
+			-- Remove situation --
+			elsif add_remove = '0' then 
+			
+				if segment = "00" or segment = "01" or segment = "10"  then
+					-- CANT DO THIS
+				elsif segment = "11" then
+					snake(tail_index)(25) <= '0';
+					tail_index <= tail_index + 1;
+					if tail_index > MAX_SNAKE_SIZE - 1 then
+						tail_index <= 0;
+					end if;
+				end if;
+					
+			end if; --add remove situation
 			
 		end if; -- end if reset/enabled --
 		

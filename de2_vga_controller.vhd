@@ -22,9 +22,9 @@ use work.definitions.all;
 			
 		--Tiles protocol ( in tiles_ram, from controller to raster)
 			-- 8 bits
-			-- 5-0: Sprite select
-			-- 7-6: unused
-			-- 8	: Enabled/Active signal 
+			-- 4-0: Sprite select
+			-- 6-5: unused
+			-- 7	: Enabled/Active signal 
 --
 
 entity snake_plus_vga is
@@ -98,6 +98,8 @@ begin
   reset <= not(reset_n);
   leds(14) <= reset;
   
+  leds(4 downto 0) <= snake1(1)(24 downto 20);
+  
   --VGA stuff
   
   process (clk)
@@ -113,8 +115,6 @@ begin
   process (clk)
   begin
     if rising_edge(clk) then
-	 
-	 readdata <= writedata;
 	 
       if reset = '1' then
 			readdata <= (others => '0');
@@ -146,7 +146,6 @@ begin
 					end if;
 					
 					leds(10 downto 7) <= address;
-					leds(6 downto 0) <= writedata(20 downto 14);
 				
 				-- Read --
 				elsif read = '1' then
@@ -166,7 +165,7 @@ begin
 					end if;
 					
 					
-					--readdata <= std_logic_vector( to_unsigned( readdata_temp, readdata'length ) );
+					readdata <= std_logic_vector( to_unsigned( readdata_temp, readdata'length ) );
 					
 				end if; -- end write/read
 				
@@ -175,8 +174,9 @@ begin
       end if; --end rising edge
   end process;
 
+  
+  
 --VGA stuff
-
 
 V1: entity work.de2_vga_raster port map (
     reset => reset,
@@ -356,9 +356,9 @@ signal add_remove		: std_logic;							-- 1 bit  ---
 signal segment			: std_logic_vector(1 downto 0);	-- 2 bits ---
 signal unused			: std_logic_vector(3 downto 0);	-- 4 bits ---
 
-signal head_index		: integer;
-signal tail_index		: integer;
-signal snake_length	: integer;
+signal head_index		: integer		:= 0;
+signal tail_index		: integer		:= 0;
+signal snake_length	: integer		:= 0;
 
 --Index that new value will assigned to: head, second head, second tail, tail --
 signal seg_index		: integer;
@@ -412,29 +412,31 @@ begin
 			if add_remove = '1' then
 				
 				--Increment head pointer --
-				head_index <= head_index + 1;
+				tail_index <= tail_index + 1;
 				
 				--Increment snake length
 				snake_length <= snake_length + 1;
 				
 				-- Check for wrap around --
-				if head_index > MAX_SNAKE_SIZE - 1 then
-					head_index <= 0;
+				if tail_index > MAX_SNAKE_SIZE - 1 then
+					tail_index <= 0;
 				end if;
 			
+				-- Seg index should be update tail_index
+				seg_index <= tail_index;
 			
 			---- Remove situation -----
 			else
 				
 				-- Increment tail pointer --
-				tail_index <= tail_index + 1;
+				tail_index <= tail_index - 1;
 				
 				-- Decrement snake length
 				snake_length <= snake_length - 1;
 				
 				-- Check for wrap around --
-				if tail_index > MAX_SNAKE_SIZE - 1 then
-					tail_index <= 0;
+				if tail_index < 0  then
+					tail_index <= MAX_SNAKE_SIZE - 1;
 				end if;
 				
 				assert tail_index < head_index report "Tail greater than head" severity error;
@@ -443,15 +445,15 @@ begin
 			
 			
 			-- In all cases, set new value to snake(seg_index) --
-			snake(seg_index) <= 	y_val & x_val 
-										& sprite_select & add_remove 
-										& segment & unused;
+			snake(seg_index) <= 	unused & segment 
+										& add_remove & sprite_select
+										& x_val & y_val; 
 			
 		end if; -- end if reset/enabled --
 		
 		
-	snake(1) <= "0000000001" & "0000000001" & SNAKE_HEAD_RIGHT 
-													& add_remove & segment & unused;
+	snake(1) <=  unused & segment & add_remove & SNAKE_HEAD_RIGHT 
+													& "0011111111" & "0011111111";
 													
 	head_index <= to_integer( unsigned( data_in ) );
 		

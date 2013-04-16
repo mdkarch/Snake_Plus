@@ -11,10 +11,10 @@ package DEFINITIONS is
 							std_logic_vector(31 downto 0);
 	
 	--Snake constants
-		constant MAX_SNAKE_SIZE	: integer := 1200;	
+		constant MAX_SNAKE_SIZE	: integer := 100;	
 		
 	--Sprite Constants
-		constant SPRITE_LENGTH : integer := 16;
+		constant SPRITE_LEN: integer := 16;
 	
 	
 	-- Color declarations

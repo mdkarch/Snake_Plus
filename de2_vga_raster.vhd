@@ -70,7 +70,7 @@ architecture rtl of de2_vga_raster is
   signal vga_hblank, vga_hsync,
     vga_vblank, vga_vsync : std_logic;  -- Sync. signals
 
-	
+	signal snake1_segment			: integer;
 	signal inner_tile_h_pos			: integer;
 	signal inner_tile_v_pos			: integer;
 	signal tiles_h_pos				: integer;
@@ -330,11 +330,30 @@ begin
   ----------- Begin Sprite Display Logic ------------------------
   ---------------------------------------------------------------
   
+	FindSnake1: process(clk)
+	variable x, y : integer;
+	begin
+  
+	for i in MAX_SNAKE_SIZE downto 0 loop
+		y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
+		x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
+		
+		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
+			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
+		
+			snake1_segment <= i;
+		
+		end if;
+	end loop;
+  end process FindSnake1;
+  
   
 	-- snake sprite head generation
   SnakeHeadSpriteGen : process (clk)
   variable sprite_h_pos, sprite_v_pos : integer;
-  variable x, y : integer;
+ 
   variable orient : std_logic_vector(4 downto 0);
   begin
 	if rising_edge(clk) then	
@@ -345,56 +364,50 @@ begin
 			snake_head_b 	<= '0';
 			snake_body 		<= '0';
 		else
-			for i in 1200 downto 0 loop
-				orient := SNAKE1_IN(i)(24 downto 20);
-				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
-				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
-				
-				if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
-						and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
-						and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
-						and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
-						
-						sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
-						sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
-					 
-						-- Snake head color signals
-						snake_head_g 	<= '0';
-						snake_head_r 	<= '0';
-						snake_head_w 	<= '0';
-						snake_head_b 	<= '0';
-						
-						-- Snake body color signals
-						snake_body 		<= '0';
-						
-						-- Right orientation for snake head
-						if orient = SNAKE_HEAD_RIGHT then 
-							 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_g <= '1';
-							 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_b <= '1';
-							 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_r <= '1';
-							 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_w <= '1';
-							 end if; -- end sprite snake head
-						
-						elsif orient = SNAKE_BODY_SELECT then 
-							 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body <= '1';
-							 end if; -- end sprite snake body
-						end if; -- orient
+			if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+					and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + 15) 
+					and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+					and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + 15) then
 					
-					 -- PUT IN OTHER THREE DIRECTIONS
-
-				else
+					sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
+					sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
+				 
+					-- Snake head color signals
 					snake_head_g 	<= '0';
 					snake_head_r 	<= '0';
 					snake_head_w 	<= '0';
 					snake_head_b 	<= '0';
+					
+					-- Snake body color signals
 					snake_body 		<= '0';
-				end if;
-			end loop;
+					
+					-- Right orientation for snake head
+					if orient = SNAKE_HEAD_RIGHT then 
+						 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_head_g <= '1';
+						 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_head_b <= '1';
+						 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_head_r <= '1';
+						 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_head_w <= '1';
+						 end if; -- end sprite snake head
+					
+					elsif orient = SNAKE_BODY_SELECT then 
+						 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_body <= '1';
+						 end if; -- end sprite snake body
+					end if; -- orient
+				
+				 -- PUT IN OTHER THREE DIRECTIONS
+
+			else
+				snake_head_g 	<= '0';
+				snake_head_r 	<= '0';
+				snake_head_w 	<= '0';
+				snake_head_b 	<= '0';
+				snake_body 		<= '0';
+			end if;
 		end if;
 	end if;		
   end process SnakeHeadSpriteGen;
@@ -412,7 +425,7 @@ begin
 		if reset = '1' then
 			snake_tail <= '0';
 		else
-			for i in 1200 downto 0 loop
+			for i in MAX_SNAKE_SIZE downto 0 loop
 				orient := SNAKE1_IN(i)(24 downto 20);
 				y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
 				x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));

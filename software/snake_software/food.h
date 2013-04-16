@@ -1,6 +1,6 @@
 #ifndef _FOOD_H_
 #define _FOOD_H_
-int SIZE = 5;
+int FOOD_SIZE = 1;
 
 struct Food{
 	int xCoord;
@@ -11,11 +11,11 @@ struct Food{
 void initFood(struct Food *food[]){
 	int x = 50;
 	int y = 50;
-	for(int i = 0; i < SIZE; i++){
-		food[i]->enable = 1;
-		food[i]->xCoord = x*(i+1);
-		food[i]->yCoord = y*(i+1);
-	}
+	food[0]->enable = 1;
+	food[0]->xCoord = 50;
+	food[0]->yCoord = 50;
+	printf("food xDiff: %d yDiff: %d\n",food[0]->xCoord, food[0]->yCoord);
+
 }
 
 void removeFood(struct Food *food[], int index){

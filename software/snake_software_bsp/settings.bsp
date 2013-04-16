@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Apr 15, 2013 1:11:39 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1366045899652</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 15, 2013 6:35:54 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1366065354839</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/user3/spring13/ie2147/Desktop/Git/Snake_Plus/software/snake_software_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../snake_system.sopcinfo</SopcDesignFile>

@@ -4,31 +4,31 @@ use ieee.numeric_std.all;
 
 entity snakeplus is
 	port (
-signal CLOCK_50 : in std_logic;
-signal LEDR : out std_logic_vector(17 downto 0);
-SRAM_DQ : inout std_logic_vector(15 downto 0);
-SRAM_ADDR : out std_logic_vector(17 downto 0);
-SRAM_UB_N,
-SRAM_LB_N,
-SRAM_WE_N,
-SRAM_CE_N,
-SRAM_OE_N : out std_logic;
+		signal CLOCK_50 : in std_logic;
+		signal LEDR : out std_logic_vector(17 downto 0);
+		SRAM_DQ : inout std_logic_vector(15 downto 0);
+		SRAM_ADDR : out std_logic_vector(17 downto 0);
+		SRAM_UB_N,
+		SRAM_LB_N,
+		SRAM_WE_N,
+		SRAM_CE_N,
+		SRAM_OE_N : out std_logic;
 
--- PS/2 port
+		-- PS/2 port
 
-    PS2_DAT,                    -- Data
-    PS2_CLK : in std_logic;     -- Clock
+		 PS2_DAT,                    -- Data
+		 PS2_CLK : in std_logic;     -- Clock
 
-    -- VGA output
-    
-    VGA_CLK,                                            -- Clock
-    VGA_HS,                                             -- H_SYNC
-    VGA_VS,                                             -- V_SYNC
-    VGA_BLANK,                                          -- BLANK
-    VGA_SYNC : out std_logic;                           -- SYNC
-    VGA_R,                                              -- Red[9:0]
-    VGA_G,                                              -- Green[9:0]
-    VGA_B : out std_logic_vector(9 downto 0)           -- Blue[9:0]
+		 -- VGA output
+		 
+		 VGA_CLK,                                            -- Clock
+		 VGA_HS,                                             -- H_SYNC
+		 VGA_VS,                                             -- V_SYNC
+		 VGA_BLANK,                                          -- BLANK
+		 VGA_SYNC : out std_logic;                           -- SYNC
+		 VGA_R,                                              -- Red[9:0]
+		 VGA_G,                                              -- Green[9:0]
+		 VGA_B : out std_logic_vector(9 downto 0)           -- Blue[9:0]
 );
 end snakeplus;
 architecture rtl of snakeplus is

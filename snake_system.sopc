@@ -43,7 +43,7 @@
       }
       datum megawizard_uipreferences
       {
-         value = "{}";
+         value = "{output_language=VHDL, output_directory=/home/user3/spring13/ie2147/Desktop/Git/Snake_Plus}";
          type = "String";
       }
    }
@@ -113,7 +113,7 @@
  <parameter name="projectName" value="snakeplus.qpf" />
  <parameter name="sopcBorderPoints" value="true" />
  <parameter name="systemHash" value="-26044189220" />
- <parameter name="timeStamp" value="1365616313439" />
+ <parameter name="timeStamp" value="1366064797858" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <module kind="clock_source" version="12.1" enabled="1" name="clk_0">
   <parameter name="clockFrequency" value="50000000" />

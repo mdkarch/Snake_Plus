@@ -1,6 +1,6 @@
 #ifndef _LLIST_H_
 #define _LLIST_H_
-int SNAKE_SIZE = 1;
+int SNAKE_SIZE = 100;
 
 int head;
 int tail;
@@ -31,7 +31,7 @@ void initSnake(struct Snake *snake[], int xCoord, int yCoord){
 	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
 	//printf("IN INIT x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
 
-	snake[tail]->xCoord = snake[0]->xCoord - SNAKE_SIZE;//8;
+	snake[tail]->xCoord = snake[0]->xCoord - 8; //hardcoded to move right
 	snake[tail]->yCoord = snake[0]->yCoord;//8;
 	snake[tail]->enable = 1;
 	int i;
@@ -101,7 +101,7 @@ void updateBody(struct Snake *snake[]){
 	}
 }
 
-void updateSnake(struct Snake *snake[], int xCoord, int yCoord){
+void updateSnake(struct Snake *snake[], int xCoord, int yCoord, int dir){
 	printf("Updating snake\n");
 	updateBody(snake);
 	snake[0]->xCoord = xCoord;
@@ -112,6 +112,7 @@ void updateSnake(struct Snake *snake[], int xCoord, int yCoord){
 	for(i = 0; i < SNAKE_SIZE; i++){
 		printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
 	}
+	writeToHW(snake, dir);
 }
 
 

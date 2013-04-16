@@ -6,7 +6,17 @@
 #include "food.h"
 
 #define WRITE_SPRITE(select,data) \
-IOWR_32DIRECT(VGA_BASE, select * 2, data)
+IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, select * 4, data)
+
+#define READ_SNAKE1_HEAD() \
+IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 0 * 4)
+
+#define READ_SNAKE1_TAIL() \
+IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 1 * 4)
+
+#define READ_SNAKE1_LENGTH() \
+IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4)
+
 
 #define LENGTH		1200
 #define MAX_FOOD	1
@@ -18,8 +28,8 @@ IOWR_32DIRECT(VGA_BASE, select * 2, data)
 
 /* will be put in a struct eventually*/
 /* start at location (0,0) */
-int xCoor = 16;
-int yCoor = 50;
+int xCoor = 255;
+int yCoor = 255;
 
 /* flags to determine the direction of the snake */
 /* maybe put this init in an init func */
@@ -110,7 +120,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 			if(up || down)
 				moveLeft();
 			break;
-		case 0x1B://'s'
+		case 0x1D://'s'
 			if(left || right)
 				moveDown();
 			break;
@@ -118,7 +128,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 			if(up || down)
 				moveRight();
 			break;
-		case 0x1D://'w'
+		case 0x1B://'w'
 			if(left || right)
 				moveUp();
 			break;
@@ -126,36 +136,38 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 			break;
 	}
 	if(right){
-		xCoor++;
-		if(xCoor >= RIGHT_BOUND){
-			printf("Collision with right boundary!\n");			
+		xCoor+=16;
+		if(xCoor >= RIGHT_BOUND - col_offset){
+			printf("Collision with right boundary!\n");
+			while(1)
+				;
 			// collision
 		}
-		updateSnake(snake, xCoor, yCoor);
+		updateSnake(snake, xCoor, yCoor, left_dir);
 		checkFood(snake, food, left_dir);
 	}else if(left){
-		xCoor--;
+		xCoor-=16;
 		if(xCoor <= LEFT_BOUND){
 			printf("Collision with left boundary!\n");			
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor);
+		updateSnake(snake, xCoor, yCoor,right_dir);
 		checkFood(snake, food, right_dir);
 	}else if(up){
-		yCoor++;
+		yCoor+=16;
 		if(yCoor >= TOP_BOUND){
 			printf("Collision with up boundary!\n");
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor);
+		updateSnake(snake, xCoor, yCoor, up_dir);
 		checkFood(snake, food, up_dir);
 	}else if(down){
-		yCoor--;
+		yCoor-=16;
 		if(yCoor <= BOT_BOUND){
 			printf("Collision with bot boundary!\n");
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor);
+		updateSnake(snake, xCoor, yCoor, down_dir);
 		checkFood(snake, food, down_dir);
 	}
 	printf("x: %d y: %d\n", xCoor, yCoor);
@@ -178,7 +190,7 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
 	*decode_mode = KB_INVALID_CODE;
 	DECODE_STATE state = STATE_INIT;
 	do {
-		status_read = read_data_byte_with_timeout(&byte, 10000);
+		status_read = read_data_byte_with_timeout(&byte, 1000);
 		//FIXME: When the user press the keyboard extremely fast, data may get
 		//occasionally get lost
 
@@ -191,12 +203,62 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
   return PS2_SUCCESS;
 }
 
+void writeToHW(struct Snake *snake[], int dir) {
+	char unused = 0;
+	char segment = 0;
+	char add_remove = 1;
+	char sprite = 1;
+	short x = (short)xCoor;
+	short y = (short)yCoor;
+
+	if(dir == right_dir)
+		sprite = 2;
+	else if(dir == left_dir)
+		sprite = 1;
+	else if(dir == down_dir)
+		sprite = 3;
+	else if(dir == up_dir)
+		sprite = 4;
+
+	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
+
+	WRITE_SPRITE(1,code);
+
+	int code2 = (unused << 28) | (2 << 26) | (1 << 25) | (9 << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
+
+	int code3 = (unused << 28) | (3 << 26) | (0 << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
+
+	//WRITE_SPRITE(1,code2);
+	WRITE_SPRITE(1,code3);
+
+	//0000 00 1 00001 0101111111 0001111111
+	//x and y for new head add
+	//WRITE_SPRITE(1,0x215FC7F); // Add
+	//WRITE_SPRITE(1,0x213FCFF); //Add
+	//WRITE_SPRITE(1,0xC13FCFF); //Remove
+	//WRITE_SPRITE(1,0x813FCFF);
+}
+
+int kb_input(){
+	unsigned char code;
+	int count = 0;
+	while(!IORD_8DIRECT(PS2_BASE, 0) && count <= 1000){
+
+		count++;
+	}
+	if(count >= 1000){
+		return 0;
+	}
+	code = IORD_8DIRECT(PS2_BASE, 4);
+	return code;
+}
+
 int main(){
 	alt_u8 key = 0;
 	/* Initialize the keyboard */
 	printf("Pretty please wait three seconds to initialize keyboard\n");
 	clear_FIFO();
-	switch (get_mode()) {
+	/*switch (get_mode()) {
 		case PS2_KEYBOARD:
 			break;
 		case PS2_MOUSE:
@@ -206,22 +268,22 @@ int main(){
 			printf("Error: Unrecognized or no device on PS/2 port\n");
 			break;
 	}
+	*/
 	//alt_irq_register(PS2_0_IRQ, NULL, (void*)kb_interrupt_handler);
 
-	WRITE_SPRITE(0,0x2137CF0);
-	WRITE_SPRITE(0,0x2137C0F);
+	//WRITE_SPRITE(0,0x2137CF0);
+	//WRITE_SPRITE(0,0x2137C0F);
 
-	struct Snake snake[1200];
+	struct Snake snake[100];
 	initSnake(&snake, xCoor, yCoor);
 	struct Food food[MAX_FOOD];
 	initFood(&food);
 
+	unsigned char code;
 
 	while(1) {
-		status = read_make_code_with_timeout(&decode_mode, &key);
-		 if (status == PS2_SUCCESS && key != 0)
-				printf("key:%c -- %x\n", key, key);
-		movement(key, &snake, &food);
+		code = kb_input();
+		movement(code, &snake, &food);
 	}
 
 

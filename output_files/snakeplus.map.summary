@@ -1,13 +1,13 @@
-Analysis & Synthesis Status : Successful - Mon Apr 15 20:02:10 2013
+Analysis & Synthesis Status : Successful - Tue Apr 16 14:18:40 2013
 Quartus II 32-bit Version : 12.1 Build 177 11/07/2012 SJ Full Version
 Revision Name : snakeplus
 Top-level Entity Name : snakeplus
 Family : Cyclone II
-Total logic elements : 33,389
-    Total combinational functions : 23,475
-    Dedicated logic registers : 10,944
-Total registers : 10944
-Total pins : 95
+Total logic elements : 17,715
+    Total combinational functions : 10,139
+    Dedicated logic registers : 8,655
+Total registers : 8655
+Total pins : 113
 Total virtual pins : 0
 Total memory bits : 11,264
 Embedded Multiplier 9-bit elements : 0

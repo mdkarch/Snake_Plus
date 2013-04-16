@@ -1,5 +1,5 @@
 Flow report for snakeplus
-Mon Apr 15 20:06:55 2013
+Tue Apr 16 14:22:04 2013
 Quartus II 32-bit Version 12.1 Build 177 11/07/2012 SJ Full Version
 
 
@@ -38,18 +38,18 @@ applicable agreement for further details.
 +--------------------------------------------------------------------------------+
 ; Flow Summary                                                                   ;
 +------------------------------------+-------------------------------------------+
-; Flow Status                        ; Successful - Mon Apr 15 20:06:55 2013     ;
+; Flow Status                        ; Successful - Tue Apr 16 14:22:04 2013     ;
 ; Quartus II 32-bit Version          ; 12.1 Build 177 11/07/2012 SJ Full Version ;
 ; Revision Name                      ; snakeplus                                 ;
 ; Top-level Entity Name              ; snakeplus                                 ;
 ; Family                             ; Cyclone II                                ;
 ; Device                             ; EP2C35F672C6                              ;
 ; Timing Models                      ; Final                                     ;
-; Total logic elements               ; 27,359 / 33,216 ( 82 % )                  ;
-;     Total combinational functions  ; 23,479 / 33,216 ( 71 % )                  ;
-;     Dedicated logic registers      ; 10,894 / 33,216 ( 33 % )                  ;
-; Total registers                    ; 10948                                     ;
-; Total pins                         ; 95 / 475 ( 20 % )                         ;
+; Total logic elements               ; 13,713 / 33,216 ( 41 % )                  ;
+;     Total combinational functions  ; 10,158 / 33,216 ( 31 % )                  ;
+;     Dedicated logic registers      ; 8,594 / 33,216 ( 26 % )                   ;
+; Total registers                    ; 8659                                      ;
+; Total pins                         ; 113 / 475 ( 24 % )                        ;
 ; Total virtual pins                 ; 0                                         ;
 ; Total memory bits                  ; 11,264 / 483,840 ( 2 % )                  ;
 ; Embedded Multiplier 9-bit elements ; 0 / 70 ( 0 % )                            ;
@@ -62,7 +62,7 @@ applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 04/15/2013 19:57:26 ;
+; Start date & time ; 04/16/2013 14:14:48 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; snakeplus           ;
 +-------------------+---------------------+
@@ -73,10 +73,9 @@ applicable agreement for further details.
 +-------------------------------------+---------------------------------------+---------------+--------------+----------------+
 ; Assignment Name                     ; Value                                 ; Default Value ; Entity Name  ; Section Id     ;
 +-------------------------------------+---------------------------------------+---------------+--------------+----------------+
-; COMPILER_SIGNATURE_ID               ; 246917495109966.136607024524390       ; --            ; --           ; --             ;
+; COMPILER_SIGNATURE_ID               ; 246917495094638.136613608819103       ; --            ; --           ; --             ;
 ; EDA_OUTPUT_DATA_FORMAT              ; Vhdl                                  ; --            ; --           ; eda_simulation ;
 ; EDA_SIMULATION_TOOL                 ; ModelSim-Altera (VHDL)                ; <None>        ; --           ; --             ;
-; FITTER_EFFORT                       ; Fast Fit                              ; Auto Fit      ; --           ; --             ;
 ; IP_TOOL_ENV                         ; sopc                                  ; --            ; snake_system ; --             ;
 ; IP_TOOL_NAME                        ; sopc                                  ; --            ; snake_system ; --             ;
 ; IP_TOOL_VERSION                     ; 12.1                                  ; --            ; snake_system ; --             ;
@@ -88,7 +87,7 @@ applicable agreement for further details.
 ; POWER_BOARD_THERMAL_MODEL           ; None (CONSERVATIVE)                   ; --            ; --           ; --             ;
 ; POWER_PRESET_COOLING_SOLUTION       ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW ; --            ; --           ; --             ;
 ; PROJECT_OUTPUT_DIRECTORY            ; output_files                          ; --            ; --           ; --             ;
-; SOPC_BUILDER_SIGNATURE_ID           ; Bc305be679a70000013e0fd03c18          ; --            ; --           ; --             ;
+; SOPC_BUILDER_SIGNATURE_ID           ; Bc305be679520000013e14038f9c          ; --            ; --           ; --             ;
 +-------------------------------------+---------------------------------------+---------------+--------------+----------------+
 
 
@@ -97,12 +96,12 @@ applicable agreement for further details.
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis      ; 00:04:37     ; 1.0                     ; 736 MB              ; 00:04:31                           ;
-; Fitter                    ; 00:03:14     ; 1.5                     ; 684 MB              ; 00:04:03                           ;
-; Assembler                 ; 00:00:11     ; 1.0                     ; 367 MB              ; 00:00:07                           ;
-; TimeQuest Timing Analyzer ; 00:00:13     ; 1.0                     ; 498 MB              ; 00:00:12                           ;
-; EDA Netlist Writer        ; 00:00:36     ; 1.0                     ; 466 MB              ; 00:00:27                           ;
-; Total                     ; 00:08:51     ; --                      ; --                  ; 00:09:20                           ;
+; Analysis & Synthesis      ; 00:03:46     ; 1.0                     ; 1071 MB             ; 00:03:39                           ;
+; Fitter                    ; 00:01:50     ; 1.4                     ; 597 MB              ; 00:02:08                           ;
+; Assembler                 ; 00:00:16     ; 1.0                     ; 351 MB              ; 00:00:07                           ;
+; TimeQuest Timing Analyzer ; 00:00:12     ; 1.0                     ; 427 MB              ; 00:00:09                           ;
+; EDA Netlist Writer        ; 00:00:22     ; 1.0                     ; 394 MB              ; 00:00:16                           ;
+; Total                     ; 00:06:26     ; --                      ; --                  ; 00:06:19                           ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
@@ -111,11 +110,11 @@ applicable agreement for further details.
 +---------------------------+------------------+---------+------------+----------------+
 ; Module Name               ; Machine Hostname ; OS Name ; OS Version ; Processor type ;
 +---------------------------+------------------+---------+------------+----------------+
-; Analysis & Synthesis      ; micro17          ; Red Hat ; 5          ; x86_64         ;
-; Fitter                    ; micro17          ; Red Hat ; 5          ; x86_64         ;
-; Assembler                 ; micro17          ; Red Hat ; 5          ; x86_64         ;
-; TimeQuest Timing Analyzer ; micro17          ; Red Hat ; 5          ; x86_64         ;
-; EDA Netlist Writer        ; micro17          ; Red Hat ; 5          ; x86_64         ;
+; Analysis & Synthesis      ; micro11          ; Red Hat ; 5          ; x86_64         ;
+; Fitter                    ; micro11          ; Red Hat ; 5          ; x86_64         ;
+; Assembler                 ; micro11          ; Red Hat ; 5          ; x86_64         ;
+; TimeQuest Timing Analyzer ; micro11          ; Red Hat ; 5          ; x86_64         ;
+; EDA Netlist Writer        ; micro11          ; Red Hat ; 5          ; x86_64         ;
 +---------------------------+------------------+---------+------------+----------------+
 
 

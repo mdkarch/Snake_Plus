@@ -8,13 +8,13 @@ set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "de2_sram_
 set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "sram.vhd"]
 # jtag_uart_0
 # ps2
-# vga
+# de2_vga_controller_0
 set_global_assignment -name TCL_FILE [file join $::quartus(qip_path) "de2_vga_controller_hw.tcl"]
 set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "de2_vga_controller.vhd"]
-set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "vga.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "de2_vga_controller_0.vhd"]
 # null
 set_global_assignment -name SDC_FILE [file join $::quartus(ip_rootpath) "altera/sopc_builder_ip/altera_avalon_clock_adapter/altera_avalon_clock_adapter.sdc"]
-set_global_assignment -name SOPC_BUILDER_SIGNATURE_ID "BC305BE679A70000013E0FD03C18"
+set_global_assignment -name SOPC_BUILDER_SIGNATURE_ID "BC305BE679520000013E14038F9C"
 set_global_assignment -entity "snake_system" -name IP_TOOL_NAME "sopc"
 set_global_assignment -entity "snake_system" -name IP_TOOL_VERSION "12.1"
 set_global_assignment -entity "snake_system" -name IP_TOOL_ENV "sopc"

@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu_0' in SOPC Builder design 'snake_system'
  * SOPC Builder design path: ../../snake_system.sopcinfo
  *
- * Generated: Mon Apr 15 11:51:47 EDT 2013
+ * Generated: Tue Apr 16 14:08:40 EDT 2013
  */
 
 /*
@@ -167,6 +167,20 @@
 
 
 /*
+ * de2_vga_controller_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_de2_vga_controller_0 de2_vga_controller
+#define DE2_VGA_CONTROLLER_0_BASE 0x0
+#define DE2_VGA_CONTROLLER_0_IRQ -1
+#define DE2_VGA_CONTROLLER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define DE2_VGA_CONTROLLER_0_NAME "/dev/de2_vga_controller_0"
+#define DE2_VGA_CONTROLLER_0_SPAN 64
+#define DE2_VGA_CONTROLLER_0_TYPE "de2_vga_controller"
+
+
+/*
  * hal configuration
  *
  */
@@ -220,19 +234,5 @@
 #define SRAM_NAME "/dev/sram"
 #define SRAM_SPAN 524288
 #define SRAM_TYPE "de2_sram_controller"
-
-
-/*
- * vga configuration
- *
- */
-
-#define ALT_MODULE_CLASS_vga de2_vga_controller
-#define VGA_BASE 0x101000
-#define VGA_IRQ -1
-#define VGA_IRQ_INTERRUPT_CONTROLLER_ID -1
-#define VGA_NAME "/dev/vga"
-#define VGA_SPAN 64
-#define VGA_TYPE "de2_vga_controller"
 
 #endif /* __SYSTEM_H_ */

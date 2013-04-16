@@ -286,7 +286,7 @@ begin
 			elsif 	HCount >= HSYNC + HBACK_PORCH - 1 and 
 						HCount <= HSYNC + HBACK_PORCH + HACTIVE - 1 then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
-				if inner_tile_h_pos >= 16 then -- 0-15 should be used
+				if inner_tile_h_pos >= 15 then -- 0-15 should be used
 					inner_tile_h_pos <= 0;
 					tiles_h_pos <= tiles_h_pos + 1;
 				end if;--end inner_tile_h_pos
@@ -308,7 +308,7 @@ begin
 						VCount <= VSYNC + VBACK_PORCH + VACTIVE - 1 and
 						EndOfLine = '1' then
 				inner_tile_v_pos <= inner_tile_v_pos + 1;
-				if inner_tile_v_pos >= 16 then -- 0-15 should be used
+				if inner_tile_v_pos >= 15 then -- 0-15 should be used
 					inner_tile_v_pos <= 0;
 					tiles_v_pos <= tiles_v_pos + 1;
 				end if;--end inner_tile_v_pos

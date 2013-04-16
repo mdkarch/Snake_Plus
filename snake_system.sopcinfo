@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="snake_system" kind="system" version="12.1" fabric="SOPC">
  <!-- Format version 12.1 177 (Future versions may contain additional information.) -->
- <!-- 2013.04.15.18:28:26 -->
+ <!-- 2013.04.16.14:02:58 -->
  <!-- A collection of modules and connections -->
  <parameter name="clockCrossingAdapter">
   <type>com.altera.sopcmodel.ensemble.EClockAdapter</type>
@@ -101,7 +101,7 @@
  </parameter>
  <parameter name="systemHash">
   <type>long</type>
-  <value>-26044189220</value>
+  <value>-25943327986</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -109,7 +109,7 @@
  </parameter>
  <parameter name="timeStamp">
   <type>long</type>
-  <value>1366064797858</value>
+  <value>1366135315671</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -376,9 +376,9 @@ parameters are a RESULT of the module parameters. -->
    </clockDomainMember>
    <clockDomainMember>
     <isBridge>false</isBridge>
-    <moduleName>vga</moduleName>
+    <moduleName>de2_vga_controller_0</moduleName>
     <slaveName>clock</slaveName>
-    <name>vga.clock</name>
+    <name>de2_vga_controller_0.clock</name>
    </clockDomainMember>
   </interface>
   <interface name="clk_reset" kind="reset_source" version="12.1">
@@ -1308,7 +1308,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="dataSlaveMapParam">
    <type>java.lang.String</type>
-   <value><![CDATA[<address-map><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='vga.avalon_slave_0' start='0x101000' end='0x101040' /><slave name='ps2.s1' start='0x101040' end='0x101048' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101048' end='0x101050' /></address-map>]]></value>
+   <value><![CDATA[<address-map><slave name='de2_vga_controller_0.avalon_slave_0' start='0x0' end='0x40' /><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='ps2.s1' start='0x101040' end='0x101048' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101048' end='0x101050' /></address-map>]]></value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -2196,10 +2196,10 @@ parameters are a RESULT of the module parameters. -->
    </memoryBlock>
    <memoryBlock>
     <isBridge>false</isBridge>
-    <moduleName>vga</moduleName>
+    <moduleName>de2_vga_controller_0</moduleName>
     <slaveName>avalon_slave_0</slaveName>
-    <name>vga.avalon_slave_0</name>
-    <baseAddress>1052672</baseAddress>
+    <name>de2_vga_controller_0.avalon_slave_0</name>
+    <baseAddress>0</baseAddress>
     <span>64</span>
    </memoryBlock>
   </interface>
@@ -4561,17 +4561,13 @@ parameters are a RESULT of the module parameters. -->
    </port>
   </interface>
  </module>
- <module name="vga" kind="de2_vga_controller" version="1.0" path="vga">
+ <module
+   name="de2_vga_controller_0"
+   kind="de2_vga_controller"
+   version="1.0"
+   path="de2_vga_controller_0">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
-  <parameter name="AUTO_CLOCK_CLOCK_RATE">
-   <type>java.lang.Long</type>
-   <value>50000000</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>false</visible>
-   <valid>true</valid>
-  </parameter>
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -4622,22 +4618,6 @@ parameters are a RESULT of the module parameters. -->
     <derived>false</derived>
     <enabled>true</enabled>
     <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="clockRateKnown">
-    <type>java.lang.Boolean</type>
-    <value>true</value>
-    <derived>true</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="clockRate">
-    <type>java.lang.Long</type>
-    <value>50000000</value>
-    <derived>true</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
     <valid>true</valid>
    </parameter>
    <type>clock</type>
@@ -5141,6 +5121,12 @@ parameters are a RESULT of the module parameters. -->
     <width>16</width>
     <role>export</role>
    </port>
+   <port>
+    <name>sw</name>
+    <direction>Input</direction>
+    <width>18</width>
+    <role>export</role>
+   </port>
   </interface>
  </module>
  <connection
@@ -5518,11 +5504,11 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>s1</endConnectionPoint>
  </connection>
  <connection
-   name="clk_0.clk/vga.clock"
+   name="clk_0.clk/de2_vga_controller_0.clock"
    kind="clock"
    version="12.1"
    start="clk_0.clk"
-   end="vga.clock">
+   end="de2_vga_controller_0.clock">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -5541,15 +5527,15 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>clk_0</startModule>
   <startConnectionPoint>clk</startConnectionPoint>
-  <endModule>vga</endModule>
+  <endModule>de2_vga_controller_0</endModule>
   <endConnectionPoint>clock</endConnectionPoint>
  </connection>
  <connection
-   name="cpu_0.data_master/vga.avalon_slave_0"
+   name="cpu_0.data_master/de2_vga_controller_0.avalon_slave_0"
    kind="avalon"
    version="12.1"
    start="cpu_0.data_master"
-   end="vga.avalon_slave_0">
+   end="de2_vga_controller_0.avalon_slave_0">
   <parameter name="arbitrationPriority">
    <type>int</type>
    <value>1</value>
@@ -5560,7 +5546,7 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <parameter name="baseAddress">
    <type>java.math.BigInteger</type>
-   <value>0x00101000</value>
+   <value>0x0000</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -5584,65 +5570,9 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>cpu_0</startModule>
   <startConnectionPoint>data_master</startConnectionPoint>
-  <endModule>vga</endModule>
+  <endModule>de2_vga_controller_0</endModule>
   <endConnectionPoint>avalon_slave_0</endConnectionPoint>
  </connection>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>altera_avalon_jtag_uart</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>JTAG UART</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>clock_source</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Clock Output</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>conduit</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Conduit Endpoint</displayName>
-  <version>7.1</version>
- </plugin>
- <plugin>
-  <instanceCount>3</instanceCount>
-  <name>avalon_slave</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Slave</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>2</instanceCount>
-  <name>reset_source</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Output</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>altera_nios2</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>Nios II Processor</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>4</instanceCount>
-  <name>clock</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Clock Connection</displayName>
-  <version>12.1</version>
- </plugin>
  <plugin>
   <instanceCount>2</instanceCount>
   <name>conduit_end</name>
@@ -5652,27 +5582,11 @@ parameters are a RESULT of the module parameters. -->
   <version>12.1</version>
  </plugin>
  <plugin>
-  <instanceCount>1</instanceCount>
-  <name>reset_sink</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Input</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
   <instanceCount>2</instanceCount>
-  <name>avalon_slave</name>
+  <name>reset_source</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Slave</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>clock_source</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>Clock Source</displayName>
+  <displayName>Reset Output</displayName>
   <version>12.1</version>
  </plugin>
  <plugin>
@@ -5685,18 +5599,10 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>de2_vga_controller</name>
+  <name>altera_nios2</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>de2_vga_controller</displayName>
-  <version>1.0</version>
- </plugin>
- <plugin>
-  <instanceCount>7</instanceCount>
-  <name>avalon</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Avalon Memory Mapped Connection</displayName>
+  <displayName>Nios II Processor</displayName>
   <version>12.1</version>
  </plugin>
  <plugin>
@@ -5709,6 +5615,38 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
+  <name>clock_source</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>Clock Source</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>interrupt_receiver</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Interrupt Receiver</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>clock_source</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Output</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>altera_avalon_jtag_uart</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>JTAG UART</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
   <name>nios_custom_instruction_master</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
@@ -5716,27 +5654,11 @@ parameters are a RESULT of the module parameters. -->
   <version>12.1</version>
  </plugin>
  <plugin>
-  <instanceCount>1</instanceCount>
-  <name>interrupt</name>
+  <instanceCount>7</instanceCount>
+  <name>avalon</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Interrupt Connection</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>clock_sink</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Clock Input</displayName>
-  <version>12.1</version>
- </plugin>
- <plugin>
-  <instanceCount>2</instanceCount>
-  <name>avalon_master</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Master</displayName>
+  <displayName>Avalon Memory Mapped Connection</displayName>
   <version>12.1</version>
  </plugin>
  <plugin>
@@ -5749,10 +5671,50 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>interrupt_receiver</name>
+  <name>interrupt</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IConnection</subtype>
+  <displayName>Interrupt Connection</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>de2_vga_controller</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>de2_vga_controller</displayName>
+  <version>1.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>3</instanceCount>
+  <name>avalon_slave</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Interrupt Receiver</displayName>
+  <displayName>Avalon Memory Mapped Slave</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>conduit</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Conduit Endpoint</displayName>
+  <version>7.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>2</instanceCount>
+  <name>avalon_master</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Memory Mapped Master</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>4</instanceCount>
+  <name>clock</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IConnection</subtype>
+  <displayName>Clock Connection</displayName>
   <version>12.1</version>
  </plugin>
  <plugin>
@@ -5764,6 +5726,14 @@ parameters are a RESULT of the module parameters. -->
   <version>1.0</version>
  </plugin>
  <plugin>
+  <instanceCount>1</instanceCount>
+  <name>clock_sink</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Input</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
   <instanceCount>3</instanceCount>
   <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
@@ -5771,6 +5741,22 @@ parameters are a RESULT of the module parameters. -->
   <displayName>Reset Input</displayName>
   <version>12.1</version>
  </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>reset_sink</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Reset Input</displayName>
+  <version>12.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>2</instanceCount>
+  <name>avalon_slave</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Memory Mapped Slave</displayName>
+  <version>12.1</version>
+ </plugin>
  <reportVersion>12.1 177</reportVersion>
- <uniqueIdentifier>BC305BE679A70000013E0FCE93C0</uniqueIdentifier>
+ <uniqueIdentifier>BC305BE679520000013E1401924A</uniqueIdentifier>
 </EnsembleReport>

@@ -31,12 +31,17 @@ void initSnake(struct Snake *snake[], int xCoord, int yCoord){
 	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
 	//printf("IN INIT x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
 
-	snake[tail]->xCoord = 8;
-	snake[tail]->yCoord = 8;
+	snake[tail]->xCoord = snake[0]->xCoord - SNAKE_SIZE;//8;
+	snake[tail]->yCoord = snake[0]->yCoord;//8;
 	snake[tail]->enable = 1;
 	int i;
 	for(i = 2; i < SNAKE_SIZE; i++){
 		snake[i]->enable = 0;
+	}
+
+	// print snake - for testing
+	for(i = 0; i < SNAKE_SIZE; i++){
+		printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
 	}
 }
 
@@ -101,6 +106,12 @@ void updateSnake(struct Snake *snake[], int xCoord, int yCoord){
 	updateBody(snake);
 	snake[0]->xCoord = xCoord;
 	snake[0]->yCoord = yCoord;
+
+	// print snake - for testing
+	int i;
+	for(i = 0; i < SNAKE_SIZE; i++){
+		printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
+	}
 }
 
 

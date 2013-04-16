@@ -8,11 +8,6 @@
 #define WRITE_SPRITE(select,data) \
 IOWR_32DIRECT(VGA_BASE, select * 2, data)
 
-
-#define LEFT_BOUND	0
-#define RIGHT_BOUND	640
-#define TOP_BOUND	480
-#define BOT_BOUND	0
 #define LENGTH		1200
 #define MAX_FOOD	1
 #define col_offset  14

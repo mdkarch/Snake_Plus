@@ -96,17 +96,38 @@ architecture rtl of de2_vga_raster is
 		-- sprites
 	type array_type_16x16 is array (0 to 15) of unsigned (0 to 15);
 	
-	-- snake head colorings
+-- snake head right facing colorings
 	signal sprite_snake_head_g 	: array_type_16x16;
 	signal sprite_snake_head_r 	: array_type_16x16;
 	signal sprite_snake_head_w 	: array_type_16x16;
 	signal sprite_snake_head_b 	: array_type_16x16;
+	
+	-- snake head left facing colorings
+	signal sprite_snake_head_g_left 	: array_type_16x16;
+	signal sprite_snake_head_r_left 	: array_type_16x16;
+	signal sprite_snake_head_w_left 	: array_type_16x16;
+	signal sprite_snake_head_b_left 	: array_type_16x16;
+	
+	-- snake head upwards facing colorings
+	signal sprite_snake_head_g_up 	: array_type_16x16;
+	signal sprite_snake_head_r_up  	: array_type_16x16;
+	signal sprite_snake_head_w_up  	: array_type_16x16;
+	signal sprite_snake_head_b_up  	: array_type_16x16;
+	
+	-- snake head downward facing colorings
+	signal sprite_snake_head_g_down 	: array_type_16x16;
+	signal sprite_snake_head_r_down 	: array_type_16x16;
+	signal sprite_snake_head_w_down 	: array_type_16x16;
+	signal sprite_snake_head_b_down 	: array_type_16x16;
 
 	-- snake body colorings
 	signal sprite_snake_body	: array_type_16x16;
 	
-	-- snake tail colorings
-	signal sprite_snake_tail	: array_type_16x16;
+-- snake tail colorings
+	signal sprite_snake_tail		: array_type_16x16;
+	signal sprite_snake_tail_left	: array_type_16x16;
+	signal sprite_snake_tail_up	: array_type_16x16;
+	signal sprite_snake_tail_down	: array_type_16x16;
 	
 	-- rabbit colorings
 	signal sprite_food_rabbit_y	: array_type_16x16;
@@ -392,6 +413,39 @@ begin
 						 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
 							snake_head_w <= '1';
 						 end if; -- end sprite snake head
+						 
+					elsif orient = SNAKE_HEAD_LEFT then
+							if sprite_snake_head_g_left(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_g <= '1';
+							elsif sprite_snake_head_b_left(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_b <= '1';
+							elsif sprite_snake_head_r_left(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_r <= '1';
+							elsif sprite_snake_head_w_left(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_w <= '1';
+							end if; -- end sprite snake head
+						
+					elsif orient = SNAKE_HEAD_UP then
+							if sprite_snake_head_g_up(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_g <= '1';
+							elsif sprite_snake_head_b_up(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_b <= '1';
+							elsif sprite_snake_head_r_up(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_r <= '1';
+							elsif sprite_snake_head_w_up(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_w <= '1';
+							end if; -- end sprite snake head						
+						
+					elsif orient = SNAKE_HEAD_DOWN then
+							if sprite_snake_head_g_down(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_g <= '1';
+							elsif sprite_snake_head_b_down(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_b <= '1';
+							elsif sprite_snake_head_r_down(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_r <= '1';
+							elsif sprite_snake_head_w_down(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_w <= '1';
+							end if; -- end sprite snake head
 					
 					elsif orient = SNAKE_BODY_SELECT then 
 						 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
@@ -446,9 +500,22 @@ begin
 							 if sprite_snake_tail(sprite_v_pos)(sprite_h_pos) = '1' then
 								snake_tail <= '1';
 							 end if; -- end sprite snake head
+							 
+						elsif orient = SNAKE_TAIL_LEFT then
+							 if sprite_snake_tail_left(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_tail <= '1';
+							 end if; -- end sprite snake head
+						
+						elsif orient = SNAKE_TAIL_UP then
+							 if sprite_snake_tail_up(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_tail <= '1';
+							 end if; -- end sprite snake head
+						
+						elsif orient = SNAKE_TAIL_DOWN then
+							 if sprite_snake_tail_down(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_tail <= '1';
+							 end if; -- end sprite snake
 						end if; -- orient
-					
-					 -- PUT IN OTHER THREE DIRECTIONS
 
 				else
 					snake_tail <= '0';
@@ -1076,6 +1143,222 @@ begin
   sprite_snake_head_b(14) 	  	 	<=	"0000000000000000";
   sprite_snake_head_b(15) 	  	 	<=	"0000000000000000";
   
+  	-- sprite snake head left facing coloring
+  sprite_snake_head_g_left(0) 			<=	"0000000011110000";
+  sprite_snake_head_g_left(1) 			<=	"0000001111111000";
+  sprite_snake_head_g_left(2)				<= "0000111111111100";
+  sprite_snake_head_g_left(3) 			<=	"0001111111111110";
+  sprite_snake_head_g_left(4) 			<=	"0011111111111110";
+  sprite_snake_head_g_left(5) 			<=	"0011111100011111";
+  sprite_snake_head_g_left(6) 			<=	"0111111100011111";
+  sprite_snake_head_g_left(7) 			<=	"0011111100011111";
+  sprite_snake_head_g_left(8) 			<=	"0000011111111111";
+  sprite_snake_head_g_left(9) 			<=	"0000011111111111";
+  sprite_snake_head_g_left(10) 			<=	"0011111111111111";
+  sprite_snake_head_g_left(11) 			<=	"0111111111111110";
+  sprite_snake_head_g_left(12) 	   	<=	"0001111111111110";
+  sprite_snake_head_g_left(13) 	   	<=	"0000111111111100";
+  sprite_snake_head_g_left(14) 	   	<=	"0000001111111000";
+  sprite_snake_head_g_left(15) 	   	<=	"0000000011110000";
+  
+  -- sprite snake head left facing tongue coloring
+  sprite_snake_head_r_left(0) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(1) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(2) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(3) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(4) 	  		<=	"0000000000000000";
+  sprite_snake_head_r_left(5) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(6) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(7) 			<=	"1100000000000000";
+  sprite_snake_head_r_left(8) 			<=	"0111100000000000";
+  sprite_snake_head_r_left(9) 			<=	"0111100000000000";
+  sprite_snake_head_r_left(10) 			<=	"1100000000000000";
+  sprite_snake_head_r_left(11) 			<=	"0000000000000000";
+  sprite_snake_head_r_left(12) 	   	<=	"0000000000000000";
+  sprite_snake_head_r_left(13) 	   	<=	"0000000000000000";
+  sprite_snake_head_r_left(14) 	   	<=	"0000000000000000";
+  sprite_snake_head_r_left(15) 	  	 	<= "0000000000000000";
+  
+  -- sprite snake head left facing eye white coloring
+  sprite_snake_head_w_left(0) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(1) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(2) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(3) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(4) 			<= "0000000000000000";
+  sprite_snake_head_w_left(5) 			<=	"0000000011100000";
+  sprite_snake_head_w_left(6) 			<=	"0000000000100000";
+  sprite_snake_head_w_left(7) 			<=	"0000000000100000";
+  sprite_snake_head_w_left(8) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(9) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(10) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(11) 			<=	"0000000000000000";
+  sprite_snake_head_w_left(12) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_left(13) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_left(14) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_left(15) 	  	 	<=	"0000000000000000";
+  
+    -- sprite snake head left facing eye black coloring
+  sprite_snake_head_b_left(0) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(1) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(2) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(3) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(4) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(5) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(6) 			<=	"0000000011000000";
+  sprite_snake_head_b_left(7) 			<=	"0000000011000000";
+  sprite_snake_head_b_left(8) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(9) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(10) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(11) 			<=	"0000000000000000";
+  sprite_snake_head_b_left(12) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_left(13) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_left(14) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_left(15) 	  	 	<=	"0000000000000000";
+  
+    	-- sprite snake head upwards facing coloring
+  sprite_snake_head_g_up(0) 			<=	"0000000000000000";
+  sprite_snake_head_g_up(1) 			<=	"0000001000010000";
+  sprite_snake_head_g_up(2) 			<=	"0000111100110000";
+  sprite_snake_head_g_up(3) 			<=	"0001111100111000";
+  sprite_snake_head_g_up(4) 			<=	"0011111100111100";
+  sprite_snake_head_g_up(5) 			<=	"0011111111111100";
+  sprite_snake_head_g_up(6) 			<=	"0111111111111110";
+  sprite_snake_head_g_up(7) 			<=	"0111111111111110";
+  sprite_snake_head_g_up(8) 			<=	"1111100011111111";
+  sprite_snake_head_g_up(9) 			<=	"1111100011111111";
+  sprite_snake_head_g_up(10) 			<=	"1111100011111111";
+  sprite_snake_head_g_up(11) 			<=	"1111111111111111";
+  sprite_snake_head_g_up(12) 	   	<=	"0111111111111110";
+  sprite_snake_head_g_up(13) 	   	<=	"0011111111111100";
+  sprite_snake_head_g_up(14) 	   	<=	"0001111111111000";
+  sprite_snake_head_g_up(15) 	   	<=	"0000011111100000";
+  
+  -- sprite snake head upwards facing tongue coloring
+  sprite_snake_head_r_up(0) 			<=	"0000000100100000";
+  sprite_snake_head_r_up(1) 			<=	"0000000111100000";
+  sprite_snake_head_r_up(2) 			<=	"0000000011000000";
+  sprite_snake_head_r_up(3) 			<=	"0000000011000000";
+  sprite_snake_head_r_up(4) 	  		<=	"0000000011000000";
+  sprite_snake_head_r_up(5) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(6) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(7) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(8) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(9) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(10) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(11) 			<=	"0000000000000000";
+  sprite_snake_head_r_up(12) 	   	<=	"0000000000000000";
+  sprite_snake_head_r_up(13) 	   	<=	"0000000000000000";
+  sprite_snake_head_r_up(14) 	   	<=	"0000000000000000";
+  sprite_snake_head_r_up(15) 	  	 	<= "0000000000000000";
+  
+  -- sprite snake head upwards facing eye white coloring
+  sprite_snake_head_w_up(0) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(1) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(2) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(3) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(4) 			<= "0000000000000000";
+  sprite_snake_head_w_up(5) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(6) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(7) 			<=	"0000010000000000";
+  sprite_snake_head_w_up(8) 			<=	"0000010000000000";
+  sprite_snake_head_w_up(9) 			<=	"0000011100000000";
+  sprite_snake_head_w_up(10) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(11) 			<=	"0000000000000000";
+  sprite_snake_head_w_up(12) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_up(13) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_up(14) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_up(15) 	  	 	<=	"0000000000000000";
+  
+    -- sprite snake head upwards facing eye black coloring
+  sprite_snake_head_b_up(0) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(1) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(2) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(3) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(4) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(5) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(6) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(7) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(8) 			<=	"0000001100000000";
+  sprite_snake_head_b_up(9) 			<=	"0000001100000000";
+  sprite_snake_head_b_up(10) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(11) 			<=	"0000000000000000";
+  sprite_snake_head_b_up(12) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_up(13) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_up(14) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_up(15) 	  	 	<=	"0000000000000000";
+  
+      	-- sprite snake head downwards facing coloring
+  sprite_snake_head_g_down(0) 			<=	"0000011111100000";
+  sprite_snake_head_g_down(1) 			<=	"0001111111111000";
+  sprite_snake_head_g_down(2) 			<=	"0011111111111100";
+  sprite_snake_head_g_down(3) 			<=	"0111111111111110";
+  sprite_snake_head_g_down(4) 			<=	"1111111111111111";
+  sprite_snake_head_g_down(5) 			<=	"1111100011111111";
+  sprite_snake_head_g_down(6) 			<=	"1111100011111111";
+  sprite_snake_head_g_down(7) 			<=	"1111100011111111";
+  sprite_snake_head_g_down(8) 			<=	"0111111111111110";
+  sprite_snake_head_g_down(9) 			<=	"0111111111111110";
+  sprite_snake_head_g_down(10) 			<=	"0011111111111100";
+  sprite_snake_head_g_down(11) 			<=	"0011111100111100";
+  sprite_snake_head_g_down(12) 	   	<=	"0001111100111000";
+  sprite_snake_head_g_down(13) 	   	<=	"0000111100110000";
+  sprite_snake_head_g_down(14) 	   	<=	"0000001000010000";
+  sprite_snake_head_g_down(15) 	   	<=	"0000000000000000";
+  
+  -- sprite snake head downwards facing tongue coloring
+  sprite_snake_head_r_down(0) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(1) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(2) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(3) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(4) 	  		<=	"0000000000000000";
+  sprite_snake_head_r_down(5) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(6) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(7) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(8) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(9) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(10) 			<=	"0000000000000000";
+  sprite_snake_head_r_down(11) 			<=	"0000001100000000";
+  sprite_snake_head_r_down(12) 	   	<=	"0000001100000000";
+  sprite_snake_head_r_down(13) 	   	<=	"0000001100000000";
+  sprite_snake_head_r_down(14) 	   	<=	"0000011110000000";
+  sprite_snake_head_r_down(15) 	  	 	<= "0000010010000000";
+  
+  -- sprite snake head downwards facing eye white coloring
+  sprite_snake_head_w_down(0) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(1) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(2) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(3) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(4) 			<= "0000000000000000";
+  sprite_snake_head_w_down(5) 			<=	"0000011100000000";
+  sprite_snake_head_w_down(6) 			<=	"0000000100000000";
+  sprite_snake_head_w_down(7) 			<=	"0000000100000000";
+  sprite_snake_head_w_down(8) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(9) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(10) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(11) 			<=	"0000000000000000";
+  sprite_snake_head_w_down(12) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_down(13) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_down(14) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_w_down(15) 	  	 	<=	"0000000000000000";
+  
+    -- sprite snake head downwards facing eye black coloring
+  sprite_snake_head_b_down(0) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(1) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(2) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(3) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(4) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(5) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(6) 			<=	"0000011000000000";
+  sprite_snake_head_b_down(7) 			<=	"0000011000000000";
+  sprite_snake_head_b_down(8) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(9) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(10) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(11) 			<=	"0000000000000000";
+  sprite_snake_head_b_down(12) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_down(13) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_down(14) 	  	 	<=	"0000000000000000";
+  sprite_snake_head_b_down(15) 	  	 	<=	"0000000000000000";
+  
     -- sprite snake body coloring
   sprite_snake_body(0) 			<=	"0000111111110000";
   sprite_snake_body(1) 			<=	"0001111111111000";
@@ -1111,6 +1394,60 @@ begin
   sprite_snake_tail(13) 	   <=	"0000001111111100";
   sprite_snake_tail(14) 	   <=	"0000000011111000";
   sprite_snake_tail(15) 	   <=	"0000000000110000";
+  
+   -- sprite snake tail left facing coloring
+  sprite_snake_tail_left(0) 			<=	"0000110000000000";
+  sprite_snake_tail_left(1) 			<=	"0001111100000000";
+  sprite_snake_tail_left(2) 			<=	"0011111111000000";
+  sprite_snake_tail_left(3) 			<=	"0011111111110000";
+  sprite_snake_tail_left(4) 			<=	"0111111111111000";
+  sprite_snake_tail_left(5) 			<=	"0111111111111100";
+  sprite_snake_tail_left(6) 			<=	"1111111111111110";
+  sprite_snake_tail_left(7) 			<=	"1111111111111111";
+  sprite_snake_tail_left(8) 			<=	"1111111111111111";
+  sprite_snake_tail_left(9) 			<=	"1111111111111110";
+  sprite_snake_tail_left(10) 			<=	"0111111111111100";
+  sprite_snake_tail_left(11) 			<=	"0111111111111000";
+  sprite_snake_tail_left(12) 	 	  	<=	"0011111111110000";
+  sprite_snake_tail_left(13) 	  	 	<=	"0011111111000000";
+  sprite_snake_tail_left(14) 	 	  	<=	"0001111100000000";
+  sprite_snake_tail_left(15) 	  	 	<=	"0000110000000000";
+  
+    -- sprite snake tail upwards facing coloring
+  sprite_snake_tail_up(0) 			<=	"0000001111000000";
+  sprite_snake_tail_up(1) 			<=	"0000111111110000";
+  sprite_snake_tail_up(2) 			<=	"0011111111111100";
+  sprite_snake_tail_up(3) 			<=	"0111111111111110";
+  sprite_snake_tail_up(4) 			<=	"1111111111111111";
+  sprite_snake_tail_up(5) 			<=	"1111111111111111";
+  sprite_snake_tail_up(6) 			<=	"0111111111111110";
+  sprite_snake_tail_up(7) 			<=	"0111111111111110";
+  sprite_snake_tail_up(8) 			<=	"0011111111111100";
+  sprite_snake_tail_up(9) 			<=	"0011111111111100";
+  sprite_snake_tail_up(10) 		<=	"0001111111111000";
+  sprite_snake_tail_up(11) 		<=	"0001111111111000";
+  sprite_snake_tail_up(12) 	   <=	"0000111111110000";
+  sprite_snake_tail_up(13) 	   <=	"0000011111100000";
+  sprite_snake_tail_up(14) 	   <=	"0000001111000000";
+  sprite_snake_tail_up(15) 	   <=	"0000000110000000";
+  
+    -- sprite snake tail downwards facing coloring
+  sprite_snake_tail_down(0) 			<=	"0000000110000000";
+  sprite_snake_tail_down(1) 			<=	"0000001111000000";
+  sprite_snake_tail_down(2) 			<=	"0000011111100000";
+  sprite_snake_tail_down(3) 			<=	"0000111111110000";
+  sprite_snake_tail_down(4) 			<=	"0001111111111000";
+  sprite_snake_tail_down(5) 			<=	"0001111111111000";
+  sprite_snake_tail_down(6) 			<=	"0011111111111100";
+  sprite_snake_tail_down(7) 			<=	"0011111111111100";
+  sprite_snake_tail_down(8) 			<=	"0111111111111110";
+  sprite_snake_tail_down(9) 			<=	"0111111111111110";
+  sprite_snake_tail_down(10) 			<=	"1111111111111111";
+  sprite_snake_tail_down(11) 			<=	"1111111111111111";
+  sprite_snake_tail_down(12) 	   	<=	"0111111111111110";
+  sprite_snake_tail_down(13) 	   	<=	"0011111111111100";
+  sprite_snake_tail_down(14) 	   	<=	"0000111111110000";
+  sprite_snake_tail_down(15) 	   	<=	"0000001111000000";
   
   -- sprite rabbit gray body coloring
   sprite_food_rabbit_y(0) 		<=	"0000100000010000";

@@ -1,0 +1,87 @@
+m255
+K3
+13
+cModel Technology
+Z0 d/home/user3/spring13/ie2147/Desktop/NES_FSM/simulation/modelsim
+Econtroller
+Z1 w1366319015
+Z2 DPx4 ieee 15 std_logic_arith 0 22 4`Y?g_lkdn;7UL9IiJck01
+Z3 DPx4 ieee 16 vital_primitives 0 22 9W@YP9_VCb?_GCJ8e:;YQ0
+Z4 DPx9 cycloneii 19 cycloneii_atom_pack 0 22 io]W;SE]b]IhC:3fS:^Jk3
+Z5 DPx4 ieee 12 vital_timing 0 22 7h8zz2S4HVg:a;2TBMI[j1
+Z6 DPx3 std 6 textio 0 22 5>J:;AW>W0[[dW0I6EN1Q0
+Z7 DPx4 ieee 14 std_logic_1164 0 22 5=aWaoGZSMWIcH0i^f`XF1
+Z8 DPx9 cycloneii 20 cycloneii_components 0 22 Sl@YIgSLed5Y_B]n4g_T=3
+Z9 d/home/user3/spring13/ie2147/Desktop/NES_FSM/simulation/modelsim
+Z10 8NES_FSM.vho
+Z11 FNES_FSM.vho
+l0
+L37
+V]31BBKQD7YXI5XHkCAn9n3
+Z12 OV;C;10.1b;51
+31
+Z13 !s108 1366319046.428639
+Z14 !s90 -reportprogress|300|-93|-work|work|NES_FSM.vho|
+Z15 !s107 NES_FSM.vho|
+Z16 o-93 -work work -O0
+Z17 tExplicit 1
+!s100 8LVoCPf5FL=`XO`9>OI1N1
+!i10b 1
+Astructure
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+DEx4 work 10 controller 0 22 ]31BBKQD7YXI5XHkCAn9n3
+l414
+L103
+VJn]PPYfbd55bcEBbkEBSd0
+R12
+31
+R13
+R14
+R15
+R16
+R17
+!s100 hg1T29^]4B9mP>bgb`3050
+!i10b 1
+Econtroller_tb
+Z18 w1366312802
+Z19 DPx4 ieee 11 numeric_std 0 22 O3PF8EB`?j9=z7KT`fn941
+R6
+R7
+R9
+Z20 8/home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd
+Z21 F/home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd
+l0
+L5
+VTV_H970Y4zhi_CHJD63TM1
+!s100 I=bciD^GVAK1ULe2;cLbB1
+R12
+31
+!i10b 1
+Z22 !s108 1366319046.946793
+Z23 !s90 -reportprogress|300|-93|-work|work|/home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd|
+Z24 !s107 /home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd|
+R16
+R17
+Aa1
+R19
+R6
+R7
+DEx4 work 13 controller_tb 0 22 TV_H970Y4zhi_CHJD63TM1
+l29
+L8
+VFg5<UHU5j?P9VYTce:o:=0
+!s100 ^f=k22`N95dYDL>CTN0]Y0
+R12
+31
+!i10b 1
+R22
+R23
+R24
+R16
+R17

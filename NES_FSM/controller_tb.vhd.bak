@@ -1,0 +1,49 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity controller_tb is
+end controller_tb;
+
+architecture a1 of controller_tb is
+
+component controller is 
+	port (
+		clk	: in std_logic;
+		latch	: out std_logic;
+		pulse	: out std_logic;
+		data	: in std_logic;
+		leds	: out std_logic_vector(15 downto 0)
+	);
+end component;
+
+signal clk 	: std_logic  := '0';
+signal latch : std_logic;
+signal pulse : std_logic;
+signal data : std_logic;
+signal leds : std_logic_vector(15 downto 0);
+
+
+begin
+
+	UTB : lab1 port map( 
+		clk => clk,
+		latch => latch,
+		pulse => pulse,
+		data => data,
+		leds => leds
+		);
+			
+		clock <= not clock after 10ns;
+		
+		process
+		begin
+			
+
+			wait;
+		end process;
+
+end a1;
+
+
+	

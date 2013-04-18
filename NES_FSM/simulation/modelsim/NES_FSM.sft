@@ -1,0 +1,5 @@
+set tool_name "ModelSim-Altera (VHDL)"
+set corner_file_list {
+	{{"Slow Model"} {NES_FSM.vho NES_FSM_vhd.sdo}}
+	{{"Fast Model"} {NES_FSM_fast.vho NES_FSM_vhd_fast.sdo}}
+}

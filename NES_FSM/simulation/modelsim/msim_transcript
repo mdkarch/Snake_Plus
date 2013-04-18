@@ -1,0 +1,211 @@
+# do NES_FSM_run_msim_gate_vhdl.do 
+# if {[file exists gate_work]} {
+# 	vdel -lib gate_work -all
+# }
+# vlib gate_work
+# vmap work gate_work
+# Copying /opt/altera/altera12.1/modelsim/modelsim_ae/linuxaloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# ** Warning: Copied /opt/altera/altera12.1/modelsim/modelsim_ae/linuxaloem/../modelsim.ini to modelsim.ini.
+#          Updated modelsim.ini.
+# 
+# vcom -93 -work work {NES_FSM.vho}
+# Model Technology ModelSim ALTERA vcom 10.1b Compiler 2012.04 Apr 27 2012
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package VITAL_Timing
+# -- Loading package VITAL_Primitives
+# -- Loading package cycloneii_atom_pack
+# -- Loading package cycloneii_components
+# -- Loading package std_logic_arith
+# -- Compiling entity controller
+# -- Compiling architecture structure of controller
+# 
+# vcom -93 -work work {/home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd}
+# Model Technology ModelSim ALTERA vcom 10.1b Compiler 2012.04 Apr 27 2012
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity controller_tb
+# -- Compiling architecture a1 of controller_tb
+# ** Warning: [4] /home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd(40): (vcom-1207) An abstract literal and an identifier must have a separator between them.
+# 
+# vsim -t 1ps +transport_int_delays +transport_path_delays -sdftyp /UTB=NES_FSM_vhd.sdo -L cycloneii -L gate_work -L work -voptargs="+acc"  controller_tb
+# vsim +transport_int_delays +transport_path_delays -L cycloneii -L gate_work -L work -voptargs=\"+acc\" -sdftyp /UTB=NES_FSM_vhd.sdo -t 1ps controller_tb 
+# //  ModelSim ALTERA 10.1b Apr 27 2012 Linux 2.6.18-274.3.1.el5
+# //
+# //  Copyright 1991-2012 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND PROPRIETARY INFORMATION
+# //  WHICH IS THE PROPERTY OF MENTOR GRAPHICS CORPORATION OR ITS
+# //  LICENSORS AND IS SUBJECT TO LICENSE TERMS.
+# //
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.controller_tb(a1)
+# SDF 10.1b Compiler 2012.04 Apr 27 2012
+# Loading ieee.vital_timing(body)
+# Loading ieee.vital_primitives(body)
+# Loading cycloneii.cycloneii_atom_pack(body)
+# Loading cycloneii.cycloneii_components
+# Loading ieee.std_logic_arith(body)
+# Loading work.controller(structure)
+# Loading cycloneii.cycloneii_lcell_ff(vital_lcell_ff)
+# Loading cycloneii.cycloneii_and1(altvital)
+# Loading cycloneii.cycloneii_lcell_comb(vital_lcell_comb)
+# Loading cycloneii.cycloneii_io(structure)
+# Loading cycloneii.cycloneii_mux21(altvital)
+# Loading cycloneii.cycloneii_dffe(behave)
+# Loading cycloneii.cycloneii_asynch_io(behave)
+# Loading cycloneii.cycloneii_clkctrl(vital_clkctrl)
+# Loading cycloneii.cycloneii_ena_reg(behave)
+# Loading instances from NES_FSM_vhd.sdo
+# Loading timing data from NES_FSM_vhd.sdo
+# ** Note: (vsim-3587) SDF Backannotation Successfully Completed.
+#    Time: 0 ps  Iteration: 0  Instance: /controller_tb File: /home/user3/spring13/ie2147/Desktop/NES_FSM/controller_tb.vhd
+# 
+# add wave *
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run 10 ms
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 0 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 1  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 0 ps  Iteration: 1  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 3  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 0 ps  Iteration: 3  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3392 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3392 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3394 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3394 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3404 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3404 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3412 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3412 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3413 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3413 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3420 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3420 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3422 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3422 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3439 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3439 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3440 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3440 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3648 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3648 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3651 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3651 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3654 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3654 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3660 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3660 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3666 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3666 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3673 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3673 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3696 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3696 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3881 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3881 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3882 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3882 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3884 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3884 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3885 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3885 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3892 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3892 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3895 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3895 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3903 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3903 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3906 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3906 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER(UNSIGNED) input array has 32 bits and MSB is not zero.
+#    Time: 3907 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3907 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3907 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER(UNSIGNED) input array has 32 bits and MSB is not zero.
+#    Time: 3912 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3912 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3912 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER(UNSIGNED) input array has 32 bits and MSB is not zero.
+#    Time: 3930 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 3930 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 3930 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER(UNSIGNED) input array has 32 bits and MSB is not zero.
+#    Time: 4098 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 4098 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, and it has been converted to 0.
+#    Time: 4098 ps  Iteration: 0  Instance: /controller_tb/UTB
+# ** Warning: CONV_INTEGER(UNSIGNED) input array has 32 bits and MSB is not zero.
+#    Time: 4145 ps  Iteration: 0  Instance: /controller_tb/UTB

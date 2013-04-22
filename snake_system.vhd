@@ -424,24 +424,29 @@ entity cpu_0_data_master_arbitrator is
               -- inputs:
                  signal clk : IN STD_LOGIC;
                  signal cpu_0_data_master_address : IN STD_LOGIC_VECTOR (20 DOWNTO 0);
+                 signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
                  signal cpu_0_data_master_byteenable_sram_avalon_slave_0 : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
                  signal cpu_0_data_master_granted_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                 signal cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_granted_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_granted_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                  signal cpu_0_data_master_granted_ps2_s1 : IN STD_LOGIC;
                  signal cpu_0_data_master_granted_sram_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                 signal cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                  signal cpu_0_data_master_qualified_request_ps2_s1 : IN STD_LOGIC;
                  signal cpu_0_data_master_qualified_request_sram_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_read : IN STD_LOGIC;
                  signal cpu_0_data_master_read_data_valid_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                 signal cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_read_data_valid_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_read_data_valid_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                  signal cpu_0_data_master_read_data_valid_ps2_s1 : IN STD_LOGIC;
                  signal cpu_0_data_master_read_data_valid_sram_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_requests_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                 signal cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                  signal cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                  signal cpu_0_data_master_requests_ps2_s1 : IN STD_LOGIC;
@@ -450,10 +455,12 @@ entity cpu_0_data_master_arbitrator is
                  signal cpu_0_data_master_writedata : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
                  signal cpu_0_jtag_debug_module_readdata_from_sa : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
                  signal d1_cpu_0_jtag_debug_module_end_xfer : IN STD_LOGIC;
+                 signal d1_de2_audio_0_avalon_slave_0_end_xfer : IN STD_LOGIC;
                  signal d1_de2_vga_controller_0_avalon_slave_0_end_xfer : IN STD_LOGIC;
                  signal d1_jtag_uart_0_avalon_jtag_slave_end_xfer : IN STD_LOGIC;
                  signal d1_ps2_s1_end_xfer : IN STD_LOGIC;
                  signal d1_sram_avalon_slave_0_end_xfer : IN STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_readdata_from_sa : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
                  signal de2_vga_controller_0_avalon_slave_0_readdata_from_sa : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
                  signal jtag_uart_0_avalon_jtag_slave_irq_from_sa : IN STD_LOGIC;
                  signal jtag_uart_0_avalon_jtag_slave_readdata_from_sa : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -496,15 +503,15 @@ architecture europa of cpu_0_data_master_arbitrator is
 begin
 
   --r_0 master_run cascaded wait assignment, which is an e_assign
-  r_0 <= Vector_To_Std_Logic((((((((((((((((((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_requests_cpu_0_jtag_debug_module)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_granted_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_read)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_write)))) OR ((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 OR NOT cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 OR NOT cpu_0_data_master_read)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 OR NOT cpu_0_data_master_write)))) OR ((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave OR NOT cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT jtag_uart_0_avalon_jtag_slave_waitrequest_from_sa)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT jtag_uart_0_avalon_jtag_slave_waitrequest_from_sa)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_ps2_s1 OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_ps2_s1 OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((((cpu_0_data_master_qualified_request_sram_avalon_slave_0 OR (((cpu_0_data_master_write AND NOT(or_reduce(cpu_0_data_master_byteenable_sram_avalon_slave_0))) AND internal_cpu_0_data_master_dbs_address(1)))) OR NOT cpu_0_data_master_requests_sram_avalon_slave_0)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_granted_sram_avalon_slave_0 OR NOT cpu_0_data_master_qualified_request_sram_avalon_slave_0)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_data_master_read)))) OR ((((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))));
+  r_0 <= Vector_To_Std_Logic((((((((((((((((((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_requests_cpu_0_jtag_debug_module)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_granted_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_read)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_data_master_write)))) OR ((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((((cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 OR (((cpu_0_data_master_write AND NOT(or_reduce(cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0))) AND internal_cpu_0_data_master_dbs_address(1)))) OR NOT cpu_0_data_master_requests_de2_audio_0_avalon_slave_0)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 OR NOT cpu_0_data_master_read)))) OR ((((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 OR NOT cpu_0_data_master_write)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 OR NOT cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 OR NOT cpu_0_data_master_read)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 OR NOT cpu_0_data_master_write)))) OR ((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave OR NOT cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT jtag_uart_0_avalon_jtag_slave_waitrequest_from_sa)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT jtag_uart_0_avalon_jtag_slave_waitrequest_from_sa)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_ps2_s1 OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_ps2_s1 OR NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))))) OR (((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_read OR cpu_0_data_master_write)))))))))));
   --cascaded wait assignment, which is an e_assign
   cpu_0_data_master_run <= r_0 AND r_1;
   --r_1 master_run cascaded wait assignment, which is an e_assign
-  r_1 <= Vector_To_Std_Logic(((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_data_master_write)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))));
+  r_1 <= Vector_To_Std_Logic(((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((((cpu_0_data_master_qualified_request_sram_avalon_slave_0 OR (((cpu_0_data_master_write AND NOT(or_reduce(cpu_0_data_master_byteenable_sram_avalon_slave_0))) AND internal_cpu_0_data_master_dbs_address(1)))) OR NOT cpu_0_data_master_requests_sram_avalon_slave_0)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_granted_sram_avalon_slave_0 OR NOT cpu_0_data_master_qualified_request_sram_avalon_slave_0)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_data_master_read)))) OR ((((std_logic_vector'("00000000000000000000000000000001") AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_read)))))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_data_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_data_master_write)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_write)))))))));
   --optimize select-logic by passing only those address bits which matter.
   internal_cpu_0_data_master_address_to_slave <= cpu_0_data_master_address(20 DOWNTO 0);
   --cpu_0/data_master readdata mux, which is an e_mux
-  cpu_0_data_master_readdata <= (((((A_REP(NOT cpu_0_data_master_requests_cpu_0_jtag_debug_module, 32) OR cpu_0_jtag_debug_module_readdata_from_sa)) AND ((A_REP(NOT cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0, 32) OR de2_vga_controller_0_avalon_slave_0_readdata_from_sa))) AND ((A_REP(NOT cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave, 32) OR registered_cpu_0_data_master_readdata))) AND ((A_REP(NOT cpu_0_data_master_requests_ps2_s1, 32) OR (std_logic_vector'("000000000000000000000000") & (ps2_s1_readdata_from_sa))))) AND ((A_REP(NOT cpu_0_data_master_requests_sram_avalon_slave_0, 32) OR Std_Logic_Vector'(sram_avalon_slave_0_readdata_from_sa(15 DOWNTO 0) & dbs_16_reg_segment_0)));
+  cpu_0_data_master_readdata <= ((((((A_REP(NOT cpu_0_data_master_requests_cpu_0_jtag_debug_module, 32) OR cpu_0_jtag_debug_module_readdata_from_sa)) AND ((A_REP(NOT cpu_0_data_master_requests_de2_audio_0_avalon_slave_0, 32) OR Std_Logic_Vector'(de2_audio_0_avalon_slave_0_readdata_from_sa(15 DOWNTO 0) & dbs_16_reg_segment_0)))) AND ((A_REP(NOT cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0, 32) OR de2_vga_controller_0_avalon_slave_0_readdata_from_sa))) AND ((A_REP(NOT cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave, 32) OR registered_cpu_0_data_master_readdata))) AND ((A_REP(NOT cpu_0_data_master_requests_ps2_s1, 32) OR (std_logic_vector'("000000000000000000000000") & (ps2_s1_readdata_from_sa))))) AND ((A_REP(NOT cpu_0_data_master_requests_sram_avalon_slave_0, 32) OR Std_Logic_Vector'(sram_avalon_slave_0_readdata_from_sa(15 DOWNTO 0) & dbs_16_reg_segment_0)));
   --actual waitrequest port, which is an e_register
   process (clk, reset_n)
   begin
@@ -512,6 +519,59 @@ begin
       internal_cpu_0_data_master_waitrequest <= Vector_To_Std_Logic(NOT std_logic_vector'("00000000000000000000000000000000"));
     elsif clk'event and clk = '1' then
       internal_cpu_0_data_master_waitrequest <= Vector_To_Std_Logic(NOT (A_WE_StdLogicVector((std_logic'((NOT ((cpu_0_data_master_read OR cpu_0_data_master_write)))) = '1'), std_logic_vector'("00000000000000000000000000000000"), (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_data_master_run AND internal_cpu_0_data_master_waitrequest))))))));
+    end if;
+
+  end process;
+
+  --no_byte_enables_and_last_term, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      internal_cpu_0_data_master_no_byte_enables_and_last_term <= std_logic'('0');
+    elsif clk'event and clk = '1' then
+      internal_cpu_0_data_master_no_byte_enables_and_last_term <= last_dbs_term_and_run;
+    end if;
+
+  end process;
+
+  --compute the last dbs term, which is an e_mux
+  last_dbs_term_and_run <= A_WE_StdLogic((std_logic'((cpu_0_data_master_requests_de2_audio_0_avalon_slave_0)) = '1'), (((to_std_logic(((internal_cpu_0_data_master_dbs_address = std_logic_vector'("10")))) AND cpu_0_data_master_write) AND NOT(or_reduce(cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0)))), (((to_std_logic(((internal_cpu_0_data_master_dbs_address = std_logic_vector'("10")))) AND cpu_0_data_master_write) AND NOT(or_reduce(cpu_0_data_master_byteenable_sram_avalon_slave_0)))));
+  --pre dbs count enable, which is an e_mux
+  pre_dbs_count_enable <= Vector_To_Std_Logic(((((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((((((NOT internal_cpu_0_data_master_no_byte_enables_and_last_term) AND cpu_0_data_master_requests_de2_audio_0_avalon_slave_0) AND cpu_0_data_master_write) AND NOT(or_reduce(cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0))))))) OR (((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 AND cpu_0_data_master_read)))) AND std_logic_vector'("00000000000000000000000000000001")) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_de2_audio_0_avalon_slave_0_end_xfer)))))) OR ((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 AND cpu_0_data_master_write)))) AND std_logic_vector'("00000000000000000000000000000001")) AND std_logic_vector'("00000000000000000000000000000001")))) OR (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((((((NOT internal_cpu_0_data_master_no_byte_enables_and_last_term) AND cpu_0_data_master_requests_sram_avalon_slave_0) AND cpu_0_data_master_write) AND NOT(or_reduce(cpu_0_data_master_byteenable_sram_avalon_slave_0)))))))) OR (((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((cpu_0_data_master_granted_sram_avalon_slave_0 AND cpu_0_data_master_read)))) AND std_logic_vector'("00000000000000000000000000000001")) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_sram_avalon_slave_0_end_xfer)))))) OR ((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((cpu_0_data_master_granted_sram_avalon_slave_0 AND cpu_0_data_master_write)))) AND std_logic_vector'("00000000000000000000000000000001")) AND std_logic_vector'("00000000000000000000000000000001")))));
+  --input to dbs-16 stored 0, which is an e_mux
+  p1_dbs_16_reg_segment_0 <= A_WE_StdLogicVector((std_logic'((cpu_0_data_master_requests_de2_audio_0_avalon_slave_0)) = '1'), de2_audio_0_avalon_slave_0_readdata_from_sa, sram_avalon_slave_0_readdata_from_sa);
+  --dbs register for dbs-16 segment 0, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      dbs_16_reg_segment_0 <= std_logic_vector'("0000000000000000");
+    elsif clk'event and clk = '1' then
+      if std_logic'((dbs_count_enable AND to_std_logic((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1))))) = std_logic_vector'("00000000000000000000000000000000")))))) = '1' then 
+        dbs_16_reg_segment_0 <= p1_dbs_16_reg_segment_0;
+      end if;
+    end if;
+
+  end process;
+
+  --mux write dbs 1, which is an e_mux
+  cpu_0_data_master_dbs_write_16 <= A_WE_StdLogicVector((std_logic'((internal_cpu_0_data_master_dbs_address(1))) = '1'), cpu_0_data_master_writedata(31 DOWNTO 16), A_WE_StdLogicVector((std_logic'((NOT (internal_cpu_0_data_master_dbs_address(1)))) = '1'), cpu_0_data_master_writedata(15 DOWNTO 0), A_WE_StdLogicVector((std_logic'((internal_cpu_0_data_master_dbs_address(1))) = '1'), cpu_0_data_master_writedata(31 DOWNTO 16), cpu_0_data_master_writedata(15 DOWNTO 0))));
+  --dbs count increment, which is an e_mux
+  cpu_0_data_master_dbs_increment <= A_EXT (A_WE_StdLogicVector((std_logic'((cpu_0_data_master_requests_de2_audio_0_avalon_slave_0)) = '1'), std_logic_vector'("00000000000000000000000000000010"), A_WE_StdLogicVector((std_logic'((cpu_0_data_master_requests_sram_avalon_slave_0)) = '1'), std_logic_vector'("00000000000000000000000000000010"), std_logic_vector'("00000000000000000000000000000000"))), 2);
+  --dbs counter overflow, which is an e_assign
+  dbs_counter_overflow <= internal_cpu_0_data_master_dbs_address(1) AND NOT((next_dbs_address(1)));
+  --next master address, which is an e_assign
+  next_dbs_address <= A_EXT (((std_logic_vector'("0") & (internal_cpu_0_data_master_dbs_address)) + (std_logic_vector'("0") & (cpu_0_data_master_dbs_increment))), 2);
+  --dbs count enable, which is an e_mux
+  dbs_count_enable <= (pre_dbs_count_enable AND (NOT (((cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 AND NOT internal_cpu_0_data_master_waitrequest) AND cpu_0_data_master_write)))) AND (NOT (((cpu_0_data_master_requests_sram_avalon_slave_0 AND NOT internal_cpu_0_data_master_waitrequest) AND cpu_0_data_master_write)));
+  --dbs counter, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      internal_cpu_0_data_master_dbs_address <= std_logic_vector'("00");
+    elsif clk'event and clk = '1' then
+      if std_logic'(dbs_count_enable) = '1' then 
+        internal_cpu_0_data_master_dbs_address <= next_dbs_address;
+      end if;
     end if;
 
   end process;
@@ -531,59 +591,6 @@ begin
   p1_registered_cpu_0_data_master_readdata <= A_REP(NOT cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave, 32) OR jtag_uart_0_avalon_jtag_slave_readdata_from_sa;
   --irq assign, which is an e_assign
   cpu_0_data_master_irq <= Std_Logic_Vector'(A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(std_logic'('0')) & A_ToStdLogicVector(jtag_uart_0_avalon_jtag_slave_irq_from_sa));
-  --no_byte_enables_and_last_term, which is an e_register
-  process (clk, reset_n)
-  begin
-    if reset_n = '0' then
-      internal_cpu_0_data_master_no_byte_enables_and_last_term <= std_logic'('0');
-    elsif clk'event and clk = '1' then
-      internal_cpu_0_data_master_no_byte_enables_and_last_term <= last_dbs_term_and_run;
-    end if;
-
-  end process;
-
-  --compute the last dbs term, which is an e_mux
-  last_dbs_term_and_run <= (to_std_logic(((internal_cpu_0_data_master_dbs_address = std_logic_vector'("10")))) AND cpu_0_data_master_write) AND NOT(or_reduce(cpu_0_data_master_byteenable_sram_avalon_slave_0));
-  --pre dbs count enable, which is an e_mux
-  pre_dbs_count_enable <= Vector_To_Std_Logic((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((((((NOT internal_cpu_0_data_master_no_byte_enables_and_last_term) AND cpu_0_data_master_requests_sram_avalon_slave_0) AND cpu_0_data_master_write) AND NOT(or_reduce(cpu_0_data_master_byteenable_sram_avalon_slave_0))))))) OR (((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((cpu_0_data_master_granted_sram_avalon_slave_0 AND cpu_0_data_master_read)))) AND std_logic_vector'("00000000000000000000000000000001")) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_sram_avalon_slave_0_end_xfer)))))) OR ((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((cpu_0_data_master_granted_sram_avalon_slave_0 AND cpu_0_data_master_write)))) AND std_logic_vector'("00000000000000000000000000000001")) AND std_logic_vector'("00000000000000000000000000000001")))));
-  --input to dbs-16 stored 0, which is an e_mux
-  p1_dbs_16_reg_segment_0 <= sram_avalon_slave_0_readdata_from_sa;
-  --dbs register for dbs-16 segment 0, which is an e_register
-  process (clk, reset_n)
-  begin
-    if reset_n = '0' then
-      dbs_16_reg_segment_0 <= std_logic_vector'("0000000000000000");
-    elsif clk'event and clk = '1' then
-      if std_logic'((dbs_count_enable AND to_std_logic((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_data_master_dbs_address(1))))) = std_logic_vector'("00000000000000000000000000000000")))))) = '1' then 
-        dbs_16_reg_segment_0 <= p1_dbs_16_reg_segment_0;
-      end if;
-    end if;
-
-  end process;
-
-  --mux write dbs 1, which is an e_mux
-  cpu_0_data_master_dbs_write_16 <= A_WE_StdLogicVector((std_logic'((internal_cpu_0_data_master_dbs_address(1))) = '1'), cpu_0_data_master_writedata(31 DOWNTO 16), cpu_0_data_master_writedata(15 DOWNTO 0));
-  --dbs count increment, which is an e_mux
-  cpu_0_data_master_dbs_increment <= A_EXT (A_WE_StdLogicVector((std_logic'((cpu_0_data_master_requests_sram_avalon_slave_0)) = '1'), std_logic_vector'("00000000000000000000000000000010"), std_logic_vector'("00000000000000000000000000000000")), 2);
-  --dbs counter overflow, which is an e_assign
-  dbs_counter_overflow <= internal_cpu_0_data_master_dbs_address(1) AND NOT((next_dbs_address(1)));
-  --next master address, which is an e_assign
-  next_dbs_address <= A_EXT (((std_logic_vector'("0") & (internal_cpu_0_data_master_dbs_address)) + (std_logic_vector'("0") & (cpu_0_data_master_dbs_increment))), 2);
-  --dbs count enable, which is an e_mux
-  dbs_count_enable <= pre_dbs_count_enable AND (NOT (((cpu_0_data_master_requests_sram_avalon_slave_0 AND NOT internal_cpu_0_data_master_waitrequest) AND cpu_0_data_master_write)));
-  --dbs counter, which is an e_register
-  process (clk, reset_n)
-  begin
-    if reset_n = '0' then
-      internal_cpu_0_data_master_dbs_address <= std_logic_vector'("00");
-    elsif clk'event and clk = '1' then
-      if std_logic'(dbs_count_enable) = '1' then 
-        internal_cpu_0_data_master_dbs_address <= next_dbs_address;
-      end if;
-    end if;
-
-  end process;
-
   --vhdl renameroo for output signals
   cpu_0_data_master_address_to_slave <= internal_cpu_0_data_master_address_to_slave;
   --vhdl renameroo for output signals
@@ -665,11 +672,11 @@ architecture europa of cpu_0_instruction_master_arbitrator is
 begin
 
   --r_0 master_run cascaded wait assignment, which is an e_assign
-  r_0 <= Vector_To_Std_Logic(((((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_instruction_master_requests_cpu_0_jtag_debug_module)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_granted_cpu_0_jtag_debug_module OR NOT cpu_0_instruction_master_qualified_request_cpu_0_jtag_debug_module)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_instruction_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_instruction_master_read)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_cpu_0_jtag_debug_module_end_xfer)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_instruction_master_read)))))))) AND std_logic_vector'("00000000000000000000000000000001")) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_instruction_master_requests_sram_avalon_slave_0)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_granted_sram_avalon_slave_0 OR NOT cpu_0_instruction_master_qualified_request_sram_avalon_slave_0)))))));
+  r_0 <= Vector_To_Std_Logic((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_instruction_master_requests_cpu_0_jtag_debug_module)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_granted_cpu_0_jtag_debug_module OR NOT cpu_0_instruction_master_qualified_request_cpu_0_jtag_debug_module)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_instruction_master_qualified_request_cpu_0_jtag_debug_module OR NOT cpu_0_instruction_master_read)))) OR (((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_cpu_0_jtag_debug_module_end_xfer)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_instruction_master_read)))))))));
   --cascaded wait assignment, which is an e_assign
   cpu_0_instruction_master_run <= r_0 AND r_1;
   --r_1 master_run cascaded wait assignment, which is an e_assign
-  r_1 <= Vector_To_Std_Logic(((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_instruction_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_instruction_master_read)))) OR ((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_sram_avalon_slave_0_end_xfer)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_instruction_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_instruction_master_read)))))));
+  r_1 <= Vector_To_Std_Logic((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_instruction_master_requests_sram_avalon_slave_0)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(((cpu_0_instruction_master_granted_sram_avalon_slave_0 OR NOT cpu_0_instruction_master_qualified_request_sram_avalon_slave_0)))))) AND (((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((NOT cpu_0_instruction_master_qualified_request_sram_avalon_slave_0 OR NOT cpu_0_instruction_master_read)))) OR ((((std_logic_vector'("00000000000000000000000000000001") AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT d1_sram_avalon_slave_0_end_xfer)))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR((internal_cpu_0_instruction_master_dbs_address(1)))))) AND (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_instruction_master_read)))))))));
   --optimize select-logic by passing only those address bits which matter.
   internal_cpu_0_instruction_master_address_to_slave <= cpu_0_instruction_master_address(20 DOWNTO 0);
   --cpu_0/instruction_master readdata mux, which is an e_mux
@@ -784,6 +791,258 @@ begin
           deallocate (write_line3);
           assert false report "VHDL STOP" severity failure;
         end if;
+      end if;
+
+    end process;
+
+--synthesis translate_on
+
+end europa;
+
+
+
+-- turn off superfluous VHDL processor warnings 
+-- altera message_level Level1 
+-- altera message_off 10034 10035 10036 10037 10230 10240 10030 
+
+library altera;
+use altera.altera_europa_support_lib.all;
+
+library altera_mf;
+use altera_mf.altera_mf_components.all;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity de2_audio_0_avalon_slave_0_arbitrator is 
+        port (
+              -- inputs:
+                 signal clk : IN STD_LOGIC;
+                 signal cpu_0_data_master_address_to_slave : IN STD_LOGIC_VECTOR (20 DOWNTO 0);
+                 signal cpu_0_data_master_byteenable : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+                 signal cpu_0_data_master_dbs_address : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
+                 signal cpu_0_data_master_dbs_write_16 : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+                 signal cpu_0_data_master_no_byte_enables_and_last_term : IN STD_LOGIC;
+                 signal cpu_0_data_master_read : IN STD_LOGIC;
+                 signal cpu_0_data_master_waitrequest : IN STD_LOGIC;
+                 signal cpu_0_data_master_write : IN STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_readdata : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+                 signal reset_n : IN STD_LOGIC;
+
+              -- outputs:
+                 signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC_VECTOR (1 DOWNTO 0);
+                 signal cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                 signal cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                 signal cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                 signal cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                 signal d1_de2_audio_0_avalon_slave_0_end_xfer : OUT STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_address : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+                 signal de2_audio_0_avalon_slave_0_chipselect : OUT STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_read : OUT STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_readdata_from_sa : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+                 signal de2_audio_0_avalon_slave_0_reset_n : OUT STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_write : OUT STD_LOGIC;
+                 signal de2_audio_0_avalon_slave_0_writedata : OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+              );
+end entity de2_audio_0_avalon_slave_0_arbitrator;
+
+
+architecture europa of de2_audio_0_avalon_slave_0_arbitrator is
+                signal cpu_0_data_master_arbiterlock :  STD_LOGIC;
+                signal cpu_0_data_master_arbiterlock2 :  STD_LOGIC;
+                signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_0 :  STD_LOGIC_VECTOR (1 DOWNTO 0);
+                signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_1 :  STD_LOGIC_VECTOR (1 DOWNTO 0);
+                signal cpu_0_data_master_continuerequest :  STD_LOGIC;
+                signal cpu_0_data_master_saved_grant_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
+                signal d1_reasons_to_wait :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_allgrants :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_allow_new_arb_cycle :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_any_bursting_master_saved_grant :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_any_continuerequest :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_arb_counter_enable :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_arb_share_counter :  STD_LOGIC_VECTOR (1 DOWNTO 0);
+                signal de2_audio_0_avalon_slave_0_arb_share_counter_next_value :  STD_LOGIC_VECTOR (1 DOWNTO 0);
+                signal de2_audio_0_avalon_slave_0_arb_share_set_values :  STD_LOGIC_VECTOR (1 DOWNTO 0);
+                signal de2_audio_0_avalon_slave_0_beginbursttransfer_internal :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_begins_xfer :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_end_xfer :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_firsttransfer :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_grant_vector :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_in_a_read_cycle :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_in_a_write_cycle :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_master_qreq_vector :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_non_bursting_master_requests :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_reg_firsttransfer :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_slavearbiterlockenable :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_slavearbiterlockenable2 :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_unreg_firsttransfer :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_waits_for_read :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_waits_for_write :  STD_LOGIC;
+                signal enable_nonzero_assertions :  STD_LOGIC;
+                signal end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
+                signal in_a_read_cycle :  STD_LOGIC;
+                signal in_a_write_cycle :  STD_LOGIC;
+                signal internal_cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 :  STD_LOGIC_VECTOR (1 DOWNTO 0);
+                signal internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
+                signal internal_cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
+                signal internal_cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
+                signal shifted_address_to_de2_audio_0_avalon_slave_0_from_cpu_0_data_master :  STD_LOGIC_VECTOR (20 DOWNTO 0);
+                signal wait_for_de2_audio_0_avalon_slave_0_counter :  STD_LOGIC;
+
+begin
+
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      d1_reasons_to_wait <= std_logic'('0');
+    elsif clk'event and clk = '1' then
+      d1_reasons_to_wait <= NOT de2_audio_0_avalon_slave_0_end_xfer;
+    end if;
+
+  end process;
+
+  de2_audio_0_avalon_slave_0_begins_xfer <= NOT d1_reasons_to_wait AND (internal_cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0);
+  --assign de2_audio_0_avalon_slave_0_readdata_from_sa = de2_audio_0_avalon_slave_0_readdata so that symbol knows where to group signals which may go to master only, which is an e_assign
+  de2_audio_0_avalon_slave_0_readdata_from_sa <= de2_audio_0_avalon_slave_0_readdata;
+  internal_cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 <= to_std_logic(((Std_Logic_Vector'(cpu_0_data_master_address_to_slave(20 DOWNTO 4) & std_logic_vector'("0000")) = std_logic_vector'("000000000000001000000")))) AND ((cpu_0_data_master_read OR cpu_0_data_master_write));
+  --de2_audio_0_avalon_slave_0_arb_share_counter set values, which is an e_mux
+  de2_audio_0_avalon_slave_0_arb_share_set_values <= A_EXT (A_WE_StdLogicVector((std_logic'((internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0)) = '1'), std_logic_vector'("00000000000000000000000000000010"), std_logic_vector'("00000000000000000000000000000001")), 2);
+  --de2_audio_0_avalon_slave_0_non_bursting_master_requests mux, which is an e_mux
+  de2_audio_0_avalon_slave_0_non_bursting_master_requests <= internal_cpu_0_data_master_requests_de2_audio_0_avalon_slave_0;
+  --de2_audio_0_avalon_slave_0_any_bursting_master_saved_grant mux, which is an e_mux
+  de2_audio_0_avalon_slave_0_any_bursting_master_saved_grant <= std_logic'('0');
+  --de2_audio_0_avalon_slave_0_arb_share_counter_next_value assignment, which is an e_assign
+  de2_audio_0_avalon_slave_0_arb_share_counter_next_value <= A_EXT (A_WE_StdLogicVector((std_logic'(de2_audio_0_avalon_slave_0_firsttransfer) = '1'), (((std_logic_vector'("0000000000000000000000000000000") & (de2_audio_0_avalon_slave_0_arb_share_set_values)) - std_logic_vector'("000000000000000000000000000000001"))), A_WE_StdLogicVector((std_logic'(or_reduce(de2_audio_0_avalon_slave_0_arb_share_counter)) = '1'), (((std_logic_vector'("0000000000000000000000000000000") & (de2_audio_0_avalon_slave_0_arb_share_counter)) - std_logic_vector'("000000000000000000000000000000001"))), std_logic_vector'("000000000000000000000000000000000"))), 2);
+  --de2_audio_0_avalon_slave_0_allgrants all slave grants, which is an e_mux
+  de2_audio_0_avalon_slave_0_allgrants <= de2_audio_0_avalon_slave_0_grant_vector;
+  --de2_audio_0_avalon_slave_0_end_xfer assignment, which is an e_assign
+  de2_audio_0_avalon_slave_0_end_xfer <= NOT ((de2_audio_0_avalon_slave_0_waits_for_read OR de2_audio_0_avalon_slave_0_waits_for_write));
+  --end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0 arb share counter enable term, which is an e_assign
+  end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0 <= de2_audio_0_avalon_slave_0_end_xfer AND (((NOT de2_audio_0_avalon_slave_0_any_bursting_master_saved_grant OR in_a_read_cycle) OR in_a_write_cycle));
+  --de2_audio_0_avalon_slave_0_arb_share_counter arbitration counter enable, which is an e_assign
+  de2_audio_0_avalon_slave_0_arb_counter_enable <= ((end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0 AND de2_audio_0_avalon_slave_0_allgrants)) OR ((end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0 AND NOT de2_audio_0_avalon_slave_0_non_bursting_master_requests));
+  --de2_audio_0_avalon_slave_0_arb_share_counter counter, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      de2_audio_0_avalon_slave_0_arb_share_counter <= std_logic_vector'("00");
+    elsif clk'event and clk = '1' then
+      if std_logic'(de2_audio_0_avalon_slave_0_arb_counter_enable) = '1' then 
+        de2_audio_0_avalon_slave_0_arb_share_counter <= de2_audio_0_avalon_slave_0_arb_share_counter_next_value;
+      end if;
+    end if;
+
+  end process;
+
+  --de2_audio_0_avalon_slave_0_slavearbiterlockenable slave enables arbiterlock, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      de2_audio_0_avalon_slave_0_slavearbiterlockenable <= std_logic'('0');
+    elsif clk'event and clk = '1' then
+      if std_logic'((((de2_audio_0_avalon_slave_0_master_qreq_vector AND end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0)) OR ((end_xfer_arb_share_counter_term_de2_audio_0_avalon_slave_0 AND NOT de2_audio_0_avalon_slave_0_non_bursting_master_requests)))) = '1' then 
+        de2_audio_0_avalon_slave_0_slavearbiterlockenable <= or_reduce(de2_audio_0_avalon_slave_0_arb_share_counter_next_value);
+      end if;
+    end if;
+
+  end process;
+
+  --cpu_0/data_master de2_audio_0/avalon_slave_0 arbiterlock, which is an e_assign
+  cpu_0_data_master_arbiterlock <= de2_audio_0_avalon_slave_0_slavearbiterlockenable AND cpu_0_data_master_continuerequest;
+  --de2_audio_0_avalon_slave_0_slavearbiterlockenable2 slave enables arbiterlock2, which is an e_assign
+  de2_audio_0_avalon_slave_0_slavearbiterlockenable2 <= or_reduce(de2_audio_0_avalon_slave_0_arb_share_counter_next_value);
+  --cpu_0/data_master de2_audio_0/avalon_slave_0 arbiterlock2, which is an e_assign
+  cpu_0_data_master_arbiterlock2 <= de2_audio_0_avalon_slave_0_slavearbiterlockenable2 AND cpu_0_data_master_continuerequest;
+  --de2_audio_0_avalon_slave_0_any_continuerequest at least one master continues requesting, which is an e_assign
+  de2_audio_0_avalon_slave_0_any_continuerequest <= std_logic'('1');
+  --cpu_0_data_master_continuerequest continued request, which is an e_assign
+  cpu_0_data_master_continuerequest <= std_logic'('1');
+  internal_cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 AND NOT (((((NOT cpu_0_data_master_waitrequest OR cpu_0_data_master_no_byte_enables_and_last_term) OR NOT(or_reduce(internal_cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0)))) AND cpu_0_data_master_write));
+  --de2_audio_0_avalon_slave_0_writedata mux, which is an e_mux
+  de2_audio_0_avalon_slave_0_writedata <= cpu_0_data_master_dbs_write_16;
+  --master is always granted when requested
+  internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0;
+  --cpu_0/data_master saved-grant de2_audio_0/avalon_slave_0, which is an e_assign
+  cpu_0_data_master_saved_grant_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_requests_de2_audio_0_avalon_slave_0;
+  --allow new arb cycle for de2_audio_0/avalon_slave_0, which is an e_assign
+  de2_audio_0_avalon_slave_0_allow_new_arb_cycle <= std_logic'('1');
+  --placeholder chosen master
+  de2_audio_0_avalon_slave_0_grant_vector <= std_logic'('1');
+  --placeholder vector of master qualified-requests
+  de2_audio_0_avalon_slave_0_master_qreq_vector <= std_logic'('1');
+  --de2_audio_0_avalon_slave_0_reset_n assignment, which is an e_assign
+  de2_audio_0_avalon_slave_0_reset_n <= reset_n;
+  de2_audio_0_avalon_slave_0_chipselect <= internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0;
+  --de2_audio_0_avalon_slave_0_firsttransfer first transaction, which is an e_assign
+  de2_audio_0_avalon_slave_0_firsttransfer <= A_WE_StdLogic((std_logic'(de2_audio_0_avalon_slave_0_begins_xfer) = '1'), de2_audio_0_avalon_slave_0_unreg_firsttransfer, de2_audio_0_avalon_slave_0_reg_firsttransfer);
+  --de2_audio_0_avalon_slave_0_unreg_firsttransfer first transaction, which is an e_assign
+  de2_audio_0_avalon_slave_0_unreg_firsttransfer <= NOT ((de2_audio_0_avalon_slave_0_slavearbiterlockenable AND de2_audio_0_avalon_slave_0_any_continuerequest));
+  --de2_audio_0_avalon_slave_0_reg_firsttransfer first transaction, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      de2_audio_0_avalon_slave_0_reg_firsttransfer <= std_logic'('1');
+    elsif clk'event and clk = '1' then
+      if std_logic'(de2_audio_0_avalon_slave_0_begins_xfer) = '1' then 
+        de2_audio_0_avalon_slave_0_reg_firsttransfer <= de2_audio_0_avalon_slave_0_unreg_firsttransfer;
+      end if;
+    end if;
+
+  end process;
+
+  --de2_audio_0_avalon_slave_0_beginbursttransfer_internal begin burst transfer, which is an e_assign
+  de2_audio_0_avalon_slave_0_beginbursttransfer_internal <= de2_audio_0_avalon_slave_0_begins_xfer;
+  --de2_audio_0_avalon_slave_0_read assignment, which is an e_mux
+  de2_audio_0_avalon_slave_0_read <= internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 AND cpu_0_data_master_read;
+  --de2_audio_0_avalon_slave_0_write assignment, which is an e_mux
+  de2_audio_0_avalon_slave_0_write <= internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 AND cpu_0_data_master_write;
+  shifted_address_to_de2_audio_0_avalon_slave_0_from_cpu_0_data_master <= A_EXT (Std_Logic_Vector'(A_SRL(cpu_0_data_master_address_to_slave,std_logic_vector'("00000000000000000000000000000010")) & A_ToStdLogicVector(cpu_0_data_master_dbs_address(1)) & A_ToStdLogicVector(std_logic'('0'))), 21);
+  --de2_audio_0_avalon_slave_0_address mux, which is an e_mux
+  de2_audio_0_avalon_slave_0_address <= A_EXT (A_SRL(shifted_address_to_de2_audio_0_avalon_slave_0_from_cpu_0_data_master,std_logic_vector'("00000000000000000000000000000001")), 3);
+  --d1_de2_audio_0_avalon_slave_0_end_xfer register, which is an e_register
+  process (clk, reset_n)
+  begin
+    if reset_n = '0' then
+      d1_de2_audio_0_avalon_slave_0_end_xfer <= std_logic'('1');
+    elsif clk'event and clk = '1' then
+      d1_de2_audio_0_avalon_slave_0_end_xfer <= de2_audio_0_avalon_slave_0_end_xfer;
+    end if;
+
+  end process;
+
+  --de2_audio_0_avalon_slave_0_waits_for_read in a cycle, which is an e_mux
+  de2_audio_0_avalon_slave_0_waits_for_read <= de2_audio_0_avalon_slave_0_in_a_read_cycle AND de2_audio_0_avalon_slave_0_begins_xfer;
+  --de2_audio_0_avalon_slave_0_in_a_read_cycle assignment, which is an e_assign
+  de2_audio_0_avalon_slave_0_in_a_read_cycle <= internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 AND cpu_0_data_master_read;
+  --in_a_read_cycle assignment, which is an e_mux
+  in_a_read_cycle <= de2_audio_0_avalon_slave_0_in_a_read_cycle;
+  --de2_audio_0_avalon_slave_0_waits_for_write in a cycle, which is an e_mux
+  de2_audio_0_avalon_slave_0_waits_for_write <= Vector_To_Std_Logic(((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(de2_audio_0_avalon_slave_0_in_a_write_cycle))) AND std_logic_vector'("00000000000000000000000000000000")));
+  --de2_audio_0_avalon_slave_0_in_a_write_cycle assignment, which is an e_assign
+  de2_audio_0_avalon_slave_0_in_a_write_cycle <= internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 AND cpu_0_data_master_write;
+  --in_a_write_cycle assignment, which is an e_mux
+  in_a_write_cycle <= de2_audio_0_avalon_slave_0_in_a_write_cycle;
+  wait_for_de2_audio_0_avalon_slave_0_counter <= std_logic'('0');
+  (cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_1(1), cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_1(0), cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_0(1), cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_0(0)) <= cpu_0_data_master_byteenable;
+  internal_cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 <= A_WE_StdLogicVector((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_data_master_dbs_address(1)))) = std_logic_vector'("00000000000000000000000000000000"))), cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_0, cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0_segment_1);
+  --vhdl renameroo for output signals
+  cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0;
+  --vhdl renameroo for output signals
+  cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_granted_de2_audio_0_avalon_slave_0;
+  --vhdl renameroo for output signals
+  cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0;
+  --vhdl renameroo for output signals
+  cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 <= internal_cpu_0_data_master_requests_de2_audio_0_avalon_slave_0;
+--synthesis translate_off
+    --de2_audio_0/avalon_slave_0 enable non-zero assertions, which is an e_register
+    process (clk, reset_n)
+    begin
+      if reset_n = '0' then
+        enable_nonzero_assertions <= std_logic'('0');
+      elsif clk'event and clk = '1' then
+        enable_nonzero_assertions <= std_logic'('1');
       end if;
 
     end process;
@@ -1999,6 +2258,18 @@ entity snake_system is
                  signal clk_0 : IN STD_LOGIC;
                  signal reset_n : IN STD_LOGIC;
 
+              -- the_de2_audio_0
+                 signal AUD_ADCDAT_to_the_de2_audio_0 : IN STD_LOGIC;
+                 signal AUD_ADCLRCK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                 signal AUD_BCLK_to_and_from_the_de2_audio_0 : INOUT STD_LOGIC;
+                 signal AUD_DACDAT_from_the_de2_audio_0 : OUT STD_LOGIC;
+                 signal AUD_DACLRCK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                 signal AUD_XCK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                 signal I2C_SCLK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                 signal I2C_SDAT_to_and_from_the_de2_audio_0 : INOUT STD_LOGIC;
+                 signal iCLK_to_the_de2_audio_0 : IN STD_LOGIC;
+                 signal iRST_N_to_the_de2_audio_0 : IN STD_LOGIC;
+
               -- the_de2_vga_controller_0
                  signal VGA_BLANK_from_the_de2_vga_controller_0 : OUT STD_LOGIC;
                  signal VGA_B_from_the_de2_vga_controller_0 : OUT STD_LOGIC_VECTOR (9 DOWNTO 0);
@@ -2073,24 +2344,29 @@ component cpu_0_data_master_arbitrator is
                  -- inputs:
                     signal clk : IN STD_LOGIC;
                     signal cpu_0_data_master_address : IN STD_LOGIC_VECTOR (20 DOWNTO 0);
+                    signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
                     signal cpu_0_data_master_byteenable_sram_avalon_slave_0 : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
                     signal cpu_0_data_master_granted_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                    signal cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_granted_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_granted_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                     signal cpu_0_data_master_granted_ps2_s1 : IN STD_LOGIC;
                     signal cpu_0_data_master_granted_sram_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                    signal cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                     signal cpu_0_data_master_qualified_request_ps2_s1 : IN STD_LOGIC;
                     signal cpu_0_data_master_qualified_request_sram_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_read : IN STD_LOGIC;
                     signal cpu_0_data_master_read_data_valid_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                    signal cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_read_data_valid_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_read_data_valid_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                     signal cpu_0_data_master_read_data_valid_ps2_s1 : IN STD_LOGIC;
                     signal cpu_0_data_master_read_data_valid_sram_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_requests_cpu_0_jtag_debug_module : IN STD_LOGIC;
+                    signal cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0 : IN STD_LOGIC;
                     signal cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave : IN STD_LOGIC;
                     signal cpu_0_data_master_requests_ps2_s1 : IN STD_LOGIC;
@@ -2099,10 +2375,12 @@ component cpu_0_data_master_arbitrator is
                     signal cpu_0_data_master_writedata : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
                     signal cpu_0_jtag_debug_module_readdata_from_sa : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
                     signal d1_cpu_0_jtag_debug_module_end_xfer : IN STD_LOGIC;
+                    signal d1_de2_audio_0_avalon_slave_0_end_xfer : IN STD_LOGIC;
                     signal d1_de2_vga_controller_0_avalon_slave_0_end_xfer : IN STD_LOGIC;
                     signal d1_jtag_uart_0_avalon_jtag_slave_end_xfer : IN STD_LOGIC;
                     signal d1_ps2_s1_end_xfer : IN STD_LOGIC;
                     signal d1_sram_avalon_slave_0_end_xfer : IN STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_readdata_from_sa : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
                     signal de2_vga_controller_0_avalon_slave_0_readdata_from_sa : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
                     signal jtag_uart_0_avalon_jtag_slave_irq_from_sa : IN STD_LOGIC;
                     signal jtag_uart_0_avalon_jtag_slave_readdata_from_sa : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -2181,6 +2459,64 @@ component cpu_0 is
                     signal jtag_debug_module_resetrequest : OUT STD_LOGIC
                  );
 end component cpu_0;
+
+component de2_audio_0_avalon_slave_0_arbitrator is 
+           port (
+                 -- inputs:
+                    signal clk : IN STD_LOGIC;
+                    signal cpu_0_data_master_address_to_slave : IN STD_LOGIC_VECTOR (20 DOWNTO 0);
+                    signal cpu_0_data_master_byteenable : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+                    signal cpu_0_data_master_dbs_address : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
+                    signal cpu_0_data_master_dbs_write_16 : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+                    signal cpu_0_data_master_no_byte_enables_and_last_term : IN STD_LOGIC;
+                    signal cpu_0_data_master_read : IN STD_LOGIC;
+                    signal cpu_0_data_master_waitrequest : IN STD_LOGIC;
+                    signal cpu_0_data_master_write : IN STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_readdata : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+                    signal reset_n : IN STD_LOGIC;
+
+                 -- outputs:
+                    signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC_VECTOR (1 DOWNTO 0);
+                    signal cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                    signal cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                    signal cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                    signal cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 : OUT STD_LOGIC;
+                    signal d1_de2_audio_0_avalon_slave_0_end_xfer : OUT STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_address : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+                    signal de2_audio_0_avalon_slave_0_chipselect : OUT STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_read : OUT STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_readdata_from_sa : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+                    signal de2_audio_0_avalon_slave_0_reset_n : OUT STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_write : OUT STD_LOGIC;
+                    signal de2_audio_0_avalon_slave_0_writedata : OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+                 );
+end component de2_audio_0_avalon_slave_0_arbitrator;
+
+component de2_audio_0 is 
+           port (
+                 -- inputs:
+                    signal AUD_ADCDAT : IN STD_LOGIC;
+                    signal address : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+                    signal chipselect : IN STD_LOGIC;
+                    signal clk : IN STD_LOGIC;
+                    signal iCLK : IN STD_LOGIC;
+                    signal iRST_N : IN STD_LOGIC;
+                    signal read : IN STD_LOGIC;
+                    signal reset_n : IN STD_LOGIC;
+                    signal write : IN STD_LOGIC;
+                    signal writedata : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+
+                 -- outputs:
+                    signal AUD_ADCLRCK : OUT STD_LOGIC;
+                    signal AUD_BCLK : INOUT STD_LOGIC;
+                    signal AUD_DACDAT : OUT STD_LOGIC;
+                    signal AUD_DACLRCK : OUT STD_LOGIC;
+                    signal AUD_XCK : OUT STD_LOGIC;
+                    signal I2C_SCLK : OUT STD_LOGIC;
+                    signal I2C_SDAT : INOUT STD_LOGIC;
+                    signal readdata : OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+                 );
+end component de2_audio_0;
 
 component de2_vga_controller_0_avalon_slave_0_arbitrator is 
            port (
@@ -2409,11 +2745,13 @@ end component snake_system_reset_clk_0_domain_synch_module;
                 signal cpu_0_data_master_address :  STD_LOGIC_VECTOR (20 DOWNTO 0);
                 signal cpu_0_data_master_address_to_slave :  STD_LOGIC_VECTOR (20 DOWNTO 0);
                 signal cpu_0_data_master_byteenable :  STD_LOGIC_VECTOR (3 DOWNTO 0);
+                signal cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 :  STD_LOGIC_VECTOR (1 DOWNTO 0);
                 signal cpu_0_data_master_byteenable_sram_avalon_slave_0 :  STD_LOGIC_VECTOR (1 DOWNTO 0);
                 signal cpu_0_data_master_dbs_address :  STD_LOGIC_VECTOR (1 DOWNTO 0);
                 signal cpu_0_data_master_dbs_write_16 :  STD_LOGIC_VECTOR (15 DOWNTO 0);
                 signal cpu_0_data_master_debugaccess :  STD_LOGIC;
                 signal cpu_0_data_master_granted_cpu_0_jtag_debug_module :  STD_LOGIC;
+                signal cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_granted_de2_vga_controller_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_granted_jtag_uart_0_avalon_jtag_slave :  STD_LOGIC;
                 signal cpu_0_data_master_granted_ps2_s1 :  STD_LOGIC;
@@ -2421,18 +2759,21 @@ end component snake_system_reset_clk_0_domain_synch_module;
                 signal cpu_0_data_master_irq :  STD_LOGIC_VECTOR (31 DOWNTO 0);
                 signal cpu_0_data_master_no_byte_enables_and_last_term :  STD_LOGIC;
                 signal cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module :  STD_LOGIC;
+                signal cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave :  STD_LOGIC;
                 signal cpu_0_data_master_qualified_request_ps2_s1 :  STD_LOGIC;
                 signal cpu_0_data_master_qualified_request_sram_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_read :  STD_LOGIC;
                 signal cpu_0_data_master_read_data_valid_cpu_0_jtag_debug_module :  STD_LOGIC;
+                signal cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_read_data_valid_de2_vga_controller_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_read_data_valid_jtag_uart_0_avalon_jtag_slave :  STD_LOGIC;
                 signal cpu_0_data_master_read_data_valid_ps2_s1 :  STD_LOGIC;
                 signal cpu_0_data_master_read_data_valid_sram_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_readdata :  STD_LOGIC_VECTOR (31 DOWNTO 0);
                 signal cpu_0_data_master_requests_cpu_0_jtag_debug_module :  STD_LOGIC;
+                signal cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0 :  STD_LOGIC;
                 signal cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave :  STD_LOGIC;
                 signal cpu_0_data_master_requests_ps2_s1 :  STD_LOGIC;
@@ -2467,10 +2808,19 @@ end component snake_system_reset_clk_0_domain_synch_module;
                 signal cpu_0_jtag_debug_module_write :  STD_LOGIC;
                 signal cpu_0_jtag_debug_module_writedata :  STD_LOGIC_VECTOR (31 DOWNTO 0);
                 signal d1_cpu_0_jtag_debug_module_end_xfer :  STD_LOGIC;
+                signal d1_de2_audio_0_avalon_slave_0_end_xfer :  STD_LOGIC;
                 signal d1_de2_vga_controller_0_avalon_slave_0_end_xfer :  STD_LOGIC;
                 signal d1_jtag_uart_0_avalon_jtag_slave_end_xfer :  STD_LOGIC;
                 signal d1_ps2_s1_end_xfer :  STD_LOGIC;
                 signal d1_sram_avalon_slave_0_end_xfer :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_address :  STD_LOGIC_VECTOR (2 DOWNTO 0);
+                signal de2_audio_0_avalon_slave_0_chipselect :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_read :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_readdata :  STD_LOGIC_VECTOR (15 DOWNTO 0);
+                signal de2_audio_0_avalon_slave_0_readdata_from_sa :  STD_LOGIC_VECTOR (15 DOWNTO 0);
+                signal de2_audio_0_avalon_slave_0_reset_n :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_write :  STD_LOGIC;
+                signal de2_audio_0_avalon_slave_0_writedata :  STD_LOGIC_VECTOR (15 DOWNTO 0);
                 signal de2_vga_controller_0_avalon_slave_0_address :  STD_LOGIC_VECTOR (3 DOWNTO 0);
                 signal de2_vga_controller_0_avalon_slave_0_chipselect :  STD_LOGIC;
                 signal de2_vga_controller_0_avalon_slave_0_read :  STD_LOGIC;
@@ -2479,6 +2829,11 @@ end component snake_system_reset_clk_0_domain_synch_module;
                 signal de2_vga_controller_0_avalon_slave_0_reset_n :  STD_LOGIC;
                 signal de2_vga_controller_0_avalon_slave_0_write :  STD_LOGIC;
                 signal de2_vga_controller_0_avalon_slave_0_writedata :  STD_LOGIC_VECTOR (31 DOWNTO 0);
+                signal internal_AUD_ADCLRCK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal internal_AUD_DACDAT_from_the_de2_audio_0 :  STD_LOGIC;
+                signal internal_AUD_DACLRCK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal internal_AUD_XCK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal internal_I2C_SCLK_from_the_de2_audio_0 :  STD_LOGIC;
                 signal internal_SRAM_ADDR_from_the_sram :  STD_LOGIC_VECTOR (17 DOWNTO 0);
                 signal internal_SRAM_CE_N_from_the_sram :  STD_LOGIC;
                 signal internal_SRAM_LB_N_from_the_sram :  STD_LOGIC;
@@ -2579,24 +2934,29 @@ begin
       cpu_0_data_master_waitrequest => cpu_0_data_master_waitrequest,
       clk => clk_0,
       cpu_0_data_master_address => cpu_0_data_master_address,
+      cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 => cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0,
       cpu_0_data_master_byteenable_sram_avalon_slave_0 => cpu_0_data_master_byteenable_sram_avalon_slave_0,
       cpu_0_data_master_granted_cpu_0_jtag_debug_module => cpu_0_data_master_granted_cpu_0_jtag_debug_module,
+      cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 => cpu_0_data_master_granted_de2_audio_0_avalon_slave_0,
       cpu_0_data_master_granted_de2_vga_controller_0_avalon_slave_0 => cpu_0_data_master_granted_de2_vga_controller_0_avalon_slave_0,
       cpu_0_data_master_granted_jtag_uart_0_avalon_jtag_slave => cpu_0_data_master_granted_jtag_uart_0_avalon_jtag_slave,
       cpu_0_data_master_granted_ps2_s1 => cpu_0_data_master_granted_ps2_s1,
       cpu_0_data_master_granted_sram_avalon_slave_0 => cpu_0_data_master_granted_sram_avalon_slave_0,
       cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module => cpu_0_data_master_qualified_request_cpu_0_jtag_debug_module,
+      cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 => cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0,
       cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0 => cpu_0_data_master_qualified_request_de2_vga_controller_0_avalon_slave_0,
       cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave => cpu_0_data_master_qualified_request_jtag_uart_0_avalon_jtag_slave,
       cpu_0_data_master_qualified_request_ps2_s1 => cpu_0_data_master_qualified_request_ps2_s1,
       cpu_0_data_master_qualified_request_sram_avalon_slave_0 => cpu_0_data_master_qualified_request_sram_avalon_slave_0,
       cpu_0_data_master_read => cpu_0_data_master_read,
       cpu_0_data_master_read_data_valid_cpu_0_jtag_debug_module => cpu_0_data_master_read_data_valid_cpu_0_jtag_debug_module,
+      cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 => cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0,
       cpu_0_data_master_read_data_valid_de2_vga_controller_0_avalon_slave_0 => cpu_0_data_master_read_data_valid_de2_vga_controller_0_avalon_slave_0,
       cpu_0_data_master_read_data_valid_jtag_uart_0_avalon_jtag_slave => cpu_0_data_master_read_data_valid_jtag_uart_0_avalon_jtag_slave,
       cpu_0_data_master_read_data_valid_ps2_s1 => cpu_0_data_master_read_data_valid_ps2_s1,
       cpu_0_data_master_read_data_valid_sram_avalon_slave_0 => cpu_0_data_master_read_data_valid_sram_avalon_slave_0,
       cpu_0_data_master_requests_cpu_0_jtag_debug_module => cpu_0_data_master_requests_cpu_0_jtag_debug_module,
+      cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 => cpu_0_data_master_requests_de2_audio_0_avalon_slave_0,
       cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0 => cpu_0_data_master_requests_de2_vga_controller_0_avalon_slave_0,
       cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave => cpu_0_data_master_requests_jtag_uart_0_avalon_jtag_slave,
       cpu_0_data_master_requests_ps2_s1 => cpu_0_data_master_requests_ps2_s1,
@@ -2605,10 +2965,12 @@ begin
       cpu_0_data_master_writedata => cpu_0_data_master_writedata,
       cpu_0_jtag_debug_module_readdata_from_sa => cpu_0_jtag_debug_module_readdata_from_sa,
       d1_cpu_0_jtag_debug_module_end_xfer => d1_cpu_0_jtag_debug_module_end_xfer,
+      d1_de2_audio_0_avalon_slave_0_end_xfer => d1_de2_audio_0_avalon_slave_0_end_xfer,
       d1_de2_vga_controller_0_avalon_slave_0_end_xfer => d1_de2_vga_controller_0_avalon_slave_0_end_xfer,
       d1_jtag_uart_0_avalon_jtag_slave_end_xfer => d1_jtag_uart_0_avalon_jtag_slave_end_xfer,
       d1_ps2_s1_end_xfer => d1_ps2_s1_end_xfer,
       d1_sram_avalon_slave_0_end_xfer => d1_sram_avalon_slave_0_end_xfer,
+      de2_audio_0_avalon_slave_0_readdata_from_sa => de2_audio_0_avalon_slave_0_readdata_from_sa,
       de2_vga_controller_0_avalon_slave_0_readdata_from_sa => de2_vga_controller_0_avalon_slave_0_readdata_from_sa,
       jtag_uart_0_avalon_jtag_slave_irq_from_sa => jtag_uart_0_avalon_jtag_slave_irq_from_sa,
       jtag_uart_0_avalon_jtag_slave_readdata_from_sa => jtag_uart_0_avalon_jtag_slave_readdata_from_sa,
@@ -2672,6 +3034,60 @@ begin
       jtag_debug_module_write => cpu_0_jtag_debug_module_write,
       jtag_debug_module_writedata => cpu_0_jtag_debug_module_writedata,
       reset_n => cpu_0_jtag_debug_module_reset_n
+    );
+
+
+  --the_de2_audio_0_avalon_slave_0, which is an e_instance
+  the_de2_audio_0_avalon_slave_0 : de2_audio_0_avalon_slave_0_arbitrator
+    port map(
+      cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0 => cpu_0_data_master_byteenable_de2_audio_0_avalon_slave_0,
+      cpu_0_data_master_granted_de2_audio_0_avalon_slave_0 => cpu_0_data_master_granted_de2_audio_0_avalon_slave_0,
+      cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0 => cpu_0_data_master_qualified_request_de2_audio_0_avalon_slave_0,
+      cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0 => cpu_0_data_master_read_data_valid_de2_audio_0_avalon_slave_0,
+      cpu_0_data_master_requests_de2_audio_0_avalon_slave_0 => cpu_0_data_master_requests_de2_audio_0_avalon_slave_0,
+      d1_de2_audio_0_avalon_slave_0_end_xfer => d1_de2_audio_0_avalon_slave_0_end_xfer,
+      de2_audio_0_avalon_slave_0_address => de2_audio_0_avalon_slave_0_address,
+      de2_audio_0_avalon_slave_0_chipselect => de2_audio_0_avalon_slave_0_chipselect,
+      de2_audio_0_avalon_slave_0_read => de2_audio_0_avalon_slave_0_read,
+      de2_audio_0_avalon_slave_0_readdata_from_sa => de2_audio_0_avalon_slave_0_readdata_from_sa,
+      de2_audio_0_avalon_slave_0_reset_n => de2_audio_0_avalon_slave_0_reset_n,
+      de2_audio_0_avalon_slave_0_write => de2_audio_0_avalon_slave_0_write,
+      de2_audio_0_avalon_slave_0_writedata => de2_audio_0_avalon_slave_0_writedata,
+      clk => clk_0,
+      cpu_0_data_master_address_to_slave => cpu_0_data_master_address_to_slave,
+      cpu_0_data_master_byteenable => cpu_0_data_master_byteenable,
+      cpu_0_data_master_dbs_address => cpu_0_data_master_dbs_address,
+      cpu_0_data_master_dbs_write_16 => cpu_0_data_master_dbs_write_16,
+      cpu_0_data_master_no_byte_enables_and_last_term => cpu_0_data_master_no_byte_enables_and_last_term,
+      cpu_0_data_master_read => cpu_0_data_master_read,
+      cpu_0_data_master_waitrequest => cpu_0_data_master_waitrequest,
+      cpu_0_data_master_write => cpu_0_data_master_write,
+      de2_audio_0_avalon_slave_0_readdata => de2_audio_0_avalon_slave_0_readdata,
+      reset_n => clk_0_reset_n
+    );
+
+
+  --the_de2_audio_0, which is an e_ptf_instance
+  the_de2_audio_0 : de2_audio_0
+    port map(
+      AUD_ADCLRCK => internal_AUD_ADCLRCK_from_the_de2_audio_0,
+      AUD_BCLK => AUD_BCLK_to_and_from_the_de2_audio_0,
+      AUD_DACDAT => internal_AUD_DACDAT_from_the_de2_audio_0,
+      AUD_DACLRCK => internal_AUD_DACLRCK_from_the_de2_audio_0,
+      AUD_XCK => internal_AUD_XCK_from_the_de2_audio_0,
+      I2C_SCLK => internal_I2C_SCLK_from_the_de2_audio_0,
+      I2C_SDAT => I2C_SDAT_to_and_from_the_de2_audio_0,
+      readdata => de2_audio_0_avalon_slave_0_readdata,
+      AUD_ADCDAT => AUD_ADCDAT_to_the_de2_audio_0,
+      address => de2_audio_0_avalon_slave_0_address,
+      chipselect => de2_audio_0_avalon_slave_0_chipselect,
+      clk => clk_0,
+      iCLK => iCLK_to_the_de2_audio_0,
+      iRST_N => iRST_N_to_the_de2_audio_0,
+      read => de2_audio_0_avalon_slave_0_read,
+      reset_n => de2_audio_0_avalon_slave_0_reset_n,
+      write => de2_audio_0_avalon_slave_0_write,
+      writedata => de2_audio_0_avalon_slave_0_writedata
     );
 
 
@@ -2884,6 +3300,16 @@ begin
   --reset sources mux, which is an e_mux
   reset_n_sources <= Vector_To_Std_Logic(NOT (((((std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(NOT reset_n))) OR std_logic_vector'("00000000000000000000000000000000")) OR (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_jtag_debug_module_resetrequest_from_sa)))) OR (std_logic_vector'("0000000000000000000000000000000") & (A_TOSTDLOGICVECTOR(cpu_0_jtag_debug_module_resetrequest_from_sa))))));
   --vhdl renameroo for output signals
+  AUD_ADCLRCK_from_the_de2_audio_0 <= internal_AUD_ADCLRCK_from_the_de2_audio_0;
+  --vhdl renameroo for output signals
+  AUD_DACDAT_from_the_de2_audio_0 <= internal_AUD_DACDAT_from_the_de2_audio_0;
+  --vhdl renameroo for output signals
+  AUD_DACLRCK_from_the_de2_audio_0 <= internal_AUD_DACLRCK_from_the_de2_audio_0;
+  --vhdl renameroo for output signals
+  AUD_XCK_from_the_de2_audio_0 <= internal_AUD_XCK_from_the_de2_audio_0;
+  --vhdl renameroo for output signals
+  I2C_SCLK_from_the_de2_audio_0 <= internal_I2C_SCLK_from_the_de2_audio_0;
+  --vhdl renameroo for output signals
   SRAM_ADDR_from_the_sram <= internal_SRAM_ADDR_from_the_sram;
   --vhdl renameroo for output signals
   SRAM_CE_N_from_the_sram <= internal_SRAM_CE_N_from_the_sram;
@@ -2947,6 +3373,18 @@ component snake_system is
                     signal clk_0 : IN STD_LOGIC;
                     signal reset_n : IN STD_LOGIC;
 
+                 -- the_de2_audio_0
+                    signal AUD_ADCDAT_to_the_de2_audio_0 : IN STD_LOGIC;
+                    signal AUD_ADCLRCK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                    signal AUD_BCLK_to_and_from_the_de2_audio_0 : INOUT STD_LOGIC;
+                    signal AUD_DACDAT_from_the_de2_audio_0 : OUT STD_LOGIC;
+                    signal AUD_DACLRCK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                    signal AUD_XCK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                    signal I2C_SCLK_from_the_de2_audio_0 : OUT STD_LOGIC;
+                    signal I2C_SDAT_to_and_from_the_de2_audio_0 : INOUT STD_LOGIC;
+                    signal iCLK_to_the_de2_audio_0 : IN STD_LOGIC;
+                    signal iRST_N_to_the_de2_audio_0 : IN STD_LOGIC;
+
                  -- the_de2_vga_controller_0
                     signal VGA_BLANK_from_the_de2_vga_controller_0 : OUT STD_LOGIC;
                     signal VGA_B_from_the_de2_vga_controller_0 : OUT STD_LOGIC_VECTOR (9 DOWNTO 0);
@@ -2974,6 +3412,14 @@ component snake_system is
                  );
 end component snake_system;
 
+                signal AUD_ADCDAT_to_the_de2_audio_0 :  STD_LOGIC;
+                signal AUD_ADCLRCK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal AUD_BCLK_to_and_from_the_de2_audio_0 :  STD_LOGIC;
+                signal AUD_DACDAT_from_the_de2_audio_0 :  STD_LOGIC;
+                signal AUD_DACLRCK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal AUD_XCK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal I2C_SCLK_from_the_de2_audio_0 :  STD_LOGIC;
+                signal I2C_SDAT_to_and_from_the_de2_audio_0 :  STD_LOGIC;
                 signal PS2_Clk_to_the_ps2 :  STD_LOGIC;
                 signal PS2_Data_to_the_ps2 :  STD_LOGIC;
                 signal SRAM_ADDR_from_the_sram :  STD_LOGIC_VECTOR (17 DOWNTO 0);
@@ -2993,6 +3439,8 @@ end component snake_system;
                 signal VGA_VS_from_the_de2_vga_controller_0 :  STD_LOGIC;
                 signal clk :  STD_LOGIC;
                 signal clk_0 :  STD_LOGIC;
+                signal iCLK_to_the_de2_audio_0 :  STD_LOGIC;
+                signal iRST_N_to_the_de2_audio_0 :  STD_LOGIC;
                 signal jtag_uart_0_avalon_jtag_slave_dataavailable_from_sa :  STD_LOGIC;
                 signal jtag_uart_0_avalon_jtag_slave_readyfordata_from_sa :  STD_LOGIC;
                 signal leds_from_the_de2_vga_controller_0 :  STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -3010,6 +3458,13 @@ begin
   --Set us up the Dut
   DUT : snake_system
     port map(
+      AUD_ADCLRCK_from_the_de2_audio_0 => AUD_ADCLRCK_from_the_de2_audio_0,
+      AUD_BCLK_to_and_from_the_de2_audio_0 => AUD_BCLK_to_and_from_the_de2_audio_0,
+      AUD_DACDAT_from_the_de2_audio_0 => AUD_DACDAT_from_the_de2_audio_0,
+      AUD_DACLRCK_from_the_de2_audio_0 => AUD_DACLRCK_from_the_de2_audio_0,
+      AUD_XCK_from_the_de2_audio_0 => AUD_XCK_from_the_de2_audio_0,
+      I2C_SCLK_from_the_de2_audio_0 => I2C_SCLK_from_the_de2_audio_0,
+      I2C_SDAT_to_and_from_the_de2_audio_0 => I2C_SDAT_to_and_from_the_de2_audio_0,
       SRAM_ADDR_from_the_sram => SRAM_ADDR_from_the_sram,
       SRAM_CE_N_from_the_sram => SRAM_CE_N_from_the_sram,
       SRAM_DQ_to_and_from_the_sram => SRAM_DQ_to_and_from_the_sram,
@@ -3026,9 +3481,12 @@ begin
       VGA_SYNC_from_the_de2_vga_controller_0 => VGA_SYNC_from_the_de2_vga_controller_0,
       VGA_VS_from_the_de2_vga_controller_0 => VGA_VS_from_the_de2_vga_controller_0,
       leds_from_the_de2_vga_controller_0 => leds_from_the_de2_vga_controller_0,
+      AUD_ADCDAT_to_the_de2_audio_0 => AUD_ADCDAT_to_the_de2_audio_0,
       PS2_Clk_to_the_ps2 => PS2_Clk_to_the_ps2,
       PS2_Data_to_the_ps2 => PS2_Data_to_the_ps2,
       clk_0 => clk_0,
+      iCLK_to_the_de2_audio_0 => iCLK_to_the_de2_audio_0,
+      iRST_N_to_the_de2_audio_0 => iRST_N_to_the_de2_audio_0,
       reset_n => reset_n,
       sw_to_the_de2_vga_controller_0 => sw_to_the_de2_vga_controller_0
     );

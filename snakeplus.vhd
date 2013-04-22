@@ -31,13 +31,16 @@ entity snakeplus is
 		 VGA_R,                                              -- Red[9:0]
 		 VGA_G,                                              -- Green[9:0]
 		 VGA_B : out std_logic_vector(9 downto 0);           -- Blue[9:0]
-					  
-		AUD_ADCAT : in std_logic;
-		AUD_BCLK : inout std_logic;
-		AUD_ADCLRCK,
-		AUD_DACDAT,
-		AUD_DACLRCK,
-		AUD_XCK : out std_logic;
+
+	 
+		-- Audio Signals --
+	 
+		AUD_ADCAT : in std_logic;								-- Audio Codec ADC Data
+		AUD_BCLK : inout std_logic;							-- Audio Codec Bit-Stream Clock
+		AUD_ADCLRCK,												-- Audio Codec ADC LR Clock
+		AUD_DACDAT,													-- Audio Codec DAC Data
+		AUD_DACLRCK,												-- Audio Codec DAC LR Clock
+		AUD_XCK : out std_logic;								-- Chip Clock
 		
 		I2C_SCLK : out std_logic;
 		I2C_SDAT : inout std_logic;

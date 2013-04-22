@@ -22,7 +22,7 @@ entity de2_audio is
     AUD_DACLRCK  : out std_logic;       --    Audio CODEC DAC LR Clock
     AUD_DACDAT   : out std_logic;       --    Audio CODEC DAC Data
     AUD_BCLK     : inout std_logic;     --    Audio CODEC Bit-Stream Clock
-    AUD_XCK 	 : out std_logic;       -- Chip Clock
+    AUD_XCK 	  : out std_logic;       -- 	 Chip Clock
     
     iCLK : in std_logic;
     iRST_N : in std_logic;
@@ -87,7 +87,7 @@ begin
     reset_n => '1',
     test_mode => '1',                   -- Output a sine wave
     audio_request => audio_request,
-    data => "0000000000000000",
+    data => "0000000000000001",
   
     -- Audio interface signals
     AUD_ADCLRCK  => AUD_ADCLRCK,

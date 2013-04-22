@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+--use work.definitions.all;
 
 entity de2_wm8731_audio is
 port (
@@ -36,8 +37,22 @@ architecture rtl of de2_wm8731_audio is
     signal shift_out : unsigned(15 downto 0);
 
     signal sin_out     : unsigned(15 downto 0);
-    signal sin_counter : unsigned(5 downto 0);    
+    signal sin_counter : unsigned(5 downto 0); 
 
+	 signal select_sound : integer;
+	 signal sound_out : unsigned(15 downto 0);
+
+	 type sound_ram is array(0 to 15) of unsigned(15 downto 0);
+	 
+	 constant sound1 : sound_ram := (
+		X"0000", X"10b4", X"2120",
+		X"30fb", X"3fff", X"4deb",
+		X"5a81", X"658b", X"6ed9",
+		X"7640", X"7ba2", X"7ee6",
+		X"7fff", X"7ee6", X"7ba2",
+		X"7640"
+	);
+	
 begin
   
     -- LRCK divider 
@@ -111,7 +126,10 @@ begin
         if test_mode = '1' then 
           shift_out <= sin_out;
         else 
-          shift_out <= data;
+				if data = "0000000000000001" then
+					select_sound <= 1;
+					shift_out <= sound_out;
+				end if;
         end if;
       elsif clr_bclk = '1' then 
         shift_out <= shift_out (14 downto 0) & '0';
@@ -160,6 +178,12 @@ begin
         end if;
       end if;
     end process;
+	 
+	 with select_sound select sound_out <=
+		sound1(to_integer(sin_counter)) when 1,
+		X"0000" when others; 
+		
+	
 
   with sin_counter select sin_out <=
     X"0000" when "000000",

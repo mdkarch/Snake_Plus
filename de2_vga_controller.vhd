@@ -27,8 +27,8 @@ use work.definitions.all;
 			-- 7	: Enabled/Active signal 
 			
 -- On Add:
--- 	Adding to head or tail, the hardware automatically changes second to head/tail
---		No need to send second change
+-- 	Adding to head or tail
+--		NEED to send second change for second to head
 -- On Remove:
 --		Can only happen on tail
 --		Must send second change to second to tail, with correct tail
@@ -392,10 +392,16 @@ begin
 		if reset = '1' then
 			snake <= (others=>(others=>'0'));
 			snake(0) <=  "0000" & "00" & "1" & SNAKE_HEAD_RIGHT 
+											& "0100001111" & "0011111111";
+			snake(1) <=  "0000" & "00" & "1" & SNAKE_BODY_RIGHT 
 											& "0011111111" & "0011111111";
+			snake(2) <=  "0000" & "00" & "1" & SNAKE_TAIL_RIGHT 
+											& "0011101111" & "0011111111";
+--			snake(3) <=  "0000" & "00" & "1" & SNAKE_TURN_UP_RIGHT 
+--											& "0011011111" & "0011111111";
 			head_index		<= 0;
-			tail_index		<= 0;
-			snake_length	<= 1;
+			tail_index		<= 2;
+			snake_length	<= 3; 
 		
 		-- Only do something if it was directed at this snake	--
 		elsif enabled = '1' then
@@ -404,8 +410,6 @@ begin
 			if add_remove = '1' then
 			
 				if segment = "00" then
-					--Automatically change second to new head
-					snake(head_index)(24 downto 20) <= SNAKE_BODY_SELECT;
 					
 					--Increment snake length
 					snake_length <= snake_length + 1;
@@ -425,23 +429,21 @@ begin
 				-- Second to head
 				elsif segment = "01" then
 					if head_index - 1 < 0 then
-						snake(MAX_SNAKE_SIZE- 1) <= data_in;
+						snake(MAX_SNAKE_SIZE- 1)(24 downto 20) <= data_in(24 downto 20);
 					else
-						snake(head_index - 1) <= data_in;
+						snake(head_index - 1)(24 downto 20) <= data_in(24 downto 20);
 					end if;
 					
 				-- Second to tail
 				elsif segment = "10" then
 					if tail_index + 1 > MAX_SNAKE_SIZE - 1 then
-						snake(0) <= data_in; 
+						snake(0)(24 downto 20) <= data_in(24 downto 20);
 					else 
-						snake(tail_index + 1) <= data_in;
+						snake(tail_index + 1)(24 downto 20) <= data_in(24 downto 20);
 					end if;
 					
 				-- Tail
 				elsif segment = "11" then
-					--Automatically change old tail to body
-					snake(tail_index)(24 downto 20) <= SNAKE_BODY_SELECT;
 					
 					--Increment snake length
 					snake_length <= snake_length + 1;

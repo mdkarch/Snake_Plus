@@ -40,9 +40,9 @@ void initSnake(struct Snake *snake[], int xCoord, int yCoord){
 	}
 
 	// print snake - for testing
-	for(i = 0; i < SNAKE_SIZE; i++){
-		printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
-	}
+	//for(i = 0; i < SNAKE_SIZE; i++){
+	//	printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
+	//}
 }
 
 int abs(int n)
@@ -101,7 +101,7 @@ void updateBody(struct Snake *snake[]){
 	}
 }
 
-void updateSnake(struct Snake *snake[], int xCoord, int yCoord, int dir){
+void updateSnake(struct Snake *snake[], int xCoord, int yCoord, int dir, int old_dir){
 	printf("Updating snake\n");
 	updateBody(snake);
 	snake[0]->xCoord = xCoord;
@@ -109,10 +109,10 @@ void updateSnake(struct Snake *snake[], int xCoord, int yCoord, int dir){
 
 	// print snake - for testing
 	int i;
-	for(i = 0; i < SNAKE_SIZE; i++){
-		printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
-	}
-	writeToHW(snake, dir);
+	//for(i = 0; i < SNAKE_SIZE; i++){
+	//	printf("snake part at x:%d, y%d\n", snake[i]->xCoord, snake[i]->yCoord);
+	//}
+	writeToHW(snake, dir, old_dir);
 }
 
 

@@ -82,21 +82,21 @@ static void moveDown(){
 	down = 1;
 }
 
-int checkFood(struct Snake *snake[], struct Food *food[], int dir)
+int checkFood(struct Snake snake[], struct Food food[], int dir)
 {
 	//struct Snake *head = snake[0];
 	int j;
 	for(j = 0; j < MAX_FOOD; j++){
-			if(food[j]->enable){
-				int xDiff = abs(snake[0]->xCoord - food[j]->xCoord);
-				int yDiff = abs(snake[0]->yCoord - food[j]->yCoord);
-				//printf("snake x: %d y: %d\n",snake[0]->xCoord, snake[0]->yCoord);
-				//printf("food x: %d y: %d\n",food[j]->xCoord, food[j]->yCoord);
+			if(food[j].enable){
+				int xDiff = abs(snake[0].xCoord - food[j].xCoord);
+				int yDiff = abs(snake[0].yCoord - food[j].yCoord);
+				//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+				//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
 				if(xDiff <= col_offset && yDiff <= col_offset){
 					printf("Eating Food!\n");
 					removeFood(food,j);
 					addEnd(snake, dir);
-					//break;
+					break;
 				}
 			}
 	}
@@ -104,7 +104,7 @@ int checkFood(struct Snake *snake[], struct Food *food[], int dir)
 }
 
 // track snake movement
-static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
+static void movement(alt_u8 key, struct Snake snake[], struct Food food[]){
 
 	int old_dir = -1;
 	if( left )
@@ -121,17 +121,17 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 			if(up || down)
 				moveLeft();
 			break;
-		case 0x1D://'s'
+		case 0x1D://'w'
 			if(left || right)
-				moveDown();
+				moveUp();
 			break;
 		case 0x23://'d'
 			if(up || down)
 				moveRight();
 			break;
-		case 0x1B://'w'
+		case 0x1B://'s'
 			if(left || right)
-				moveUp();
+				moveDown();
 			break;
 		default:
 			break;
@@ -140,37 +140,40 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 		xCoor+=16;
 		if(xCoor >= RIGHT_BOUND - col_offset){
 			printf("Collision with right boundary!\n");
-			while(1)
-				;
+			while(1);
 			// collision
 		}
 		updateSnake(snake, xCoor, yCoor, right_dir, old_dir);
-		checkFood(snake, food, left_dir);
+		checkFood(snake, food, right_dir);
 	}else if(left){
 		xCoor-=16;
-		if(xCoor <= LEFT_BOUND){
+		if(xCoor <= LEFT_BOUND + col_offset){
 			printf("Collision with left boundary!\n");			
+			while(1);
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor,left_dir, old_dir);
-		checkFood(snake, food, right_dir);
+		checkFood(snake, food, left_dir);
 	}else if(up){
-		yCoor+=16;
-		if(yCoor <= TOP_BOUND){
+		yCoor-=16;
+		if(yCoor <= TOP_BOUND + col_offset){
 			printf("Collision with up boundary!\n");
+			while(1);
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, up_dir, old_dir);
 		checkFood(snake, food, up_dir);
 	}else if(down){
-		yCoor-=16;
-		if(yCoor >= BOT_BOUND){
+		yCoor+=16;
+		if(yCoor >= BOT_BOUND - col_offset){
 			printf("Collision with bot boundary!\n");
+			while(1);
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, down_dir, old_dir);
 		checkFood(snake, food, down_dir);
 	}
+	traverseList(snake);
 	printf("x: %d y: %d\n", xCoor, yCoor);
 }
 
@@ -204,7 +207,7 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
   return PS2_SUCCESS;
 }
 
-void writeToHW(struct Snake *snake[], int dir, int old_dir) {
+void writeToHW(struct Snake snake[], int dir, int old_dir) {
 
 	char segment = 0;
 	char add_remove = 1;
@@ -220,9 +223,9 @@ void writeToHW(struct Snake *snake[], int dir, int old_dir) {
 	else if(dir == left_dir)
 		sprite = SNAKE_HEAD_LEFT;
 	else if(dir == down_dir)
-		sprite = SNAKE_HEAD_UP;
-	else if(dir == up_dir)
 		sprite = SNAKE_HEAD_DOWN;
+	else if(dir == up_dir)
+		sprite = SNAKE_HEAD_UP;
 
 	if( dir == old_dir ){
 		sprite_second = sprite + 8; //Trick bc head and body are offset by 8
@@ -230,15 +233,16 @@ void writeToHW(struct Snake *snake[], int dir, int old_dir) {
 		/* Turn piece */
 		if( dir == right_dir && old_dir == up_dir ||
 			dir == down_dir && old_dir == left_dir){
+			printf("old dir:%d new dir:%d", old_dir, dir);
 			sprite_second = SNAKE_TURN_UP_RIGHT;
 		}
 		else if( (dir == down_dir) && (old_dir == right_dir) ||
 				 (dir == left_dir) && (old_dir == up_dir)){
-			 sprite_second = SNAKE_TURN_RIGHT_DOWN;
+			sprite_second = SNAKE_TURN_RIGHT_DOWN;
 		}
 		else if( (dir == left_dir) && (old_dir == down_dir) ||
 				 (dir == up_dir) && (old_dir == right_dir)){
-			 sprite_second = SNAKE_TURN_DOWN_LEFT;
+			sprite_second = SNAKE_TURN_DOWN_LEFT;
 		 }
 		else if( (dir == up_dir) && (old_dir == left_dir) ||
 				 (dir == right_dir) && (old_dir == down_dir)){
@@ -246,8 +250,8 @@ void writeToHW(struct Snake *snake[], int dir, int old_dir) {
 		 }
 	}
 
-
-	addSnakePiece(PLAYER1, SEG_HEAD/*head*/	, sprite, x, y);
+	incrementSnake(PLAYER1, sprite, x, y);
+	//addSnakePiece(PLAYER1, SEG_HEAD/*head*/	, sprite, x, y);
 	addSnakePiece(PLAYER1, SEG_SECOND_HEAD, sprite_second, 0/*dontcare*/,0/*dontcare*/);
 	//removeSnakeTail(PLAYER1);
 }
@@ -288,9 +292,9 @@ int main(){
 	//WRITE_SPRITE(0,0x2137C0F);
 
 	struct Snake snake[100];
-	initSnake(&snake, xCoor, yCoor);
+	initSnake(snake, xCoor, yCoor);
 	struct Food food[MAX_FOOD];
-	initFood(&food);
+	initFood(food);
 
 	addSnakePiece(PLAYER1, SEG_HEAD, SNAKE_HEAD_RIGHT, (short)xCoor, (short)yCoor);
 	addSnakePiece(PLAYER1, SEG_SECOND_HEAD, SNAKE_BODY_RIGHT, ((short)xCoor), (short)yCoor);
@@ -299,7 +303,7 @@ int main(){
 
 	while(1) {
 		code = kb_input();
-		movement(code, &snake, &food);
+		movement(code, snake, food);
 		printf("H: %d\n",READ_SNAKE1_HEAD() );
 		printf("T: %d\n",READ_SNAKE1_TAIL() );
 		printf("L: %d\n",READ_SNAKE1_LENGTH() );

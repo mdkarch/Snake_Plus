@@ -316,8 +316,8 @@ begin
 		-- Enabled --
 		elsif enabled = '1' then
 															--1=active	-Unused	-Check definitions file
-			tiles( to_integer( unsigned( y_val ) ), 
-					 to_integer( unsigned( x_val ) ) ) <= add_remove & "00" & sprite_select;
+			tiles( to_integer( unsigned( x_val ) ), 
+					 to_integer( unsigned( y_val ) ) ) <= add_remove & "00" & sprite_select;
 		end if; -- reset/ enabled
 		
 		tiles( 30, 1 ) 	<= '1' & "00" & RABBIT_CODE;
@@ -432,7 +432,6 @@ begin
 					
 				-- Tail
 				elsif segment = "11" then
-				
 
 					--Overflow case
 					if tail_index + 1 > MAX_SNAKE_SIZE then

@@ -89,19 +89,19 @@ void addEnd(struct Snake snake[], int dir)
 	if(dir == 0){//left
 		snake[tail].xCoord = snake[tail-1].xCoord + offset;
 		snake[tail].yCoord = snake[tail-1].yCoord;
-		addSnakePiece(PLAYER1, SNAKE_TAIL_LEFT, SEG_TAIL, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
+		addSnakePiece(PLAYER1, SEG_TAIL, SNAKE_TAIL_LEFT, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
 	}else if(dir == 1){//right
 		snake[tail].xCoord = snake[tail-1].xCoord - offset;
 		snake[tail].yCoord = snake[tail-1].yCoord;
-		addSnakePiece(PLAYER1, SNAKE_TAIL_RIGHT, SEG_TAIL, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
+		addSnakePiece(PLAYER1, SEG_TAIL, SNAKE_TAIL_RIGHT,(short) snake[tail].xCoord , (short) snake[tail].yCoord );
 	}else if(dir == 2){//up
 		snake[tail].xCoord = snake[tail-1].xCoord;
 		snake[tail].yCoord = snake[tail-1].yCoord + offset;
-		addSnakePiece(PLAYER1, SNAKE_TAIL_UP, SEG_TAIL, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
+		addSnakePiece(PLAYER1, SEG_TAIL, SNAKE_TAIL_UP, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
 	}else if(dir == 3){//down
 		snake[tail].xCoord = snake[tail-1].xCoord;
 		snake[tail].yCoord = snake[tail-1].yCoord - offset;
-		addSnakePiece(PLAYER1, SNAKE_TAIL_DOWN, SEG_TAIL, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
+		addSnakePiece(PLAYER1, SEG_TAIL, SNAKE_TAIL_DOWN, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
 	}
 	printf("new tail at x:%d, y%d\n", snake[tail].xCoord, snake[tail].yCoord);
 

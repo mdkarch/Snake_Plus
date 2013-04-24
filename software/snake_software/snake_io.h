@@ -1,5 +1,5 @@
 #ifndef _SNAKE_IO_H_
-#define _SNAKE_IO__H_
+#define _SNAKE_IO_H_
 
 #include <system.h>
 

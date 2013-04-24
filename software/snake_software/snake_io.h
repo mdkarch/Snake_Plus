@@ -72,6 +72,15 @@ const char ADD_CODE					= 1;
 
 
 
+void inline incrementSnake(int player, char sprite, short x, short y){
+	char unused = 0;
+	char increment = 1; // Increment flag is set high
+	char segment = 0; // Head
+	char add_remove = ADD_CODE; // Add
+	int code = (unused << 29) | (increment << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
+	WRITE_SPRITE(player,code);
+}
+
 /*
  * 	Player : 1 = player1, 2 = player2
  * 	Segment 0=head, 1= second to head, 2 = second to tail 3 = tail

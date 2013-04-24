@@ -16,7 +16,8 @@
 			--26-27: Which segment referring to
 			--			00=head, 01=second to head
 			--			10=second to tail 11=tail
-			--26-31: UNUSED (MSB)
+			--28: increment flag, move all pieces, move head to new x & y
+			--29-31: UNUSED (MSB)
 --
 -------------------------------------------------------------------------------
 library ieee;
@@ -83,8 +84,12 @@ architecture rtl of de2_vga_raster is
 			-- process signals
 	signal green, blue, red, black, tan 										: std_logic;
 	signal white, pink, gray, yellow, brown									: std_logic;
-	signal snake_head_g, snake_head_r, snake_head_w, snake_head_b 		: std_logic;
-	signal snake_body, snake_tail													: std_logic;
+	signal snake_head_orange, snake_head_black 								: std_logic;
+	signal snake_body_black, snake_body_grey, 
+					snake_body_orange, snake_body_white							: std_logic;
+	signal snake_turn_black, snake_turn_grey,
+					snake_turn_orange, snake_turn_white							: std_logic;
+	signal snake_tail_black, snake_tail_orange, snake_tail_yellow		: std_logic;
 	signal rabbit_y, rabbit_b, rabbit_w, rabbit_p							: std_logic;
 	signal mouse_y, mouse_p, mouse_l, mouse_b_eye, mouse_w_eye			: std_logic;
 	signal edwards_t, edwards_br, edwards_bl, edwards_p, ed_b_eye, ed_w_eye	: std_logic;
@@ -96,38 +101,65 @@ architecture rtl of de2_vga_raster is
 		-- sprites
 	type array_type_16x16 is array (0 to 15) of unsigned (0 to 15);
 	
--- snake head right facing colorings
-	signal sprite_snake_head_g 	: array_type_16x16;
-	signal sprite_snake_head_r 	: array_type_16x16;
-	signal sprite_snake_head_w 	: array_type_16x16;
-	signal sprite_snake_head_b 	: array_type_16x16;
-	
-	-- snake head left facing colorings
-	signal sprite_snake_head_g_left 	: array_type_16x16;
-	signal sprite_snake_head_r_left 	: array_type_16x16;
-	signal sprite_snake_head_w_left 	: array_type_16x16;
-	signal sprite_snake_head_b_left 	: array_type_16x16;
-	
-	-- snake head upwards facing colorings
-	signal sprite_snake_head_g_up 	: array_type_16x16;
-	signal sprite_snake_head_r_up  	: array_type_16x16;
-	signal sprite_snake_head_w_up  	: array_type_16x16;
-	signal sprite_snake_head_b_up  	: array_type_16x16;
-	
-	-- snake head downward facing colorings
-	signal sprite_snake_head_g_down 	: array_type_16x16;
-	signal sprite_snake_head_r_down 	: array_type_16x16;
-	signal sprite_snake_head_w_down 	: array_type_16x16;
-	signal sprite_snake_head_b_down 	: array_type_16x16;
+-- snake head sprites
+	signal sprite_head_right_black 	: array_type_16x16;
+	signal sprite_head_right_orange  : array_type_16x16;
+	signal sprite_head_left_black 	: array_type_16x16;
+	signal sprite_head_left_orange  	: array_type_16x16;
+	signal sprite_head_up_black 		: array_type_16x16;
+	signal sprite_head_up_orange  	: array_type_16x16;
+	signal sprite_head_down_black 	: array_type_16x16;
+	signal sprite_head_down_orange  	: array_type_16x16;
 
 	-- snake body colorings
-	signal sprite_snake_body	: array_type_16x16;
+	signal sprite_body_right_black	: array_type_16x16;
+	signal sprite_body_right_grey		: array_type_16x16;
+	signal sprite_body_right_orange	: array_type_16x16;
+	signal sprite_body_right_white	: array_type_16x16;
+	signal sprite_body_left_black		: array_type_16x16;
+	signal sprite_body_left_grey		: array_type_16x16;
+	signal sprite_body_left_orange	: array_type_16x16;
+	signal sprite_body_left_white		: array_type_16x16;
+	signal sprite_body_up_black		: array_type_16x16;
+	signal sprite_body_up_grey			: array_type_16x16;
+	signal sprite_body_up_orange		: array_type_16x16;
+	signal sprite_body_up_white		: array_type_16x16;
+	signal sprite_body_down_black		: array_type_16x16;
+	signal sprite_body_down_grey		: array_type_16x16;
+	signal sprite_body_down_orange	: array_type_16x16;
+	signal sprite_body_down_white		: array_type_16x16;
+	
+	--snake turn colorings
+	signal sprite_turn_up_right_black	: array_type_16x16;
+	signal sprite_turn_up_right_grey		: array_type_16x16;
+	signal sprite_turn_up_right_orange	: array_type_16x16;
+	signal sprite_turn_up_right_white	: array_type_16x16;
+	signal sprite_turn_right_down_black	: array_type_16x16;
+	signal sprite_turn_right_down_grey	: array_type_16x16;
+	signal sprite_turn_right_down_orange: array_type_16x16;
+	signal sprite_turn_right_down_white	: array_type_16x16;
+	signal sprite_turn_down_left_black	: array_type_16x16;
+	signal sprite_turn_down_left_grey	: array_type_16x16;
+	signal sprite_turn_down_left_orange	: array_type_16x16;
+	signal sprite_turn_down_left_white	: array_type_16x16;
+	signal sprite_turn_left_up_black		: array_type_16x16;
+	signal sprite_turn_left_up_grey		: array_type_16x16;
+	signal sprite_turn_left_up_orange	: array_type_16x16;
+	signal sprite_turn_left_up_white		: array_type_16x16;
 	
 -- snake tail colorings
-	signal sprite_snake_tail		: array_type_16x16;
-	signal sprite_snake_tail_left	: array_type_16x16;
-	signal sprite_snake_tail_up	: array_type_16x16;
-	signal sprite_snake_tail_down	: array_type_16x16;
+	signal sprite_tail_right_black	: array_type_16x16;
+	signal sprite_tail_right_orange	: array_type_16x16;
+	signal sprite_tail_right_yellow	: array_type_16x16;
+	signal sprite_tail_left_black		: array_type_16x16;
+	signal sprite_tail_left_orange	: array_type_16x16;
+	signal sprite_tail_left_yellow	: array_type_16x16;
+	signal sprite_tail_up_black		: array_type_16x16;
+	signal sprite_tail_up_orange		: array_type_16x16;
+	signal sprite_tail_up_yellow		: array_type_16x16;
+	signal sprite_tail_down_black		: array_type_16x16;
+	signal sprite_tail_down_orange	: array_type_16x16;
+	signal sprite_tail_down_yellow	: array_type_16x16;
 	
 	-- rabbit colorings
 	signal sprite_food_rabbit_y	: array_type_16x16;
@@ -382,12 +414,22 @@ begin
   begin
 	if rising_edge(clk) then	
 		if reset = '1' then
-			snake_head_g 	<= '0';
-			snake_head_r 	<= '0';
-			snake_head_w 	<= '0';
-			snake_head_b 	<= '0';
-			snake_body 		<= '0';
-			snake_tail 		<= '0';
+			snake_head_black 		<= '0';
+			snake_head_orange 	<= '0';
+			
+			snake_body_black 		<= '0';
+			snake_body_grey		<= '0';
+			snake_body_orange		<= '0';
+			snake_body_white		<= '0';
+			
+			snake_turn_black		<= '0';
+			snake_turn_grey		<= '0';
+			snake_turn_orange		<= '0';
+			snake_turn_white		<= '0';
+			
+			snake_tail_black 		<= '0';
+			snake_tail_orange 	<= '0';
+			snake_tail_yellow 	<= '0';
 		else
 			if snake1_segment /= -1 then
 			
@@ -399,99 +441,204 @@ begin
 					sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
 				 
 					-- Snake head color signals
-					snake_head_g 	<= '0';
-					snake_head_r 	<= '0';
-					snake_head_w 	<= '0';
-					snake_head_b 	<= '0';
+					snake_head_black 		<= '0';
+					snake_head_orange 	<= '0';
 					
 					-- Snake body color signals
-					snake_body 		<= '0';
+					snake_body_black 		<= '0';
+					snake_body_grey		<= '0';
+					snake_body_orange		<= '0';
+					snake_body_white		<= '0';
+					
+					--Snake body turn
+					snake_turn_black		<= '0';
+					snake_turn_grey		<= '0';
+					snake_turn_orange		<= '0';
+					snake_turn_white		<= '0';
 					
 					-- Snake tail color signals
-					snake_tail 	<= '0';
+					snake_tail_black 		<= '0';
+					snake_tail_orange 	<= '0';
+					snake_tail_yellow 	<= '0';
 					
-					-- Right orientation for snake head
+					-- HEAD ORIENTATIONS
 					if orient = SNAKE_HEAD_RIGHT then 
-						 if sprite_snake_head_g(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_head_g <= '1';
-						 elsif sprite_snake_head_b(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_head_b <= '1';
-						 elsif sprite_snake_head_r(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_head_r <= '1';
-						 elsif sprite_snake_head_w(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_head_w <= '1';
+						 if sprite_head_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_head_black <= '1';
+						 elsif sprite_head_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_head_orange <= '1';
 						 end if; -- end sprite snake head
 						 
 					elsif orient = SNAKE_HEAD_LEFT then
-							if sprite_snake_head_g_left(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_g <= '1';
-							elsif sprite_snake_head_b_left(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_b <= '1';
-							elsif sprite_snake_head_r_left(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_r <= '1';
-							elsif sprite_snake_head_w_left(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_w <= '1';
-							end if; -- end sprite snake head
+							if sprite_head_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_black <= '1';
+							elsif sprite_head_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_orange <= '1';
+						 end if; -- end sprite snake head
 						
 					elsif orient = SNAKE_HEAD_UP then
-							if sprite_snake_head_g_up(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_g <= '1';
-							elsif sprite_snake_head_b_up(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_b <= '1';
-							elsif sprite_snake_head_r_up(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_r <= '1';
-							elsif sprite_snake_head_w_up(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_w <= '1';
-							end if; -- end sprite snake head						
+							if sprite_head_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_black <= '1';
+							elsif sprite_head_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_orange <= '1';
+						 end if; -- end sprite snake head					
 						
 					elsif orient = SNAKE_HEAD_DOWN then
-							if sprite_snake_head_g_down(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_g <= '1';
-							elsif sprite_snake_head_b_down(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_b <= '1';
-							elsif sprite_snake_head_r_down(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_r <= '1';
-							elsif sprite_snake_head_w_down(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_w <= '1';
-							end if; -- end sprite snake head
+							if sprite_head_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_black <= '1';
+							elsif sprite_head_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_head_orange <= '1';
+						 end if; -- end sprite snake head	
 							
 					
-					elsif orient = SNAKE_BODY_SELECT then 
-						 if sprite_snake_body(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_body <= '1';
-						 end if; -- end sprite snake body
+					--BODY ORIENTATIONS
+					elsif orient = SNAKE_BODY_RIGHT then 
+						  if sprite_body_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_black <= '1';
+							elsif sprite_body_right_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_grey <= '1';
+							elsif sprite_body_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_orange <= '1';
+							elsif sprite_body_right_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+						 
+					elsif orient = SNAKE_BODY_LEFT then 
+						  if sprite_body_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_black <= '1';
+							elsif sprite_body_left_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_grey <= '1';
+							elsif sprite_body_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_orange <= '1';
+							elsif sprite_body_left_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+					
+					elsif orient = SNAKE_BODY_UP then 
+						  if sprite_body_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_black <= '1';
+							elsif sprite_body_up_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_grey <= '1';
+							elsif sprite_body_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_orange <= '1';
+							elsif sprite_body_up_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+					
+					elsif orient = SNAKE_BODY_DOWN then 
+						  if sprite_body_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_black <= '1';
+							elsif sprite_body_down_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_grey <= '1';
+							elsif sprite_body_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_orange <= '1';
+							elsif sprite_body_down_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
 					
 					
+					
+					--TURN ORIENTATIONS
+					elsif orient = SNAKE_TURN_UP_RIGHT then 
+						  if sprite_turn_up_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_black <= '1';
+							elsif sprite_turn_up_right_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_grey <= '1';
+							elsif sprite_turn_up_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_orange <= '1';
+							elsif sprite_turn_up_right_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+						 
+					elsif orient = SNAKE_TURN_RIGHT_DOWN then 
+						  if sprite_turn_right_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_black <= '1';
+							elsif sprite_turn_right_down_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_grey <= '1';
+							elsif sprite_turn_right_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_orange <= '1';
+							elsif sprite_turn_right_down_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+					
+					elsif orient = SNAKE_TURN_DOWN_LEFT then 
+						  if sprite_turn_down_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_black <= '1';
+							elsif sprite_turn_down_left_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_grey <= '1';
+							elsif sprite_turn_down_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_orange <= '1';
+							elsif sprite_turn_down_left_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+					
+					elsif orient = SNAKE_TURN_LEFT_UP then 
+						  if sprite_turn_left_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_black <= '1';
+							elsif sprite_turn_left_up_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_grey <= '1';
+							elsif sprite_turn_left_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_turn_orange <= '1';
+							elsif sprite_turn_left_up_white(sprite_v_pos)(sprite_h_pos) = '1' then
+								snake_body_white <= '1';
+						 end if; -- end sprite snake tail
+					
+					
+					
+					--TAIL ORIENTATIONS
 					-- Right orientation for snake tail
 					elsif orient = SNAKE_TAIL_RIGHT then 
-						 if sprite_snake_tail(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail <= '1';
-						 end if; -- end sprite snake head
+						 if sprite_tail_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_black <= '1';
+						 elsif sprite_tail_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_orange <= '1';
+						 elsif sprite_tail_right_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_yellow <= '1';
+						 end if; -- end sprite snake tail
 						 
 					elsif orient = SNAKE_TAIL_LEFT then
-						 if sprite_snake_tail_left(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail <= '1';
-						 end if; -- end sprite snake head
+						 if sprite_tail_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_black <= '1';
+						 elsif sprite_tail_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_orange <= '1';
+						 elsif sprite_tail_left_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_yellow <= '1';
+						 end if; -- end sprite snake tail
 					
 					elsif orient = SNAKE_TAIL_UP then
-						 if sprite_snake_tail_up(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail <= '1';
-						 end if; -- end sprite snake head
+						 if sprite_tail_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_black <= '1';
+						 elsif sprite_tail_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_orange <= '1';
+						 elsif sprite_tail_up_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_yellow <= '1';
+						 end if; -- end sprite snake tail
 					
 					elsif orient = SNAKE_TAIL_DOWN then
-						 if sprite_snake_tail_down(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail <= '1';
-						 end if; -- end sprite snake
+						 if sprite_tail_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_black <= '1';
+						 elsif sprite_tail_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_orange <= '1';
+						 elsif sprite_tail_down_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+							snake_tail_yellow <= '1';
+						 end if; -- end sprite snake tail
 					end if; -- orient
 
 
 			else
-				snake_head_g 	<= '0';
-				snake_head_r 	<= '0';
-				snake_head_w 	<= '0';
-				snake_head_b 	<= '0';
-				snake_body 		<= '0';
-				snake_tail 		<= '0';
+				snake_head_black 		<= '0';
+				snake_head_orange 	<= '0';
+				snake_body_black 		<= '0';
+				snake_body_grey		<= '0';
+				snake_body_orange		<= '0';
+				snake_body_white		<= '0';
+				snake_turn_black		<= '0';
+				snake_turn_grey		<= '0';
+				snake_turn_orange		<= '0';
+				snake_turn_white		<= '0';
+				snake_tail_black 		<= '0';
+				snake_tail_orange 	<= '0';
+				snake_tail_yellow 	<= '0';
 			end if;
 		end if;
 	end if;		
@@ -970,25 +1117,27 @@ begin
     elsif clk'event and clk = '1' then
 		if blue = '1' or rabbit_b = '1'  or freeze = '1' 
 							or mouse_b_eye = '1' then
-		  VGA_R <= "0000000000";
-		  VGA_G <= "0000000000";
+		  VGA_R <= "0011100000";
+		  VGA_G <= "0010100000";
 		  VGA_B <= "1111111111";
-		elsif green = '1' or snake_body = '1' or snake_head_g = '1' 
-								or snake_tail = '1' or ed_b_eye = '1' then
-		  VGA_R <= "0000000000";
-		  VGA_G <= "1111111111";
+		 
+		--This got changed to orange, was green, now its orange
+		elsif green = '1' or snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1'
+								or snake_tail_orange = '1' or ed_b_eye = '1' then
+		  VGA_R <= "1111111111";
+		  VGA_G <= "0010100000";
 		  VGA_B <= "0000000000";
-		elsif red = '1' or snake_head_r = '1' or wall = '1' 
+		elsif red = '1' or wall = '1' 
 								or growth_r = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";
-		elsif black = '1' or snake_head_b = '1' or mouse_l = '1' 
-								or edwards_bl = '1' then
+		elsif black = '1' or snake_head_black = '1' or snake_tail_black = '1' or snake_body_black ='1' 
+								or snake_turn_black = '1' or mouse_l = '1' or edwards_bl = '1' then
 		  VGA_R <= "0000000000";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";
-		elsif white = '1' or snake_head_w = '1' or rabbit_w = '1' 
+		elsif white = '1' or rabbit_w = '1' or snake_body_white = '1' or snake_turn_white = '1'
 								or one = '1' or P = '1' or two = '1' 
 								or I = '1' or N = '1' or S = '1' 
 								or exclam = '1' or pause = '1' or ed_w_eye = '1'
@@ -1001,12 +1150,12 @@ begin
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0110000000";
 		  VGA_B <= "0110100000";
-		elsif gray = '1'  or rabbit_y = '1' or growth_y = '1'  
+		elsif gray = '1'  or snake_body_grey = '1' or snake_turn_grey = '1' or rabbit_y = '1' or growth_y = '1'  
 								or mouse_y = '1' then
 		  VGA_R <= "1100000000";
 		  VGA_G <= "1100000000";
 		  VGA_B <= "1100000000";
-		elsif yellow = '1' or speed = '1' then
+		elsif yellow = '1' or speed = '1' or snake_tail_yellow = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "1111111111";
 		  VGA_B <= "0000000000";
@@ -1042,385 +1191,918 @@ begin
   
   -- Sprite Definitions
 
-	
-	-- sprite snake head coloring
-  sprite_snake_head_g(0) 			<=	"0000111100000000";
-  sprite_snake_head_g(1) 			<=	"0001111111000000";
-  sprite_snake_head_g(2) 			<=	"0011111111110000";
-  sprite_snake_head_g(3) 			<=	"0111111111111000";
-  sprite_snake_head_g(4) 			<=	"0111111111111100";
-  sprite_snake_head_g(5) 			<=	"1111100011111100";
-  sprite_snake_head_g(6) 			<=	"1111100011111110";
-  sprite_snake_head_g(7) 			<=	"1111100011111100";
-  sprite_snake_head_g(8) 			<=	"1111111111100000";
-  sprite_snake_head_g(9) 			<=	"1111111111100000";
-  sprite_snake_head_g(10) 			<=	"1111111111111100";
-  sprite_snake_head_g(11) 			<=	"0111111111111110";
-  sprite_snake_head_g(12) 	   	<=	"0111111111111000";
-  sprite_snake_head_g(13) 	   	<=	"0011111111110000";
-  sprite_snake_head_g(14) 	   	<=	"0001111111000000";
-  sprite_snake_head_g(15) 	   	<=	"0000111100000000";
+  --Snake head
+sprite_head_down_black(0)			<=      "1000000000111000";
+sprite_head_down_black(1)			<=      "1000000000001100";
+sprite_head_down_black(2)			<=      "1000000000001000";
+sprite_head_down_black(3)			<=      "1000000000001000";
+sprite_head_down_black(4)			<=      "1000000001001110";
+sprite_head_down_black(5)			<=      "1000000000101110";
+sprite_head_down_black(6)			<=      "1000001000110000";
+sprite_head_down_black(7)			<=      "0100001000111011";
+sprite_head_down_black(8)			<=      "0100001000011111";
+sprite_head_down_black(9)			<=      "0000001000011101";
+sprite_head_down_black(10)			<=      "0010010000001001";
+sprite_head_down_black(11)			<=      "0001000000001101";
+sprite_head_down_black(12)			<=      "0000010000100100";
+sprite_head_down_black(13)			<=      "0000001000000100";
+sprite_head_down_black(14)			<=      "0000000010001000";
+sprite_head_down_black(15)			<=      "0000000000000000";
+
+sprite_head_down_orange(0)			<=      "0111111111000100";
+sprite_head_down_orange(1)			<=      "0111111111110000";
+sprite_head_down_orange(2)			<=      "0111111111110100";
+sprite_head_down_orange(3)			<=      "0111111111110100";
+sprite_head_down_orange(4)			<=      "0111111110110000";
+sprite_head_down_orange(5)			<=      "0111111111010000";
+sprite_head_down_orange(6)			<=      "0111110111001110";
+sprite_head_down_orange(7)			<=      "0011110111000100";
+sprite_head_down_orange(8)			<=      "0011110111100000";
+sprite_head_down_orange(9)			<=      "0011110111100010";
+sprite_head_down_orange(10)		<=      "0001101111110010";
+sprite_head_down_orange(11)		<=      "0000111111110010";
+sprite_head_down_orange(12)		<=      "0000001111011010";
+sprite_head_down_orange(13)		<=      "0000000111111000";
+sprite_head_down_orange(14)		<=      "0000000001110000";
+sprite_head_down_orange(15)		<=      "0000000000000000";
+
+
+sprite_head_right_black(0)			<=      "1111111000000000";
+sprite_head_right_black(1)			<=      "0000000110000000";
+sprite_head_right_black(2)			<=      "0000000000100000";
+sprite_head_right_black(3)			<=      "0000000000010000";
+sprite_head_right_black(4)			<=      "0000000000000000";
+sprite_head_right_black(5)			<=      "0000000000101000";
+sprite_head_right_black(6)			<=      "0000001111000100";
+sprite_head_right_black(7)			<=      "0000000000000000";
+sprite_head_right_black(8)			<=      "0000000000000010";
+sprite_head_right_black(9)			<=      "0000100000000000";
+sprite_head_right_black(10)		<=      "1000011100001000";
+sprite_head_right_black(11)		<=      "1000001111000000";
+sprite_head_right_black(12)		<=      "1111110111110010";
+sprite_head_right_black(13)		<=      "0100110011011100";
+sprite_head_right_black(14)		<=      "0000110110000000";
+sprite_head_right_black(15)		<=      "0000000111110000";	
+
+sprite_head_right_orange(0)		<=      "0000000000000000";
+sprite_head_right_orange(1)		<=      "1111111000000000";
+sprite_head_right_orange(2)		<=      "1111111111000000";
+sprite_head_right_orange(3)		<=      "1111111111100000";
+sprite_head_right_orange(4)		<=      "1111111111110000";
+sprite_head_right_orange(5)		<=      "1111111111010000";
+sprite_head_right_orange(6)		<=      "1111110000111000";
+sprite_head_right_orange(7)		<=      "1111111111111100";
+sprite_head_right_orange(8)		<=      "1111111111111100";
+sprite_head_right_orange(9)		<=      "1111011111111110";
+sprite_head_right_orange(10)		<=      "0111100011110110";
+sprite_head_right_orange(11)		<=      "0111110000111110";
+sprite_head_right_orange(12)		<=      "0000001000001100";
+sprite_head_right_orange(13)		<=      "1011001100000000";
+sprite_head_right_orange(14)		<=      "0000001001111000";
+sprite_head_right_orange(15)		<=      "0000000000000000";
+
+sprite_head_up_black(0)				<=      "0000000000000000";
+sprite_head_up_black(1)				<=      "0000000010001000";
+sprite_head_up_black(2)				<=      "0000001000000100";
+sprite_head_up_black(3)				<=      "0000010000100100";
+sprite_head_up_black(4)				<=      "0001000000001101";
+sprite_head_up_black(5)				<=      "0010010000001001";
+sprite_head_up_black(6)				<=      "0000001000011101";
+sprite_head_up_black(7)				<=      "0100001000011111";
+sprite_head_up_black(8)				<=      "0100001000111011";
+sprite_head_up_black(9)				<=      "1000001000110000";
+sprite_head_up_black(10)			<=      "1000000000101110";
+sprite_head_up_black(11)			<=      "1000000001001110";
+sprite_head_up_black(12)			<=      "1000000000001000";
+sprite_head_up_black(13)			<=      "1000000000001000";
+sprite_head_up_black(14)			<=      "1000000000001100";
+sprite_head_up_black(15)			<=      "1000000000111000";
+
+sprite_head_up_orange(0)			<=      "0000000000000000";
+sprite_head_up_orange(1)			<=      "0000000001110000";
+sprite_head_up_orange(2)			<=      "0000000111111000";
+sprite_head_up_orange(3)			<=      "0000001111011010";
+sprite_head_up_orange(4)			<=      "0000111111110010";
+sprite_head_up_orange(5)			<=      "0001101111110010";
+sprite_head_up_orange(6)			<=      "0011110111100010";
+sprite_head_up_orange(7)			<=      "0011110111100000";
+sprite_head_up_orange(8)			<=      "0011110111000100";
+sprite_head_up_orange(9)			<=      "0111110111001110";
+sprite_head_up_orange(10)			<=      "0111111111010000";
+sprite_head_up_orange(11)			<=      "0111111110110000";
+sprite_head_up_orange(12)			<=      "0111111111110100";
+sprite_head_up_orange(13)			<=      "0111111111110100";
+sprite_head_up_orange(14)			<=      "0111111111110000";
+sprite_head_up_orange(15)			<=      "0111111111000100";
+
+sprite_head_left_black(0)			<=      "0000000001111111";
+sprite_head_left_black(1)			<=      "0000000110000000";
+sprite_head_left_black(2)			<=      "0000010000000000";
+sprite_head_left_black(3)			<=      "0000100000000000";
+sprite_head_left_black(4)			<=      "0000000000000000";
+sprite_head_left_black(5)			<=      "0001010000000000";
+sprite_head_left_black(6)			<=      "0010001111000000";
+sprite_head_left_black(7)			<=      "0000000000000000";
+sprite_head_left_black(8)			<=      "0100000000000000";
+sprite_head_left_black(9)			<=      "0000000000010000";
+sprite_head_left_black(10)			<=      "0001000011100001";
+sprite_head_left_black(11)			<=      "0000001111000001";
+sprite_head_left_black(12)			<=      "0100111110111111";
+sprite_head_left_black(13)			<=      "0011101100110010";
+sprite_head_left_black(14)			<=      "0000000110110000";
+sprite_head_left_black(15)			<=      "0000111110000000";
+
+sprite_head_left_orange(0)			<=      "0000000000000000";
+sprite_head_left_orange(1)			<=      "0000000001111111";
+sprite_head_left_orange(2)			<=      "0000001111111111";
+sprite_head_left_orange(3)			<=      "0000011111111111";
+sprite_head_left_orange(4)			<=      "0000111111111111";
+sprite_head_left_orange(5)			<=      "0000101111111111";
+sprite_head_left_orange(6)			<=      "0001110000111111";
+sprite_head_left_orange(7)			<=      "0011111111111111";
+sprite_head_left_orange(8)			<=      "0011111111111111";
+sprite_head_left_orange(9)			<=      "0111111111101111";
+sprite_head_left_orange(10)		<=      "0110111100011110";
+sprite_head_left_orange(11)		<=      "0111110000111110";
+sprite_head_left_orange(12)		<=      "0011000001000000";
+sprite_head_left_orange(13)		<=      "0000000011001101";
+sprite_head_left_orange(14)		<=      "0001111001000000";
+sprite_head_left_orange(15)		<=      "0000000000000000";
+
+
+
+
+
+--sprite body coloring
+sprite_body_right_black(0)			<=      "0000000110000000";
+sprite_body_right_black(1)			<=      "0000000000000000";
+sprite_body_right_black(2)			<=      "0000000000000000";
+sprite_body_right_black(3)			<=      "0000000000000000";
+sprite_body_right_black(4)			<=      "0000000000000000";
+sprite_body_right_black(5)			<=      "0000000000000000";
+sprite_body_right_black(6)			<=      "0000000000000000";
+sprite_body_right_black(7)			<=      "0000000000000000";
+sprite_body_right_black(8)			<=      "0000000000000000";
+sprite_body_right_black(9)			<=      "0000000000000000";
+sprite_body_right_black(10)		<=      "0000000000000000";
+sprite_body_right_black(11)		<=      "0000000000000000";
+sprite_body_right_black(12)		<=      "1111111111111111";
+sprite_body_right_black(13)		<=      "1111111111111111";
+sprite_body_right_black(14)		<=      "0000000000000000";
+sprite_body_right_black(15)		<=      "1111111111111111";
+
+sprite_body_right_grey(0)			<=      "1111111000000000";
+sprite_body_right_grey(1)			<=      "0000000000000000";
+sprite_body_right_grey(2)			<=      "1111111100000000";
+sprite_body_right_grey(3)			<=      "1111111100000000";
+sprite_body_right_grey(4)			<=      "1111111100000000";
+sprite_body_right_grey(5)			<=      "1111111100000000";
+sprite_body_right_grey(6)			<=      "1111111100000000";
+sprite_body_right_grey(7)			<=      "1111111100000000";
+sprite_body_right_grey(8)			<=      "1111111100000000";
+sprite_body_right_grey(9)			<=      "1111111100000000";
+sprite_body_right_grey(10)			<=      "1111111100000000";
+sprite_body_right_grey(11)			<=      "1111111100000000";
+sprite_body_right_grey(12)			<=      "0000000000000000";
+sprite_body_right_grey(13)			<=      "0000000000000000";
+sprite_body_right_grey(14)			<=      "1111111100000000";
+sprite_body_right_grey(15)			<=      "0000000000000000";
+
+sprite_body_right_orange(0)		<=      "0000000001111111";
+sprite_body_right_orange(1)		<=      "0000000000000000";
+sprite_body_right_orange(2)		<=      "0000000011111111";
+sprite_body_right_orange(3)		<=      "0000000011111111";
+sprite_body_right_orange(4)		<=      "0000000011111111";
+sprite_body_right_orange(5)		<=      "0000000011111111";
+sprite_body_right_orange(6)		<=      "0000000011111111";
+sprite_body_right_orange(7)		<=      "0000000011111111";
+sprite_body_right_orange(8)		<=      "0000000011111111";
+sprite_body_right_orange(9)		<=      "0000000011111111";
+sprite_body_right_orange(10)		<=      "0000000011111111";
+sprite_body_right_orange(11)		<=      "0000000011111111";
+sprite_body_right_orange(12)		<=      "0000000000000000";
+sprite_body_right_orange(13)		<=      "0000000000000000";
+sprite_body_right_orange(14)		<=      "0000000011111111";
+sprite_body_right_orange(15)		<=      "0000000000000000";
+
+sprite_body_right_white(0)			<=      "0000000000000000";
+sprite_body_right_white(1)			<=      "1111111111111111";
+sprite_body_right_white(2)			<=      "0000000000000000";
+sprite_body_right_white(3)			<=      "0000000000000000";
+sprite_body_right_white(4)			<=      "0000000000000000";
+sprite_body_right_white(5)			<=      "0000000000000000";
+sprite_body_right_white(6)			<=      "0000000000000000";
+sprite_body_right_white(7)			<=      "0000000000000000";
+sprite_body_right_white(8)			<=      "0000000000000000";
+sprite_body_right_white(9)			<=      "0000000000000000";
+sprite_body_right_white(10)		<=      "0000000000000000";
+sprite_body_right_white(11)		<=      "0000000000000000";
+sprite_body_right_white(12)		<=      "0000000000000000";
+sprite_body_right_white(13)		<=      "0000000000000000";
+sprite_body_right_white(14)		<=      "0000000000000000";
+sprite_body_right_white(15)		<=      "0000000000000000";
+
+
+sprite_body_up_black(0)				<=      "0000000000001101";
+sprite_body_up_black(1)				<=      "0000000000001101";
+sprite_body_up_black(2)				<=      "0000000000001101";
+sprite_body_up_black(3)				<=      "0000000000001101";
+sprite_body_up_black(4)				<=      "0000000000001101";
+sprite_body_up_black(5)				<=      "0000000000001101";
+sprite_body_up_black(6)				<=      "0000000000001101";
+sprite_body_up_black(7)				<=      "1000000000001101";
+sprite_body_up_black(8)				<=      "1000000000001101";
+sprite_body_up_black(9)				<=      "0000000000001101";
+sprite_body_up_black(10)			<=      "0000000000001101";
+sprite_body_up_black(11)			<=      "0000000000001101";
+sprite_body_up_black(12)			<=      "0000000000001101";
+sprite_body_up_black(13)			<=      "0000000000001101";
+sprite_body_up_black(14)			<=      "0000000000001101";
+sprite_body_up_black(15)			<=      "0000000000001101";
+
+sprite_body_up_grey(0)				<=      "0000000000000000";
+sprite_body_up_grey(1)				<=      "0000000000000000";
+sprite_body_up_grey(2)				<=      "0000000000000000";
+sprite_body_up_grey(3)				<=      "0000000000000000";
+sprite_body_up_grey(4)				<=      "0000000000000000";
+sprite_body_up_grey(5)				<=      "0000000000000000";
+sprite_body_up_grey(6)				<=      "0000000000000000";
+sprite_body_up_grey(7)				<=      "0000000000000000";
+sprite_body_up_grey(8)				<=      "0011111111110010";
+sprite_body_up_grey(9)				<=      "1011111111110010";
+sprite_body_up_grey(10)				<=      "1011111111110010";
+sprite_body_up_grey(11)				<=      "1011111111110010";
+sprite_body_up_grey(12)				<=      "1011111111110010";
+sprite_body_up_grey(13)				<=      "1011111111110010";
+sprite_body_up_grey(14)				<=      "1011111111110010";
+sprite_body_up_grey(15)				<=      "1011111111110010";
+
+sprite_body_up_orange(0)			<=      "1011111111110010";
+sprite_body_up_orange(1)			<=      "1011111111110010";
+sprite_body_up_orange(2)			<=      "1011111111110010";
+sprite_body_up_orange(3)			<=      "1011111111110010";
+sprite_body_up_orange(4)			<=      "1011111111110010";
+sprite_body_up_orange(5)			<=      "1011111111110010";
+sprite_body_up_orange(6)			<=      "1011111111110010";
+sprite_body_up_orange(7)			<=      "0011111111110010";
+sprite_body_up_orange(8)			<=      "0000000000000000";
+sprite_body_up_orange(9)			<=      "0000000000000000";
+sprite_body_up_orange(10)			<=      "0000000000000000";
+sprite_body_up_orange(11)			<=      "0000000000000000";
+sprite_body_up_orange(12)			<=      "0000000000000000";
+sprite_body_up_orange(13)			<=      "0000000000000000";
+sprite_body_up_orange(14)			<=      "0000000000000000";
+sprite_body_up_orange(15)			<=      "0000000000000000";
+
+sprite_body_up_white(0)				<=      "0100000000000000";
+sprite_body_up_white(1)				<=      "0100000000000000";
+sprite_body_up_white(2)				<=      "0100000000000000";
+sprite_body_up_white(3)				<=      "0100000000000000";
+sprite_body_up_white(4)				<=      "0100000000000000";
+sprite_body_up_white(5)				<=      "0100000000000000";
+sprite_body_up_white(6)				<=      "0100000000000000";
+sprite_body_up_white(7)				<=      "0100000000000000";
+sprite_body_up_white(8)				<=      "0100000000000000";
+sprite_body_up_white(9)				<=      "0100000000000000";
+sprite_body_up_white(10)			<=      "0100000000000000";
+sprite_body_up_white(11)			<=      "0100000000000000";
+sprite_body_up_white(12)			<=      "0100000000000000";
+sprite_body_up_white(13)			<=      "0100000000000000";
+sprite_body_up_white(14)			<=      "0100000000000000";
+sprite_body_up_white(15)			<=      "0100000000000000";
+
+sprite_body_left_black(0)			<=      "1111111111111111";
+sprite_body_left_black(1)			<=      "0000000000000000";
+sprite_body_left_black(2)			<=      "1111111111111111";
+sprite_body_left_black(3)			<=      "1111111111111111";
+sprite_body_left_black(4)			<=      "0000000000000000";
+sprite_body_left_black(5)			<=      "0000000000000000";
+sprite_body_left_black(6)			<=      "0000000000000000";
+sprite_body_left_black(7)			<=      "0000000000000000";
+sprite_body_left_black(8)			<=      "0000000000000000";
+sprite_body_left_black(9)			<=      "0000000000000000";
+sprite_body_left_black(10)			<=      "0000000000000000";
+sprite_body_left_black(11)			<=      "0000000000000000";
+sprite_body_left_black(12)			<=      "0000000000000000";
+sprite_body_left_black(13)			<=      "0000000000000000";
+sprite_body_left_black(14)			<=      "0000000000000000";
+sprite_body_left_black(15)			<=      "0000000110000000";
+
+sprite_body_left_grey(0)			<=      "0000000000000000";
+sprite_body_left_grey(1)			<=      "0000000011111111";
+sprite_body_left_grey(2)			<=      "0000000000000000";
+sprite_body_left_grey(3)			<=      "0000000000000000";
+sprite_body_left_grey(4)			<=      "0000000011111111";
+sprite_body_left_grey(5)			<=      "0000000011111111";
+sprite_body_left_grey(6)			<=      "0000000011111111";
+sprite_body_left_grey(7)			<=      "0000000011111111";
+sprite_body_left_grey(8)			<=      "0000000011111111";
+sprite_body_left_grey(9)			<=      "0000000011111111";
+sprite_body_left_grey(10)			<=      "0000000011111111";
+sprite_body_left_grey(11)			<=      "0000000011111111";
+sprite_body_left_grey(12)			<=      "0000000011111111";
+sprite_body_left_grey(13)			<=      "0000000011111111";
+sprite_body_left_grey(14)			<=      "0000000000000000";
+sprite_body_left_grey(15)			<=      "0000000001111111";
+
+sprite_body_left_orange(0)			<=      "0000000000000000";
+sprite_body_left_orange(1)			<=      "1111111100000000";
+sprite_body_left_orange(2)			<=      "0000000000000000";
+sprite_body_left_orange(3)			<=      "0000000000000000";
+sprite_body_left_orange(4)			<=      "1111111100000000";
+sprite_body_left_orange(5)			<=      "1111111100000000";
+sprite_body_left_orange(6)			<=      "1111111100000000";
+sprite_body_left_orange(7)			<=      "1111111100000000";
+sprite_body_left_orange(8)			<=      "1111111100000000";
+sprite_body_left_orange(9)			<=      "1111111100000000";
+sprite_body_left_orange(10)		<=      "1111111100000000";
+sprite_body_left_orange(11)		<=      "1111111100000000";
+sprite_body_left_orange(12)		<=      "1111111100000000";
+sprite_body_left_orange(13)		<=      "1111111100000000";
+sprite_body_left_orange(14)		<=      "0000000000000000";
+sprite_body_left_orange(15)		<=      "1111111000000000";
+
+sprite_body_left_white(0)			<=      "0000000000000000";
+sprite_body_left_white(1)			<=      "0000000000000000";
+sprite_body_left_white(2)			<=      "0000000000000000";
+sprite_body_left_white(3)			<=      "0000000000000000";
+sprite_body_left_white(4)			<=      "0000000000000000";
+sprite_body_left_white(5)			<=      "0000000000000000";
+sprite_body_left_white(6)			<=      "0000000000000000";
+sprite_body_left_white(7)			<=      "0000000000000000";
+sprite_body_left_white(8)			<=      "0000000000000000";
+sprite_body_left_white(9)			<=      "0000000000000000";
+sprite_body_left_white(10)			<=      "0000000000000000";
+sprite_body_left_white(11)			<=      "0000000000000000";
+sprite_body_left_white(12)			<=      "0000000000000000";
+sprite_body_left_white(13)			<=      "0000000000000000";
+sprite_body_left_white(14)			<=      "1111111111111111";
+sprite_body_left_white(15)			<=      "0000000000000000";
+
+sprite_body_down_black(0)			<=      "1011000000000000";
+sprite_body_down_black(1)			<=      "1011000000000000";
+sprite_body_down_black(2)			<=      "1011000000000000";
+sprite_body_down_black(3)			<=      "1011000000000000";
+sprite_body_down_black(4)			<=      "1011000000000000";
+sprite_body_down_black(5)			<=      "1011000000000000";
+sprite_body_down_black(6)			<=      "1011000000000000";
+sprite_body_down_black(7)			<=      "1011000000000001";
+sprite_body_down_black(8)			<=      "1011000000000001";
+sprite_body_down_black(9)			<=      "1011000000000000";
+sprite_body_down_black(10)			<=      "1011000000000000";
+sprite_body_down_black(11)			<=      "1011000000000000";
+sprite_body_down_black(12)			<=      "1011000000000000";
+sprite_body_down_black(13)			<=      "1011000000000000";
+sprite_body_down_black(14)			<=      "1011000000000000";
+sprite_body_down_black(15)			<=      "1011000000000000";
+
+sprite_body_down_grey(0)			<=      "0100111111111101";
+sprite_body_down_grey(1)			<=      "0100111111111101";
+sprite_body_down_grey(2)			<=      "0100111111111101";
+sprite_body_down_grey(3)			<=      "0100111111111101";
+sprite_body_down_grey(4)			<=      "0100111111111101";
+sprite_body_down_grey(5)			<=      "0100111111111101";
+sprite_body_down_grey(6)			<=      "0100111111111101";
+sprite_body_down_grey(7)			<=      "0100111111111100";
+sprite_body_down_grey(8)			<=      "0000000000000000";
+sprite_body_down_grey(9)			<=      "0000000000000000";
+sprite_body_down_grey(10)			<=      "0000000000000000";
+sprite_body_down_grey(11)			<=      "0000000000000000";
+sprite_body_down_grey(12)			<=      "0000000000000000";
+sprite_body_down_grey(13)			<=      "0000000000000000";
+sprite_body_down_grey(14)			<=      "0000000000000000";
+sprite_body_down_grey(15)			<=      "0000000000000000";
+
+sprite_body_down_orange(0)			<=      "0000000000000000";
+sprite_body_down_orange(1)			<=      "0000000000000000";
+sprite_body_down_orange(2)			<=      "0000000000000000";
+sprite_body_down_orange(3)			<=      "0000000000000000";
+sprite_body_down_orange(4)			<=      "0000000000000000";
+sprite_body_down_orange(5)			<=      "0000000000000000";
+sprite_body_down_orange(6)			<=      "0000000000000000";
+sprite_body_down_orange(7)			<=      "0000000000000000";
+sprite_body_down_orange(8)			<=      "0100111111111100";
+sprite_body_down_orange(9)			<=      "0100111111111101";
+sprite_body_down_orange(10)			<=      "0100111111111101";
+sprite_body_down_orange(11)			<=      "0100111111111101";
+sprite_body_down_orange(12)			<=      "0100111111111101";
+sprite_body_down_orange(13)			<=      "0100111111111101";
+sprite_body_down_orange(14)			<=      "0100111111111101";
+sprite_body_down_orange(15)			<=      "0100111111111101";
+
+sprite_body_down_white(0)			<=      "0000000000000010";
+sprite_body_down_white(1)			<=      "0000000000000010";
+sprite_body_down_white(2)			<=      "0000000000000010";
+sprite_body_down_white(3)			<=      "0000000000000010";
+sprite_body_down_white(4)			<=      "0000000000000010";
+sprite_body_down_white(5)			<=      "0000000000000010";
+sprite_body_down_white(6)			<=      "0000000000000010";
+sprite_body_down_white(7)			<=      "0000000000000010";
+sprite_body_down_white(8)			<=      "0000000000000010";
+sprite_body_down_white(9)			<=      "0000000000000010";
+sprite_body_down_white(10)			<=      "0000000000000010";
+sprite_body_down_white(11)			<=      "0000000000000010";
+sprite_body_down_white(12)			<=      "0000000000000010";
+sprite_body_down_white(13)			<=      "0000000000000010";
+sprite_body_down_white(14)			<=      "0000000000000010";
+sprite_body_down_white(15)			<=      "0000000000000010";
+
   
-  -- sprite snake head tongue coloring
-  sprite_snake_head_r(0) 			<=	"0000000000000000";
-  sprite_snake_head_r(1) 			<=	"0000000000000000";
-  sprite_snake_head_r(2) 			<=	"0000000000000000";
-  sprite_snake_head_r(3) 			<=	"0000000000000000";
-  sprite_snake_head_r(4) 	  		<=	"0000000000000000";
-  sprite_snake_head_r(5) 			<=	"0000000000000000";
-  sprite_snake_head_r(6) 			<=	"0000000000000000";
-  sprite_snake_head_r(7) 			<=	"0000000000000011";
-  sprite_snake_head_r(8) 			<=	"0000000000011110";
-  sprite_snake_head_r(9) 			<=	"0000000000011110";
-  sprite_snake_head_r(10) 			<=	"0000000000000011";
-  sprite_snake_head_r(11) 			<=	"0000000000000000";
-  sprite_snake_head_r(12) 	   	<=	"0000000000000000";
-  sprite_snake_head_r(13) 	   	<=	"0000000000000000";
-  sprite_snake_head_r(14) 	   	<=	"0000000000000000";
-  sprite_snake_head_r(15) 	  	 	<= "0000000000000000";
   
-  -- sprite snake head eye white coloring
-  sprite_snake_head_w(0) 			<=	"0000000000000000";
-  sprite_snake_head_w(1) 			<=	"0000000000000000";
-  sprite_snake_head_w(2) 			<=	"0000000000000000";
-  sprite_snake_head_w(3) 			<=	"0000000000000000";
-  sprite_snake_head_w(4) 			<= "0000000000000000";
-  sprite_snake_head_w(5) 			<=	"0000011100000000";
-  sprite_snake_head_w(6) 			<=	"0000010000000000";
-  sprite_snake_head_w(7) 			<=	"0000010000000000";
-  sprite_snake_head_w(8) 			<=	"0000000000000000";
-  sprite_snake_head_w(9) 			<=	"0000000000000000";
-  sprite_snake_head_w(10) 			<=	"0000000000000000";
-  sprite_snake_head_w(11) 			<=	"0000000000000000";
-  sprite_snake_head_w(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w(15) 	  	 	<=	"0000000000000000";
   
-    -- sprite snake head eye black coloring
-  sprite_snake_head_b(0) 			<=	"0000000000000000";
-  sprite_snake_head_b(1) 			<=	"0000000000000000";
-  sprite_snake_head_b(2) 			<=	"0000000000000000";
-  sprite_snake_head_b(3) 			<=	"0000000000000000";
-  sprite_snake_head_b(4) 			<=	"0000000000000000";
-  sprite_snake_head_b(5) 			<=	"0000000000000000";
-  sprite_snake_head_b(6) 			<=	"0000001100000000";
-  sprite_snake_head_b(7) 			<=	"0000001100000000";
-  sprite_snake_head_b(8) 			<=	"0000000000000000";
-  sprite_snake_head_b(9) 			<=	"0000000000000000";
-  sprite_snake_head_b(10) 			<=	"0000000000000000";
-  sprite_snake_head_b(11) 			<=	"0000000000000000";
-  sprite_snake_head_b(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b(15) 	  	 	<=	"0000000000000000";
+--sprite turning coloring
+sprite_turn_down_left_black(0)			<=      "0000000000000110";
+sprite_turn_down_left_black(1)			<=      "0000000000000110";
+sprite_turn_down_left_black(2)			<=      "0000000000000010";
+sprite_turn_down_left_black(3)			<=      "0000000000000010";
+sprite_turn_down_left_black(4)			<=      "0000100000000110";
+sprite_turn_down_left_black(5)			<=      "1111000000000010";
+sprite_turn_down_left_black(6)			<=      "0011000111111111";
+sprite_turn_down_left_black(7)			<=      "0000001000000110";
+sprite_turn_down_left_black(8)			<=      "0000001000000110";
+sprite_turn_down_left_black(9)			<=      "0000001000000010";
+sprite_turn_down_left_black(10)			<=      "0000001000000010";
+sprite_turn_down_left_black(11)			<=      "0000001000000110";
+sprite_turn_down_left_black(12)			<=      "0000001000000111";
+sprite_turn_down_left_black(13)			<=      "0000001000001100";
+sprite_turn_down_left_black(14)			<=      "0000001000001001";
+sprite_turn_down_left_black(15)			<=      "1000001000001111";
+
+sprite_turn_down_left_grey(0)			<=      "0000011111111001";
+sprite_turn_down_left_grey(1)			<=      "0000011111111001";
+sprite_turn_down_left_grey(2)			<=      "0000011111111101";
+sprite_turn_down_left_grey(3)			<=      "0000011111111101";
+sprite_turn_down_left_grey(4)			<=      "0000000111111001";
+sprite_turn_down_left_grey(5)			<=      "0000000111111101";
+sprite_turn_down_left_grey(6)			<=      "0000000000000000";
+sprite_turn_down_left_grey(7)			<=      "0000000001000000";
+sprite_turn_down_left_grey(8)			<=      "0000000001000000";
+sprite_turn_down_left_grey(9)			<=      "0000000110000000";
+sprite_turn_down_left_grey(10)			<=      "0000000111101000";
+sprite_turn_down_left_grey(11)			<=      "0000000111010000";
+sprite_turn_down_left_grey(12)			<=      "0000000111101000";
+sprite_turn_down_left_grey(13)			<=      "0000000111110011";
+sprite_turn_down_left_grey(14)			<=      "0000000000000110";
+sprite_turn_down_left_grey(15)			<=      "0000000111110000";
+
+sprite_turn_down_left_orange(0)			<=      "0000000000000000";
+sprite_turn_down_left_orange(1)			<=      "0000000000000000";
+sprite_turn_down_left_orange(2)			<=      "0000000000000000";
+sprite_turn_down_left_orange(3)			<=      "0000000000000000";
+sprite_turn_down_left_orange(4)			<=      "1111011000000000";
+sprite_turn_down_left_orange(5)			<=      "0000111000000000";
+sprite_turn_down_left_orange(6)			<=      "1100111000000000";
+sprite_turn_down_left_orange(7)			<=      "1111110110111001";
+sprite_turn_down_left_orange(8)			<=      "1111110110111001";
+sprite_turn_down_left_orange(9)			<=      "1111110001111101";
+sprite_turn_down_left_orange(10)		<=      "1111110000010101";
+sprite_turn_down_left_orange(11)		<=      "1111110000101001";
+sprite_turn_down_left_orange(12)		<=      "1111110000010000";
+sprite_turn_down_left_orange(13)		<=      "1111110000000000";
+sprite_turn_down_left_orange(14)		<=      "0000000000000000";
+sprite_turn_down_left_orange(15)		<=      "0111110000000000";
+
+sprite_turn_down_left_white(0)			<=      "0000000000000000";
+sprite_turn_down_left_white(1)			<=      "0000000000000000";
+sprite_turn_down_left_white(2)			<=      "0000000000000000";
+sprite_turn_down_left_white(3)			<=      "0000000000000000";
+sprite_turn_down_left_white(4)			<=      "0000000000000000";
+sprite_turn_down_left_white(5)			<=      "0000000000000000";
+sprite_turn_down_left_white(6)			<=      "0000000000000000";
+sprite_turn_down_left_white(7)			<=      "0000000000000000";
+sprite_turn_down_left_white(8)			<=      "0000000000000000";
+sprite_turn_down_left_white(9)			<=      "0000000000000000";
+sprite_turn_down_left_white(10)			<=      "0000000000000000";
+sprite_turn_down_left_white(11)			<=      "0000000000000000";
+sprite_turn_down_left_white(12)			<=      "0000000000000000";
+sprite_turn_down_left_white(13)			<=      "0000000000000000";
+sprite_turn_down_left_white(14)			<=      "1111110111110000";
+sprite_turn_down_left_white(15)			<=      "0000000000000000";
+
+sprite_turn_left_up_black(0)			<=      "1000000000100000";
+sprite_turn_left_up_black(1)			<=      "0000000000100000";
+sprite_turn_left_up_black(2)			<=      "0000000001100000";
+sprite_turn_left_up_black(3)			<=      "0000000001100000";
+sprite_turn_left_up_black(4)			<=      "0000000000010000";
+sprite_turn_left_up_black(5)			<=      "0000000000000000";
+sprite_turn_left_up_black(6)			<=      "1111111110000000";
+sprite_turn_left_up_black(7)			<=      "0000000001000000";
+sprite_turn_left_up_black(8)			<=      "0000000001000000";
+sprite_turn_left_up_black(9)			<=      "0000000001000000";
+sprite_turn_left_up_black(10)			<=      "0000000001000000";
+sprite_turn_left_up_black(11)			<=      "0000000001000000";
+sprite_turn_left_up_black(12)			<=      "1110000001000000";
+sprite_turn_left_up_black(13)			<=      "1011100111010011";
+sprite_turn_left_up_black(14)			<=      "1001111111111111";
+sprite_turn_left_up_black(15)			<=      "1101000001000000";
+
+sprite_turn_left_up_grey(0)			<=      "0000000000000000";
+sprite_turn_left_up_grey(1)			<=      "0000000000000000";
+sprite_turn_left_up_grey(2)			<=      "0000000000000000";
+sprite_turn_left_up_grey(3)			<=      "0000000000000000";
+sprite_turn_left_up_grey(4)			<=      "0000000000000000";
+sprite_turn_left_up_grey(5)			<=      "0000000000001111";
+sprite_turn_left_up_grey(6)			<=      "0000000000001111";
+sprite_turn_left_up_grey(7)			<=      "1011111000111111";
+sprite_turn_left_up_grey(8)			<=      "1011111000111111";
+sprite_turn_left_up_grey(9)			<=      "1011110110111111";
+sprite_turn_left_up_grey(10)			<=      "1011010000111111";
+sprite_turn_left_up_grey(11)			<=      "1010100000111111";
+sprite_turn_left_up_grey(12)			<=      "0001010000111111";
+sprite_turn_left_up_grey(13)			<=      "0100000000101100";
+sprite_turn_left_up_grey(14)			<=      "0110000000000000";
+sprite_turn_left_up_grey(15)			<=      "0010000000111111";
+
+sprite_turn_left_up_orange(0)			<=      "0011111111010000";
+sprite_turn_left_up_orange(1)			<=      "1011111111010000";
+sprite_turn_left_up_orange(2)			<=      "1011111110010000";
+sprite_turn_left_up_orange(3)			<=      "1011111110010000";
+sprite_turn_left_up_orange(4)			<=      "1011111111100000";
+sprite_turn_left_up_orange(5)			<=      "1011111111110000";
+sprite_turn_left_up_orange(6)			<=      "0000000001110000";
+sprite_turn_left_up_orange(7)			<=      "0000000110000000";
+sprite_turn_left_up_orange(8)			<=      "0000000110000000";
+sprite_turn_left_up_orange(9)			<=      "0000001000000000";
+sprite_turn_left_up_orange(10)			<=      "0000101110000000";
+sprite_turn_left_up_orange(11)			<=      "0001011110000000";
+sprite_turn_left_up_orange(12)			<=      "0000101110000000";
+sprite_turn_left_up_orange(13)			<=      "0000011000000000";
+sprite_turn_left_up_orange(14)			<=      "0000000000000000";
+sprite_turn_left_up_orange(15)			<=      "0000111110000000";
+
+sprite_turn_left_up_white(0)			<=      "0100000000000000";
+sprite_turn_left_up_white(1)			<=      "0100000000000000";
+sprite_turn_left_up_white(2)			<=      "0100000000000000";
+sprite_turn_left_up_white(3)			<=      "0100000000000000";
+sprite_turn_left_up_white(4)			<=      "0100000000000000";
+sprite_turn_left_up_white(5)			<=      "0100000000000000";
+sprite_turn_left_up_white(6)			<=      "0000000000000000";
+sprite_turn_left_up_white(7)			<=      "0100000000000000";
+sprite_turn_left_up_white(8)			<=      "0100000000000000";
+sprite_turn_left_up_white(9)			<=      "0100000000000000";
+sprite_turn_left_up_white(10)			<=      "0100000000000000";
+sprite_turn_left_up_white(11)			<=      "0100000000000000";
+sprite_turn_left_up_white(12)			<=      "0000000000000000";
+sprite_turn_left_up_white(13)			<=      "0000000000000000";
+sprite_turn_left_up_white(14)			<=      "0000000000000000";
+sprite_turn_left_up_white(15)			<=      "0000000000000000";
+
+sprite_turn_right_down_black(0)			<=      "0000001000001011";
+sprite_turn_right_down_black(1)			<=      "1111111111111001";
+sprite_turn_right_down_black(2)			<=      "1100101110011101";
+sprite_turn_right_down_black(3)			<=      "0000001000000111";
+sprite_turn_right_down_black(4)			<=      "0000001000000000";
+sprite_turn_right_down_black(5)			<=      "0000001000000000";
+sprite_turn_right_down_black(6)			<=      "0000001000000000";
+sprite_turn_right_down_black(7)			<=      "0000001000000000";
+sprite_turn_right_down_black(8)			<=      "0000001000000000";
+sprite_turn_right_down_black(9)			<=      "0000000111111111";
+sprite_turn_right_down_black(10)		<=      "0000000000000000";
+sprite_turn_right_down_black(11)		<=      "0000100000000000";
+sprite_turn_right_down_black(12)		<=      "0000011000000000";
+sprite_turn_right_down_black(13)		<=      "0000011000000000";
+sprite_turn_right_down_black(14)		<=      "0000010000000000";
+sprite_turn_right_down_black(15)		<=      "0000010000000001";
+
+sprite_turn_right_down_grey(0)			<=      "1111110000000100";
+sprite_turn_right_down_grey(1)			<=      "0000000000000110";
+sprite_turn_right_down_grey(2)			<=      "0011010000000010";
+sprite_turn_right_down_grey(3)			<=      "1111110000101000";
+sprite_turn_right_down_grey(4)			<=      "1111110000010101";
+sprite_turn_right_down_grey(5)			<=      "1111110000101101";
+sprite_turn_right_down_grey(6)			<=      "1111110110111101";
+sprite_turn_right_down_grey(7)			<=      "1111110001111101";
+sprite_turn_right_down_grey(8)			<=      "1111110001111101";
+sprite_turn_right_down_grey(9)			<=      "1111000000000000";
+sprite_turn_right_down_grey(10)			<=      "1111000000000000";
+sprite_turn_right_down_grey(11)			<=      "0000000000000000";
+sprite_turn_right_down_grey(12)			<=      "0000000000000000";
+sprite_turn_right_down_grey(13)			<=      "0000000000000000";
+sprite_turn_right_down_grey(14)			<=      "0000000000000000";
+sprite_turn_right_down_grey(15)			<=      "0000000000000000";
+
+sprite_turn_right_down_orange(0)		<=      "0000000111110000";
+sprite_turn_right_down_orange(1)		<=      "0000000000000000";
+sprite_turn_right_down_orange(2)		<=      "0000000001100000";
+sprite_turn_right_down_orange(3)		<=      "0000000111010000";
+sprite_turn_right_down_orange(4)		<=      "0000000111101000";
+sprite_turn_right_down_orange(5)		<=      "0000000111010000";
+sprite_turn_right_down_orange(6)		<=      "0000000001000000";
+sprite_turn_right_down_orange(7)		<=      "0000000110000000";
+sprite_turn_right_down_orange(8)		<=      "0000000110000000";
+sprite_turn_right_down_orange(9)		<=      "0000111000000000";
+sprite_turn_right_down_orange(10)		<=      "0000111111111101";
+sprite_turn_right_down_orange(11)		<=      "0000011111111101";
+sprite_turn_right_down_orange(12)		<=      "0000100111111101";
+sprite_turn_right_down_orange(13)		<=      "0000100111111101";
+sprite_turn_right_down_orange(14)		<=      "0000101111111101";
+sprite_turn_right_down_orange(15)		<=      "0000101111111100";
+
+sprite_turn_right_down_white(0)			<=      "0000000000000000";
+sprite_turn_right_down_white(1)			<=      "0000000000000000";
+sprite_turn_right_down_white(2)			<=      "0000000000000000";
+sprite_turn_right_down_white(3)			<=      "0000000000000000";
+sprite_turn_right_down_white(4)			<=      "0000000000000010";
+sprite_turn_right_down_white(5)			<=      "0000000000000010";
+sprite_turn_right_down_white(6)			<=      "0000000000000010";
+sprite_turn_right_down_white(7)			<=      "0000000000000010";
+sprite_turn_right_down_white(8)			<=      "0000000000000010";
+sprite_turn_right_down_white(9)			<=      "0000000000000000";
+sprite_turn_right_down_white(10)		<=      "0000000000000010";
+sprite_turn_right_down_white(11)		<=      "0000000000000010";
+sprite_turn_right_down_white(12)		<=      "0000000000000010";
+sprite_turn_right_down_white(13)		<=      "0000000000000010";
+sprite_turn_right_down_white(14)		<=      "0000000000000010";
+sprite_turn_right_down_white(15)		<=      "0000000000000010";
+
+sprite_turn_up_right_black(0)			<=      "1111000001000001";
+sprite_turn_up_right_black(1)			<=      "1001000001000000";
+sprite_turn_up_right_black(2)			<=      "0011000001000000";
+sprite_turn_up_right_black(3)			<=      "1110000001000000";
+sprite_turn_up_right_black(4)			<=      "0110000001000000";
+sprite_turn_up_right_black(5)			<=      "0100000001000000";
+sprite_turn_up_right_black(6)			<=      "0100000001000000";
+sprite_turn_up_right_black(7)			<=      "0110000001000000";
+sprite_turn_up_right_black(8)			<=      "0110000001000000";
+sprite_turn_up_right_black(9)			<=      "1111111110001100";
+sprite_turn_up_right_black(10)		<=      "0100000000001111";
+sprite_turn_up_right_black(11)		<=      "0110000000010000";
+sprite_turn_up_right_black(12)		<=      "0100000000000000";
+sprite_turn_up_right_black(13)		<=      "0100000000000000";
+sprite_turn_up_right_black(14)		<=      "0110000000000000";
+sprite_turn_up_right_black(15)		<=      "0110000000000000";
+
+sprite_turn_up_right_grey(0)			<=      "0000111110000000";
+sprite_turn_up_right_grey(1)			<=      "0110000000000000";
+sprite_turn_up_right_grey(2)			<=      "1100111110000000";
+sprite_turn_up_right_grey(3)			<=      "0001011110000000";
+sprite_turn_up_right_grey(4)			<=      "0000101110000000";
+sprite_turn_up_right_grey(5)			<=      "0001011110000000";
+sprite_turn_up_right_grey(6)			<=      "0000000110000000";
+sprite_turn_up_right_grey(7)			<=      "0000001000000000";
+sprite_turn_up_right_grey(8)			<=      "0000001000000000";
+sprite_turn_up_right_grey(9)			<=      "0000000000000000";
+sprite_turn_up_right_grey(10)			<=      "1011111110000000";
+sprite_turn_up_right_grey(11)			<=      "1001111110000000";
+sprite_turn_up_right_grey(12)			<=      "1011111111100000";
+sprite_turn_up_right_grey(13)			<=      "1011111111100000";
+sprite_turn_up_right_grey(14)			<=      "1001111111100000";
+sprite_turn_up_right_grey(15)			<=      "1001111111100000";
+
+sprite_turn_up_right_orange(0)		<=      "0000000000111110";
+sprite_turn_up_right_orange(1)		<=      "0000000000000000";
+sprite_turn_up_right_orange(2)		<=      "0000000000111111";
+sprite_turn_up_right_orange(3)		<=      "0000100000111111";
+sprite_turn_up_right_orange(4)		<=      "1001010000111111";
+sprite_turn_up_right_orange(5)		<=      "1010100000111111";
+sprite_turn_up_right_orange(6)		<=      "1011111000111111";
+sprite_turn_up_right_orange(7)		<=      "1001110110111111";
+sprite_turn_up_right_orange(8)		<=      "1001110110111111";
+sprite_turn_up_right_orange(9)		<=      "0000000001110011";
+sprite_turn_up_right_orange(10)		<=      "0000000001110000";
+sprite_turn_up_right_orange(11)		<=      "0000000001101111";
+sprite_turn_up_right_orange(12)		<=      "0000000000000000";
+sprite_turn_up_right_orange(13)		<=      "0000000000000000";
+sprite_turn_up_right_orange(14)		<=      "0000000000000000";
+sprite_turn_up_right_orange(15)		<=      "0000000000000000";
+
+sprite_turn_up_right_white(0)			<=      "0000000000000000";
+sprite_turn_up_right_white(1)			<=      "0000111110111111";
+sprite_turn_up_right_white(2)			<=      "0000000000000000";
+sprite_turn_up_right_white(3)			<=      "0000000000000000";
+sprite_turn_up_right_white(4)			<=      "0000000000000000";
+sprite_turn_up_right_white(5)			<=      "0000000000000000";
+sprite_turn_up_right_white(6)			<=      "0000000000000000";
+sprite_turn_up_right_white(7)			<=      "0000000000000000";
+sprite_turn_up_right_white(8)			<=      "0000000000000000";
+sprite_turn_up_right_white(9)			<=      "0000000000000000";
+sprite_turn_up_right_white(10)		<=      "0000000000000000";
+sprite_turn_up_right_white(11)		<=      "0000000000000000";
+sprite_turn_up_right_white(12)		<=      "0000000000000000";
+sprite_turn_up_right_white(13)		<=      "0000000000000000";
+sprite_turn_up_right_white(14)		<=      "0000000000000000";
+sprite_turn_up_right_white(15)		<=      "0000000000000000";
+
+
+
+
+
+
+-- sprite tail coloring
+sprite_tail_down_black(0)			<=      "0000000000000000";
+sprite_tail_down_black(1)			<=      "0000000000000000";
+sprite_tail_down_black(2)			<=      "0000000000000000";
+sprite_tail_down_black(3)			<=      "0000000000000000";
+sprite_tail_down_black(4)			<=      "0000000000000000";
+sprite_tail_down_black(5)			<=      "0000000000000000";
+sprite_tail_down_black(6)			<=      "0000000000000000";
+sprite_tail_down_black(7)			<=      "0000000000000000";
+sprite_tail_down_black(8)			<=      "1110000010011011";
+sprite_tail_down_black(9)			<=      "1000000100111010";
+sprite_tail_down_black(10)			<=      "1001001101000101";
+sprite_tail_down_black(11)			<=      "1010001101000101";
+sprite_tail_down_black(12)			<=      "1000000000000110";
+sprite_tail_down_black(13)			<=      "1000000000000110";
+sprite_tail_down_black(14)			<=      "1000000000000110";
+sprite_tail_down_black(15)			<=      "1000000000000111";
+
+sprite_tail_down_orange(0)			<=      "0000000000000000";
+sprite_tail_down_orange(1)			<=      "0000000000000000";
+sprite_tail_down_orange(2)			<=      "0000000000000000";
+sprite_tail_down_orange(3)			<=      "0000000000000000";
+sprite_tail_down_orange(4)			<=      "0000000000000000";
+sprite_tail_down_orange(5)			<=      "0000000000000000";
+sprite_tail_down_orange(6)			<=      "0000000000000000";
+sprite_tail_down_orange(7)			<=      "0000000000000000";
+sprite_tail_down_orange(8)			<=      "0001111101100100";
+sprite_tail_down_orange(9)			<=      "0111111011000101";
+sprite_tail_down_orange(10)			<=      "0110110010111010";
+sprite_tail_down_orange(11)			<=      "0101110010111010";
+sprite_tail_down_orange(12)			<=      "0111111111111001";
+sprite_tail_down_orange(13)			<=      "0111111111111001";
+sprite_tail_down_orange(14)			<=      "0111111111111001";
+sprite_tail_down_orange(15)			<=      "0111111111111000";
+
+sprite_tail_down_yellow(0)			<=      "0000000000000000";
+sprite_tail_down_yellow(1)			<=      "0000000000000000";
+sprite_tail_down_yellow(2)			<=      "0000000000000000";
+sprite_tail_down_yellow(3)			<=      "0000000000000000";
+sprite_tail_down_yellow(4)			<=      "0000000110000000";
+sprite_tail_down_yellow(5)			<=      "0000011111100000";
+sprite_tail_down_yellow(6)			<=      "0000111111110000";
+sprite_tail_down_yellow(7)			<=      "0001111111111000";
+sprite_tail_down_yellow(8)			<=      "0000000000000000";
+sprite_tail_down_yellow(9)			<=      "0000000000000000";
+sprite_tail_down_yellow(10)			<=      "0000000000000000";
+sprite_tail_down_yellow(11)			<=      "0000000000000000";
+sprite_tail_down_yellow(12)			<=      "0000000000000000";
+sprite_tail_down_yellow(13)			<=      "0000000000000000";
+sprite_tail_down_yellow(14)			<=      "0000000000000000";
+sprite_tail_down_yellow(15)			<=      "0000000000000000";
+
+
+
+
+sprite_tail_left_black(0)			<=      "1111111100000000";
+sprite_tail_left_black(1)			<=      "0000000100000000";
+sprite_tail_left_black(2)			<=      "0000100100000000";
+sprite_tail_left_black(3)			<=      "0000010000000000";
+sprite_tail_left_black(4)			<=      "0000000000000000";
+sprite_tail_left_black(5)			<=      "0000000000000000";
+sprite_tail_left_black(6)			<=      "0000110000000000";
+sprite_tail_left_black(7)			<=      "0000111000000000";
+sprite_tail_left_black(8)			<=      "0000000100000000";
+sprite_tail_left_black(9)			<=      "0000110000000000";
+sprite_tail_left_black(10)			<=      "0000001000000000";
+sprite_tail_left_black(11)			<=      "0000001100000000";
+sprite_tail_left_black(12)			<=      "0000001100000000";
+sprite_tail_left_black(13)			<=      "1111110000000000";
+sprite_tail_left_black(14)			<=      "1111001100000000";
+sprite_tail_left_black(15)			<=      "1000110100000000";
+
+sprite_tail_left_orange(0)			<=      "0000000000000000";
+sprite_tail_left_orange(1)			<=      "1111111000000000";
+sprite_tail_left_orange(2)			<=      "1111011000000000";
+sprite_tail_left_orange(3)			<=      "1111101100000000";
+sprite_tail_left_orange(4)			<=      "1111111100000000";
+sprite_tail_left_orange(5)			<=      "1111111100000000";
+sprite_tail_left_orange(6)			<=      "1111001100000000";
+sprite_tail_left_orange(7)			<=      "1111000100000000";
+sprite_tail_left_orange(8)			<=      "1111111000000000";
+sprite_tail_left_orange(9)			<=      "1111001100000000";
+sprite_tail_left_orange(10)			<=      "1111110100000000";
+sprite_tail_left_orange(11)			<=      "1111110000000000";
+sprite_tail_left_orange(12)			<=      "1111110000000000";
+sprite_tail_left_orange(13)			<=      "0000001100000000";
+sprite_tail_left_orange(14)			<=      "0000110000000000";
+sprite_tail_left_orange(15)			<=      "0111001000000000";
+
+sprite_tail_left_yellow(0)			<=      "0000000000000000";
+sprite_tail_left_yellow(1)			<=      "0000000000000000";
+sprite_tail_left_yellow(2)			<=      "0000000000000000";
+sprite_tail_left_yellow(3)			<=      "0000000010000000";
+sprite_tail_left_yellow(4)			<=      "0000000011000000";
+sprite_tail_left_yellow(5)			<=      "0000000011100000";
+sprite_tail_left_yellow(6)			<=      "0000000011100000";
+sprite_tail_left_yellow(7)			<=      "0000000011110000";
+sprite_tail_left_yellow(8)			<=      "0000000011110000";
+sprite_tail_left_yellow(9)			<=      "0000000011100000";
+sprite_tail_left_yellow(10)			<=      "0000000011100000";
+sprite_tail_left_yellow(11)			<=      "0000000011000000";
+sprite_tail_left_yellow(12)			<=      "0000000010000000";
+sprite_tail_left_yellow(13)			<=      "0000000000000000";
+sprite_tail_left_yellow(14)			<=      "0000000000000000";
+sprite_tail_left_yellow(15)			<=      "0000000000000000";
+
+
+
+
+sprite_tail_right_black(0)			<=      "0000000010110001";
+sprite_tail_right_black(1)			<=      "0000000011001111";
+sprite_tail_right_black(2)			<=      "0000000000111111";
+sprite_tail_right_black(3)			<=      "0000000011000000";
+sprite_tail_right_black(4)			<=      "0000000011000000";
+sprite_tail_right_black(5)			<=      "0000000001000000";
+sprite_tail_right_black(6)			<=      "0000000000110000";
+sprite_tail_right_black(7)			<=      "0000000010000000";
+sprite_tail_right_black(8)			<=      "0000000001110000";
+sprite_tail_right_black(9)			<=      "0000000000110000";
+sprite_tail_right_black(10)			<=      "0000000000000000";
+sprite_tail_right_black(11)			<=      "0000000000000000";
+sprite_tail_right_black(12)			<=      "0000000000100000";
+sprite_tail_right_black(13)			<=      "0000000010010000";
+sprite_tail_right_black(14)			<=      "0000000010000000";
+sprite_tail_right_black(15)			<=      "0000000011111111";
+
+sprite_tail_right_orange(0)			<=      "0000000001001110";
+sprite_tail_right_orange(1)			<=      "0000000000110000";
+sprite_tail_right_orange(2)			<=      "0000000011000000";
+sprite_tail_right_orange(3)			<=      "0000000000111111";
+sprite_tail_right_orange(4)			<=      "0000000000111111";
+sprite_tail_right_orange(5)			<=      "0000000010111111";
+sprite_tail_right_orange(6)			<=      "0000000011001111";
+sprite_tail_right_orange(7)			<=      "0000000001111111";
+sprite_tail_right_orange(8)			<=      "0000000010001111";
+sprite_tail_right_orange(9)			<=      "0000000011001111";
+sprite_tail_right_orange(10)			<=      "0000000011111111";
+sprite_tail_right_orange(11)			<=      "0000000011111111";
+sprite_tail_right_orange(12)			<=      "0000000011011111";
+sprite_tail_right_orange(13)			<=      "0000000001101111";
+sprite_tail_right_orange(14)			<=      "0000000001111111";
+sprite_tail_right_orange(15)			<=      "0000000000000000";
+
+sprite_tail_right_yellow(0)			<=      "0000000000000000";
+sprite_tail_right_yellow(1)			<=      "0000000000000000";
+sprite_tail_right_yellow(2)			<=      "0000000000000000";
+sprite_tail_right_yellow(3)			<=      "0000000100000000";
+sprite_tail_right_yellow(4)			<=      "0000001100000000";
+sprite_tail_right_yellow(5)			<=      "0000011100000000";
+sprite_tail_right_yellow(6)			<=      "0000011100000000";
+sprite_tail_right_yellow(7)			<=      "0000111100000000";
+sprite_tail_right_yellow(8)			<=      "0000111100000000";
+sprite_tail_right_yellow(9)			<=      "0000011100000000";
+sprite_tail_right_yellow(10)			<=      "0000011100000000";
+sprite_tail_right_yellow(11)			<=      "0000001100000000";
+sprite_tail_right_yellow(12)			<=      "0000000100000000";
+sprite_tail_right_yellow(13)			<=      "0000000000000000";
+sprite_tail_right_yellow(14)			<=      "0000000000000000";
+
+
+
+
+
+sprite_tail_up_black(0)				<=      "1110000000000001";
+sprite_tail_up_black(1)				<=      "0110000000000001";
+sprite_tail_up_black(2)				<=      "0110000000000001";
+sprite_tail_up_black(3)				<=      "0110000000000001";
+sprite_tail_up_black(4)				<=      "1010001011000101";
+sprite_tail_up_black(5)				<=      "1010001011001001";
+sprite_tail_up_black(6)				<=      "0101110010000001";
+sprite_tail_up_black(7)				<=      "1101100100000111";
+sprite_tail_up_black(8)				<=      "0000000000000000";
+sprite_tail_up_black(9)				<=      "0000000000000000";
+sprite_tail_up_black(10)			<=      "0000000000000000";
+sprite_tail_up_black(11)			<=      "0000000000000000";
+sprite_tail_up_black(12)			<=      "0000000000000000";
+sprite_tail_up_black(13)			<=      "0000000000000000";
+sprite_tail_up_black(14)			<=      "0000000000000000";
+sprite_tail_up_black(15)			<=      "0000000000000000";
+
+sprite_tail_up_orange(0)			<=      "0001111111111110";
+sprite_tail_up_orange(1)			<=      "1001111111111110";
+sprite_tail_up_orange(2)			<=      "1001111111111110";
+sprite_tail_up_orange(3)			<=      "1001111111111110";
+sprite_tail_up_orange(4)			<=      "0101110100111010";
+sprite_tail_up_orange(5)			<=      "0101110100110110";
+sprite_tail_up_orange(6)			<=      "1010001101111110";
+sprite_tail_up_orange(7)			<=      "0010011011111000";
+sprite_tail_up_orange(8)			<=      "0000000000000000";
+sprite_tail_up_orange(9)			<=      "0000000000000000";
+sprite_tail_up_orange(10)			<=      "0000000000000000";
+sprite_tail_up_orange(11)			<=      "0000000000000000";
+sprite_tail_up_orange(12)			<=      "0000000000000000";
+sprite_tail_up_orange(13)			<=      "0000000000000000";
+sprite_tail_up_orange(14)			<=      "0000000000000000";
+sprite_tail_up_orange(15)			<=      "0000000000000000";
+
+sprite_tail_up_yellow(0)			<=      "0000000000000000";
+sprite_tail_up_yellow(1)			<=      "0000000000000000";
+sprite_tail_up_yellow(2)			<=      "0000000000000000";
+sprite_tail_up_yellow(3)			<=      "0000000000000000";
+sprite_tail_up_yellow(4)			<=      "0000000000000000";
+sprite_tail_up_yellow(5)			<=      "0000000000000000";
+sprite_tail_up_yellow(6)			<=      "0000000000000000";
+sprite_tail_up_yellow(7)			<=      "0000000000000000";
+sprite_tail_up_yellow(8)			<=      "0001111111111000";
+sprite_tail_up_yellow(9)			<=      "0000111111110000";
+sprite_tail_up_yellow(10)			<=      "0000011111100000";
+sprite_tail_up_yellow(11)			<=      "0000000110000000";
+sprite_tail_up_yellow(12)			<=      "0000000000000000";
+sprite_tail_up_yellow(13)			<=      "0000000000000000";
+sprite_tail_up_yellow(14)			<=      "0000000000000000";
+sprite_tail_up_yellow(15)			<=      "0000000000000000";
   
-  	-- sprite snake head left facing coloring
-  sprite_snake_head_g_left(0) 			<=	"0000000011110000";
-  sprite_snake_head_g_left(1) 			<=	"0000001111111000";
-  sprite_snake_head_g_left(2)				<= "0000111111111100";
-  sprite_snake_head_g_left(3) 			<=	"0001111111111110";
-  sprite_snake_head_g_left(4) 			<=	"0011111111111110";
-  sprite_snake_head_g_left(5) 			<=	"0011111100011111";
-  sprite_snake_head_g_left(6) 			<=	"0111111100011111";
-  sprite_snake_head_g_left(7) 			<=	"0011111100011111";
-  sprite_snake_head_g_left(8) 			<=	"0000011111111111";
-  sprite_snake_head_g_left(9) 			<=	"0000011111111111";
-  sprite_snake_head_g_left(10) 			<=	"0011111111111111";
-  sprite_snake_head_g_left(11) 			<=	"0111111111111110";
-  sprite_snake_head_g_left(12) 	   	<=	"0001111111111110";
-  sprite_snake_head_g_left(13) 	   	<=	"0000111111111100";
-  sprite_snake_head_g_left(14) 	   	<=	"0000001111111000";
-  sprite_snake_head_g_left(15) 	   	<=	"0000000011110000";
-  
-  -- sprite snake head left facing tongue coloring
-  sprite_snake_head_r_left(0) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(1) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(2) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(3) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(4) 	  		<=	"0000000000000000";
-  sprite_snake_head_r_left(5) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(6) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(7) 			<=	"1100000000000000";
-  sprite_snake_head_r_left(8) 			<=	"0111100000000000";
-  sprite_snake_head_r_left(9) 			<=	"0111100000000000";
-  sprite_snake_head_r_left(10) 			<=	"1100000000000000";
-  sprite_snake_head_r_left(11) 			<=	"0000000000000000";
-  sprite_snake_head_r_left(12) 	   	<=	"0000000000000000";
-  sprite_snake_head_r_left(13) 	   	<=	"0000000000000000";
-  sprite_snake_head_r_left(14) 	   	<=	"0000000000000000";
-  sprite_snake_head_r_left(15) 	  	 	<= "0000000000000000";
-  
-  -- sprite snake head left facing eye white coloring
-  sprite_snake_head_w_left(0) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(1) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(2) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(3) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(4) 			<= "0000000000000000";
-  sprite_snake_head_w_left(5) 			<=	"0000000011100000";
-  sprite_snake_head_w_left(6) 			<=	"0000000000100000";
-  sprite_snake_head_w_left(7) 			<=	"0000000000100000";
-  sprite_snake_head_w_left(8) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(9) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(10) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(11) 			<=	"0000000000000000";
-  sprite_snake_head_w_left(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_left(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_left(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_left(15) 	  	 	<=	"0000000000000000";
-  
-    -- sprite snake head left facing eye black coloring
-  sprite_snake_head_b_left(0) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(1) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(2) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(3) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(4) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(5) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(6) 			<=	"0000000011000000";
-  sprite_snake_head_b_left(7) 			<=	"0000000011000000";
-  sprite_snake_head_b_left(8) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(9) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(10) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(11) 			<=	"0000000000000000";
-  sprite_snake_head_b_left(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_left(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_left(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_left(15) 	  	 	<=	"0000000000000000";
-  
-    	-- sprite snake head upwards facing coloring
-  sprite_snake_head_g_up(0) 			<=	"0000000000000000";
-  sprite_snake_head_g_up(1) 			<=	"0000001000010000";
-  sprite_snake_head_g_up(2) 			<=	"0000111100110000";
-  sprite_snake_head_g_up(3) 			<=	"0001111100111000";
-  sprite_snake_head_g_up(4) 			<=	"0011111100111100";
-  sprite_snake_head_g_up(5) 			<=	"0011111111111100";
-  sprite_snake_head_g_up(6) 			<=	"0111111111111110";
-  sprite_snake_head_g_up(7) 			<=	"0111111111111110";
-  sprite_snake_head_g_up(8) 			<=	"1111100011111111";
-  sprite_snake_head_g_up(9) 			<=	"1111100011111111";
-  sprite_snake_head_g_up(10) 			<=	"1111100011111111";
-  sprite_snake_head_g_up(11) 			<=	"1111111111111111";
-  sprite_snake_head_g_up(12) 	   	<=	"0111111111111110";
-  sprite_snake_head_g_up(13) 	   	<=	"0011111111111100";
-  sprite_snake_head_g_up(14) 	   	<=	"0001111111111000";
-  sprite_snake_head_g_up(15) 	   	<=	"0000011111100000";
-  
-  -- sprite snake head upwards facing tongue coloring
-  sprite_snake_head_r_up(0) 			<=	"0000000100100000";
-  sprite_snake_head_r_up(1) 			<=	"0000000111100000";
-  sprite_snake_head_r_up(2) 			<=	"0000000011000000";
-  sprite_snake_head_r_up(3) 			<=	"0000000011000000";
-  sprite_snake_head_r_up(4) 	  		<=	"0000000011000000";
-  sprite_snake_head_r_up(5) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(6) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(7) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(8) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(9) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(10) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(11) 			<=	"0000000000000000";
-  sprite_snake_head_r_up(12) 	   	<=	"0000000000000000";
-  sprite_snake_head_r_up(13) 	   	<=	"0000000000000000";
-  sprite_snake_head_r_up(14) 	   	<=	"0000000000000000";
-  sprite_snake_head_r_up(15) 	  	 	<= "0000000000000000";
-  
-  -- sprite snake head upwards facing eye white coloring
-  sprite_snake_head_w_up(0) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(1) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(2) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(3) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(4) 			<= "0000000000000000";
-  sprite_snake_head_w_up(5) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(6) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(7) 			<=	"0000010000000000";
-  sprite_snake_head_w_up(8) 			<=	"0000010000000000";
-  sprite_snake_head_w_up(9) 			<=	"0000011100000000";
-  sprite_snake_head_w_up(10) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(11) 			<=	"0000000000000000";
-  sprite_snake_head_w_up(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_up(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_up(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_up(15) 	  	 	<=	"0000000000000000";
-  
-    -- sprite snake head upwards facing eye black coloring
-  sprite_snake_head_b_up(0) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(1) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(2) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(3) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(4) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(5) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(6) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(7) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(8) 			<=	"0000001100000000";
-  sprite_snake_head_b_up(9) 			<=	"0000001100000000";
-  sprite_snake_head_b_up(10) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(11) 			<=	"0000000000000000";
-  sprite_snake_head_b_up(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_up(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_up(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_up(15) 	  	 	<=	"0000000000000000";
-  
-      	-- sprite snake head downwards facing coloring
-  sprite_snake_head_g_down(0) 			<=	"0000011111100000";
-  sprite_snake_head_g_down(1) 			<=	"0001111111111000";
-  sprite_snake_head_g_down(2) 			<=	"0011111111111100";
-  sprite_snake_head_g_down(3) 			<=	"0111111111111110";
-  sprite_snake_head_g_down(4) 			<=	"1111111111111111";
-  sprite_snake_head_g_down(5) 			<=	"1111100011111111";
-  sprite_snake_head_g_down(6) 			<=	"1111100011111111";
-  sprite_snake_head_g_down(7) 			<=	"1111100011111111";
-  sprite_snake_head_g_down(8) 			<=	"0111111111111110";
-  sprite_snake_head_g_down(9) 			<=	"0111111111111110";
-  sprite_snake_head_g_down(10) 			<=	"0011111111111100";
-  sprite_snake_head_g_down(11) 			<=	"0011111100111100";
-  sprite_snake_head_g_down(12) 	   	<=	"0001111100111000";
-  sprite_snake_head_g_down(13) 	   	<=	"0000111100110000";
-  sprite_snake_head_g_down(14) 	   	<=	"0000001000010000";
-  sprite_snake_head_g_down(15) 	   	<=	"0000000000000000";
-  
-  -- sprite snake head downwards facing tongue coloring
-  sprite_snake_head_r_down(0) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(1) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(2) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(3) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(4) 	  		<=	"0000000000000000";
-  sprite_snake_head_r_down(5) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(6) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(7) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(8) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(9) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(10) 			<=	"0000000000000000";
-  sprite_snake_head_r_down(11) 			<=	"0000001100000000";
-  sprite_snake_head_r_down(12) 	   	<=	"0000001100000000";
-  sprite_snake_head_r_down(13) 	   	<=	"0000001100000000";
-  sprite_snake_head_r_down(14) 	   	<=	"0000011110000000";
-  sprite_snake_head_r_down(15) 	  	 	<= "0000010010000000";
-  
-  -- sprite snake head downwards facing eye white coloring
-  sprite_snake_head_w_down(0) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(1) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(2) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(3) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(4) 			<= "0000000000000000";
-  sprite_snake_head_w_down(5) 			<=	"0000011100000000";
-  sprite_snake_head_w_down(6) 			<=	"0000000100000000";
-  sprite_snake_head_w_down(7) 			<=	"0000000100000000";
-  sprite_snake_head_w_down(8) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(9) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(10) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(11) 			<=	"0000000000000000";
-  sprite_snake_head_w_down(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_down(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_down(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_w_down(15) 	  	 	<=	"0000000000000000";
-  
-    -- sprite snake head downwards facing eye black coloring
-  sprite_snake_head_b_down(0) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(1) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(2) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(3) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(4) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(5) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(6) 			<=	"0000011000000000";
-  sprite_snake_head_b_down(7) 			<=	"0000011000000000";
-  sprite_snake_head_b_down(8) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(9) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(10) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(11) 			<=	"0000000000000000";
-  sprite_snake_head_b_down(12) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_down(13) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_down(14) 	  	 	<=	"0000000000000000";
-  sprite_snake_head_b_down(15) 	  	 	<=	"0000000000000000";
-  
-    -- sprite snake body coloring
-  sprite_snake_body(0) 			<=	"0000111111110000";
-  sprite_snake_body(1) 			<=	"0001111111111000";
-  sprite_snake_body(2) 			<=	"0011111111111100";
-  sprite_snake_body(3) 			<=	"0011111111111100";
-  sprite_snake_body(4) 			<=	"0111111111111110";
-  sprite_snake_body(5) 			<=	"1111111111111111";
-  sprite_snake_body(6) 			<=	"1111111111111111";
-  sprite_snake_body(7) 			<=	"1111111111111111";
-  sprite_snake_body(8) 			<=	"1111111111111111";
-  sprite_snake_body(9) 			<=	"1111111111111111";
-  sprite_snake_body(10) 		<=	"1111111111111111";
-  sprite_snake_body(11) 		<=	"0111111111111110";
-  sprite_snake_body(12) 	   <=	"0011111111111100";
-  sprite_snake_body(13) 	   <=	"0011111111111100";
-  sprite_snake_body(14) 	   <=	"0001111111111000";
-  sprite_snake_body(15) 	   <=	"0000111111110000";
-  
-  -- sprite snake tail coloring
-  sprite_snake_tail(0) 			<=	"0000000000110000";
-  sprite_snake_tail(1) 			<=	"0000000011111000";
-  sprite_snake_tail(2) 			<=	"0000001111111100";
-  sprite_snake_tail(3) 			<=	"0000111111111100";
-  sprite_snake_tail(4) 			<=	"0001111111111110";
-  sprite_snake_tail(5) 			<=	"0011111111111110";
-  sprite_snake_tail(6) 			<=	"0111111111111111";
-  sprite_snake_tail(7) 			<=	"1111111111111111";
-  sprite_snake_tail(8) 			<=	"1111111111111111";
-  sprite_snake_tail(9) 			<=	"0111111111111111";
-  sprite_snake_tail(10) 		<=	"0011111111111110";
-  sprite_snake_tail(11) 		<=	"0001111111111110";
-  sprite_snake_tail(12) 	   <=	"0000111111111100";
-  sprite_snake_tail(13) 	   <=	"0000001111111100";
-  sprite_snake_tail(14) 	   <=	"0000000011111000";
-  sprite_snake_tail(15) 	   <=	"0000000000110000";
-  
-   -- sprite snake tail left facing coloring
-  sprite_snake_tail_left(0) 			<=	"0000110000000000";
-  sprite_snake_tail_left(1) 			<=	"0001111100000000";
-  sprite_snake_tail_left(2) 			<=	"0011111111000000";
-  sprite_snake_tail_left(3) 			<=	"0011111111110000";
-  sprite_snake_tail_left(4) 			<=	"0111111111111000";
-  sprite_snake_tail_left(5) 			<=	"0111111111111100";
-  sprite_snake_tail_left(6) 			<=	"1111111111111110";
-  sprite_snake_tail_left(7) 			<=	"1111111111111111";
-  sprite_snake_tail_left(8) 			<=	"1111111111111111";
-  sprite_snake_tail_left(9) 			<=	"1111111111111110";
-  sprite_snake_tail_left(10) 			<=	"0111111111111100";
-  sprite_snake_tail_left(11) 			<=	"0111111111111000";
-  sprite_snake_tail_left(12) 	 	  	<=	"0011111111110000";
-  sprite_snake_tail_left(13) 	  	 	<=	"0011111111000000";
-  sprite_snake_tail_left(14) 	 	  	<=	"0001111100000000";
-  sprite_snake_tail_left(15) 	  	 	<=	"0000110000000000";
-  
-    -- sprite snake tail upwards facing coloring
-  sprite_snake_tail_up(0) 			<=	"0000001111000000";
-  sprite_snake_tail_up(1) 			<=	"0000111111110000";
-  sprite_snake_tail_up(2) 			<=	"0011111111111100";
-  sprite_snake_tail_up(3) 			<=	"0111111111111110";
-  sprite_snake_tail_up(4) 			<=	"1111111111111111";
-  sprite_snake_tail_up(5) 			<=	"1111111111111111";
-  sprite_snake_tail_up(6) 			<=	"0111111111111110";
-  sprite_snake_tail_up(7) 			<=	"0111111111111110";
-  sprite_snake_tail_up(8) 			<=	"0011111111111100";
-  sprite_snake_tail_up(9) 			<=	"0011111111111100";
-  sprite_snake_tail_up(10) 		<=	"0001111111111000";
-  sprite_snake_tail_up(11) 		<=	"0001111111111000";
-  sprite_snake_tail_up(12) 	   <=	"0000111111110000";
-  sprite_snake_tail_up(13) 	   <=	"0000011111100000";
-  sprite_snake_tail_up(14) 	   <=	"0000001111000000";
-  sprite_snake_tail_up(15) 	   <=	"0000000110000000";
-  
-    -- sprite snake tail downwards facing coloring
-  sprite_snake_tail_down(0) 			<=	"0000000110000000";
-  sprite_snake_tail_down(1) 			<=	"0000001111000000";
-  sprite_snake_tail_down(2) 			<=	"0000011111100000";
-  sprite_snake_tail_down(3) 			<=	"0000111111110000";
-  sprite_snake_tail_down(4) 			<=	"0001111111111000";
-  sprite_snake_tail_down(5) 			<=	"0001111111111000";
-  sprite_snake_tail_down(6) 			<=	"0011111111111100";
-  sprite_snake_tail_down(7) 			<=	"0011111111111100";
-  sprite_snake_tail_down(8) 			<=	"0111111111111110";
-  sprite_snake_tail_down(9) 			<=	"0111111111111110";
-  sprite_snake_tail_down(10) 			<=	"1111111111111111";
-  sprite_snake_tail_down(11) 			<=	"1111111111111111";
-  sprite_snake_tail_down(12) 	   	<=	"0111111111111110";
-  sprite_snake_tail_down(13) 	   	<=	"0011111111111100";
-  sprite_snake_tail_down(14) 	   	<=	"0000111111110000";
-  sprite_snake_tail_down(15) 	   	<=	"0000001111000000";
-  
+
   -- sprite rabbit gray body coloring
   sprite_food_rabbit_y(0) 		<=	"0000100000010000";
   sprite_food_rabbit_y(1) 		<=	"0000110000110000";
@@ -1894,4 +2576,403 @@ begin
 	  
   
   end rtl;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+--  	-- sprite snake head coloring
+--  sprite_snake_head_g(0) 			<=	"0000111100000000";
+--  sprite_snake_head_g(1) 			<=	"0001111111000000";
+--  sprite_snake_head_g(2) 			<=	"0011111111110000";
+--  sprite_snake_head_g(3) 			<=	"0111111111111000";
+--  sprite_snake_head_g(4) 			<=	"0111111111111100";
+--  sprite_snake_head_g(5) 			<=	"1111100011111100";
+--  sprite_snake_head_g(6) 			<=	"1111100011111110";
+--  sprite_snake_head_g(7) 			<=	"1111100011111100";
+--  sprite_snake_head_g(8) 			<=	"1111111111100000";
+--  sprite_snake_head_g(9) 			<=	"1111111111100000";
+--  sprite_snake_head_g(10) 			<=	"1111111111111100";
+--  sprite_snake_head_g(11) 			<=	"0111111111111110";
+--  sprite_snake_head_g(12) 	   	<=	"0111111111111000";
+--  sprite_snake_head_g(13) 	   	<=	"0011111111110000";
+--  sprite_snake_head_g(14) 	   	<=	"0001111111000000";
+--  sprite_snake_head_g(15) 	   	<=	"0000111100000000";
+--  
+--  -- sprite snake head tongue coloring
+--  sprite_snake_head_r(0) 			<=	"0000000000000000";
+--  sprite_snake_head_r(1) 			<=	"0000000000000000";
+--  sprite_snake_head_r(2) 			<=	"0000000000000000";
+--  sprite_snake_head_r(3) 			<=	"0000000000000000";
+--  sprite_snake_head_r(4) 	  		<=	"0000000000000000";
+--  sprite_snake_head_r(5) 			<=	"0000000000000000";
+--  sprite_snake_head_r(6) 			<=	"0000000000000000";
+--  sprite_snake_head_r(7) 			<=	"0000000000000011";
+--  sprite_snake_head_r(8) 			<=	"0000000000011110";
+--  sprite_snake_head_r(9) 			<=	"0000000000011110";
+--  sprite_snake_head_r(10) 			<=	"0000000000000011";
+--  sprite_snake_head_r(11) 			<=	"0000000000000000";
+--  sprite_snake_head_r(12) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r(13) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r(14) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r(15) 	  	 	<= "0000000000000000";
+--  
+--  -- sprite snake head eye white coloring
+--  sprite_snake_head_w(0) 			<=	"0000000000000000";
+--  sprite_snake_head_w(1) 			<=	"0000000000000000";
+--  sprite_snake_head_w(2) 			<=	"0000000000000000";
+--  sprite_snake_head_w(3) 			<=	"0000000000000000";
+--  sprite_snake_head_w(4) 			<= "0000000000000000";
+--  sprite_snake_head_w(5) 			<=	"0000011100000000";
+--  sprite_snake_head_w(6) 			<=	"0000010000000000";
+--  sprite_snake_head_w(7) 			<=	"0000010000000000";
+--  sprite_snake_head_w(8) 			<=	"0000000000000000";
+--  sprite_snake_head_w(9) 			<=	"0000000000000000";
+--  sprite_snake_head_w(10) 			<=	"0000000000000000";
+--  sprite_snake_head_w(11) 			<=	"0000000000000000";
+--  sprite_snake_head_w(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w(15) 	  	 	<=	"0000000000000000";
+--  
+--    -- sprite snake head eye black coloring
+--  sprite_snake_head_b(0) 			<=	"0000000000000000";
+--  sprite_snake_head_b(1) 			<=	"0000000000000000";
+--  sprite_snake_head_b(2) 			<=	"0000000000000000";
+--  sprite_snake_head_b(3) 			<=	"0000000000000000";
+--  sprite_snake_head_b(4) 			<=	"0000000000000000";
+--  sprite_snake_head_b(5) 			<=	"0000000000000000";
+--  sprite_snake_head_b(6) 			<=	"0000001100000000";
+--  sprite_snake_head_b(7) 			<=	"0000001100000000";
+--  sprite_snake_head_b(8) 			<=	"0000000000000000";
+--  sprite_snake_head_b(9) 			<=	"0000000000000000";
+--  sprite_snake_head_b(10) 			<=	"0000000000000000";
+--  sprite_snake_head_b(11) 			<=	"0000000000000000";
+--  sprite_snake_head_b(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b(15) 	  	 	<=	"0000000000000000";
+--  
+--  	-- sprite snake head left facing coloring
+--  sprite_snake_head_g_left(0) 			<=	"0000000011110000";
+--  sprite_snake_head_g_left(1) 			<=	"0000001111111000";
+--  sprite_snake_head_g_left(2)				<= "0000111111111100";
+--  sprite_snake_head_g_left(3) 			<=	"0001111111111110";
+--  sprite_snake_head_g_left(4) 			<=	"0011111111111110";
+--  sprite_snake_head_g_left(5) 			<=	"0011111100011111";
+--  sprite_snake_head_g_left(6) 			<=	"0111111100011111";
+--  sprite_snake_head_g_left(7) 			<=	"0011111100011111";
+--  sprite_snake_head_g_left(8) 			<=	"0000011111111111";
+--  sprite_snake_head_g_left(9) 			<=	"0000011111111111";
+--  sprite_snake_head_g_left(10) 			<=	"0011111111111111";
+--  sprite_snake_head_g_left(11) 			<=	"0111111111111110";
+--  sprite_snake_head_g_left(12) 	   	<=	"0001111111111110";
+--  sprite_snake_head_g_left(13) 	   	<=	"0000111111111100";
+--  sprite_snake_head_g_left(14) 	   	<=	"0000001111111000";
+--  sprite_snake_head_g_left(15) 	   	<=	"0000000011110000";
+--  
+--  -- sprite snake head left facing tongue coloring
+--  sprite_snake_head_r_left(0) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(1) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(2) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(3) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(4) 	  		<=	"0000000000000000";
+--  sprite_snake_head_r_left(5) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(6) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(7) 			<=	"1100000000000000";
+--  sprite_snake_head_r_left(8) 			<=	"0111100000000000";
+--  sprite_snake_head_r_left(9) 			<=	"0111100000000000";
+--  sprite_snake_head_r_left(10) 			<=	"1100000000000000";
+--  sprite_snake_head_r_left(11) 			<=	"0000000000000000";
+--  sprite_snake_head_r_left(12) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r_left(13) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r_left(14) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r_left(15) 	  	 	<= "0000000000000000";
+--  
+--  -- sprite snake head left facing eye white coloring
+--  sprite_snake_head_w_left(0) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(1) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(2) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(3) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(4) 			<= "0000000000000000";
+--  sprite_snake_head_w_left(5) 			<=	"0000000011100000";
+--  sprite_snake_head_w_left(6) 			<=	"0000000000100000";
+--  sprite_snake_head_w_left(7) 			<=	"0000000000100000";
+--  sprite_snake_head_w_left(8) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(9) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(10) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(11) 			<=	"0000000000000000";
+--  sprite_snake_head_w_left(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_left(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_left(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_left(15) 	  	 	<=	"0000000000000000";
+--  
+--    -- sprite snake head left facing eye black coloring
+--  sprite_snake_head_b_left(0) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(1) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(2) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(3) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(4) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(5) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(6) 			<=	"0000000011000000";
+--  sprite_snake_head_b_left(7) 			<=	"0000000011000000";
+--  sprite_snake_head_b_left(8) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(9) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(10) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(11) 			<=	"0000000000000000";
+--  sprite_snake_head_b_left(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_left(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_left(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_left(15) 	  	 	<=	"0000000000000000";
+--  
+--    	-- sprite snake head upwards facing coloring
+--  sprite_snake_head_g_up(0) 			<=	"0000000000000000";
+--  sprite_snake_head_g_up(1) 			<=	"0000001000010000";
+--  sprite_snake_head_g_up(2) 			<=	"0000111100110000";
+--  sprite_snake_head_g_up(3) 			<=	"0001111100111000";
+--  sprite_snake_head_g_up(4) 			<=	"0011111100111100";
+--  sprite_snake_head_g_up(5) 			<=	"0011111111111100";
+--  sprite_snake_head_g_up(6) 			<=	"0111111111111110";
+--  sprite_snake_head_g_up(7) 			<=	"0111111111111110";
+--  sprite_snake_head_g_up(8) 			<=	"1111100011111111";
+--  sprite_snake_head_g_up(9) 			<=	"1111100011111111";
+--  sprite_snake_head_g_up(10) 			<=	"1111100011111111";
+--  sprite_snake_head_g_up(11) 			<=	"1111111111111111";
+--  sprite_snake_head_g_up(12) 	   	<=	"0111111111111110";
+--  sprite_snake_head_g_up(13) 	   	<=	"0011111111111100";
+--  sprite_snake_head_g_up(14) 	   	<=	"0001111111111000";
+--  sprite_snake_head_g_up(15) 	   	<=	"0000011111100000";
+--  
+--  -- sprite snake head upwards facing tongue coloring
+--  sprite_snake_head_r_up(0) 			<=	"0000000100100000";
+--  sprite_snake_head_r_up(1) 			<=	"0000000111100000";
+--  sprite_snake_head_r_up(2) 			<=	"0000000011000000";
+--  sprite_snake_head_r_up(3) 			<=	"0000000011000000";
+--  sprite_snake_head_r_up(4) 	  		<=	"0000000011000000";
+--  sprite_snake_head_r_up(5) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(6) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(7) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(8) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(9) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(10) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(11) 			<=	"0000000000000000";
+--  sprite_snake_head_r_up(12) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r_up(13) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r_up(14) 	   	<=	"0000000000000000";
+--  sprite_snake_head_r_up(15) 	  	 	<= "0000000000000000";
+--  
+--  -- sprite snake head upwards facing eye white coloring
+--  sprite_snake_head_w_up(0) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(1) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(2) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(3) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(4) 			<= "0000000000000000";
+--  sprite_snake_head_w_up(5) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(6) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(7) 			<=	"0000010000000000";
+--  sprite_snake_head_w_up(8) 			<=	"0000010000000000";
+--  sprite_snake_head_w_up(9) 			<=	"0000011100000000";
+--  sprite_snake_head_w_up(10) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(11) 			<=	"0000000000000000";
+--  sprite_snake_head_w_up(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_up(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_up(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_up(15) 	  	 	<=	"0000000000000000";
+--  
+--    -- sprite snake head upwards facing eye black coloring
+--  sprite_snake_head_b_up(0) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(1) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(2) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(3) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(4) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(5) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(6) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(7) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(8) 			<=	"0000001100000000";
+--  sprite_snake_head_b_up(9) 			<=	"0000001100000000";
+--  sprite_snake_head_b_up(10) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(11) 			<=	"0000000000000000";
+--  sprite_snake_head_b_up(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_up(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_up(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_up(15) 	  	 	<=	"0000000000000000";
+--  
+--      	-- sprite snake head downwards facing coloring
+--  sprite_snake_head_g_down(0) 			<=	"0000011111100000";
+--  sprite_snake_head_g_down(1) 			<=	"0001111111111000";
+--  sprite_snake_head_g_down(2) 			<=	"0011111111111100";
+--  sprite_snake_head_g_down(3) 			<=	"0111111111111110";
+--  sprite_snake_head_g_down(4) 			<=	"1111111111111111";
+--  sprite_snake_head_g_down(5) 			<=	"1111100011111111";
+--  sprite_snake_head_g_down(6) 			<=	"1111100011111111";
+--  sprite_snake_head_g_down(7) 			<=	"1111100011111111";
+--  sprite_snake_head_g_down(8) 			<=	"0111111111111110";
+--  sprite_snake_head_g_down(9) 			<=	"0111111111111110";
+--  sprite_snake_head_g_down(10) 			<=	"0011111111111100";
+--  sprite_snake_head_g_down(11) 			<=	"0011111100111100";
+--  sprite_snake_head_g_down(12) 	   	<=	"0001111100111000";
+--  sprite_snake_head_g_down(13) 	   	<=	"0000111100110000";
+--  sprite_snake_head_g_down(14) 	   	<=	"0000001000010000";
+--  sprite_snake_head_g_down(15) 	   	<=	"0000000000000000";
+--  
+--  -- sprite snake head downwards facing tongue coloring
+--  sprite_snake_head_r_down(0) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(1) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(2) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(3) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(4) 	  		<=	"0000000000000000";
+--  sprite_snake_head_r_down(5) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(6) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(7) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(8) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(9) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(10) 			<=	"0000000000000000";
+--  sprite_snake_head_r_down(11) 			<=	"0000001100000000";
+--  sprite_snake_head_r_down(12) 	   	<=	"0000001100000000";
+--  sprite_snake_head_r_down(13) 	   	<=	"0000001100000000";
+--  sprite_snake_head_r_down(14) 	   	<=	"0000011110000000";
+--  sprite_snake_head_r_down(15) 	  	 	<= "0000010010000000";
+--  
+--  -- sprite snake head downwards facing eye white coloring
+--  sprite_snake_head_w_down(0) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(1) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(2) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(3) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(4) 			<= "0000000000000000";
+--  sprite_snake_head_w_down(5) 			<=	"0000011100000000";
+--  sprite_snake_head_w_down(6) 			<=	"0000000100000000";
+--  sprite_snake_head_w_down(7) 			<=	"0000000100000000";
+--  sprite_snake_head_w_down(8) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(9) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(10) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(11) 			<=	"0000000000000000";
+--  sprite_snake_head_w_down(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_down(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_down(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_w_down(15) 	  	 	<=	"0000000000000000";
+--  
+--    -- sprite snake head downwards facing eye black coloring
+--  sprite_snake_head_b_down(0) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(1) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(2) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(3) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(4) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(5) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(6) 			<=	"0000011000000000";
+--  sprite_snake_head_b_down(7) 			<=	"0000011000000000";
+--  sprite_snake_head_b_down(8) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(9) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(10) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(11) 			<=	"0000000000000000";
+--  sprite_snake_head_b_down(12) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_down(13) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_down(14) 	  	 	<=	"0000000000000000";
+--  sprite_snake_head_b_down(15) 	  	 	<=	"0000000000000000";
 
+
+--  -- sprite snake tail coloring
+--  sprite_snake_tail(0) 			<=	"0000000000110000";
+--  sprite_snake_tail(1) 			<=	"0000000011111000";
+--  sprite_snake_tail(2) 			<=	"0000001111111100";
+--  sprite_snake_tail(3) 			<=	"0000111111111100";
+--  sprite_snake_tail(4) 			<=	"0001111111111110";
+--  sprite_snake_tail(5) 			<=	"0011111111111110";
+--  sprite_snake_tail(6) 			<=	"0111111111111111";
+--  sprite_snake_tail(7) 			<=	"1111111111111111";
+--  sprite_snake_tail(8) 			<=	"1111111111111111";
+--  sprite_snake_tail(9) 			<=	"0111111111111111";
+--  sprite_snake_tail(10) 		<=	"0011111111111110";
+--  sprite_snake_tail(11) 		<=	"0001111111111110";
+--  sprite_snake_tail(12) 	   <=	"0000111111111100";
+--  sprite_snake_tail(13) 	   <=	"0000001111111100";
+--  sprite_snake_tail(14) 	   <=	"0000000011111000";
+--  sprite_snake_tail(15) 	   <=	"0000000000110000";
+--  
+--   -- sprite snake tail left facing coloring
+--  sprite_snake_tail_left(0) 			<=	"0000110000000000";
+--  sprite_snake_tail_left(1) 			<=	"0001111100000000";
+--  sprite_snake_tail_left(2) 			<=	"0011111111000000";
+--  sprite_snake_tail_left(3) 			<=	"0011111111110000";
+--  sprite_snake_tail_left(4) 			<=	"0111111111111000";
+--  sprite_snake_tail_left(5) 			<=	"0111111111111100";
+--  sprite_snake_tail_left(6) 			<=	"1111111111111110";
+--  sprite_snake_tail_left(7) 			<=	"1111111111111111";
+--  sprite_snake_tail_left(8) 			<=	"1111111111111111";
+--  sprite_snake_tail_left(9) 			<=	"1111111111111110";
+--  sprite_snake_tail_left(10) 			<=	"0111111111111100";
+--  sprite_snake_tail_left(11) 			<=	"0111111111111000";
+--  sprite_snake_tail_left(12) 	 	  	<=	"0011111111110000";
+--  sprite_snake_tail_left(13) 	  	 	<=	"0011111111000000";
+--  sprite_snake_tail_left(14) 	 	  	<=	"0001111100000000";
+--  sprite_snake_tail_left(15) 	  	 	<=	"0000110000000000";
+--  
+--    -- sprite snake tail upwards facing coloring
+--  sprite_snake_tail_up(0) 			<=	"0000001111000000";
+--  sprite_snake_tail_up(1) 			<=	"0000111111110000";
+--  sprite_snake_tail_up(2) 			<=	"0011111111111100";
+--  sprite_snake_tail_up(3) 			<=	"0111111111111110";
+--  sprite_snake_tail_up(4) 			<=	"1111111111111111";
+--  sprite_snake_tail_up(5) 			<=	"1111111111111111";
+--  sprite_snake_tail_up(6) 			<=	"0111111111111110";
+--  sprite_snake_tail_up(7) 			<=	"0111111111111110";
+--  sprite_snake_tail_up(8) 			<=	"0011111111111100";
+--  sprite_snake_tail_up(9) 			<=	"0011111111111100";
+--  sprite_snake_tail_up(10) 		<=	"0001111111111000";
+--  sprite_snake_tail_up(11) 		<=	"0001111111111000";
+--  sprite_snake_tail_up(12) 	   <=	"0000111111110000";
+--  sprite_snake_tail_up(13) 	   <=	"0000011111100000";
+--  sprite_snake_tail_up(14) 	   <=	"0000001111000000";
+--  sprite_snake_tail_up(15) 	   <=	"0000000110000000";
+--  
+--    -- sprite snake tail downwards facing coloring
+--  sprite_snake_tail_down(0) 			<=	"0000000110000000";
+--  sprite_snake_tail_down(1) 			<=	"0000001111000000";
+--  sprite_snake_tail_down(2) 			<=	"0000011111100000";
+--  sprite_snake_tail_down(3) 			<=	"0000111111110000";
+--  sprite_snake_tail_down(4) 			<=	"0001111111111000";
+--  sprite_snake_tail_down(5) 			<=	"0001111111111000";
+--  sprite_snake_tail_down(6) 			<=	"0011111111111100";
+--  sprite_snake_tail_down(7) 			<=	"0011111111111100";
+--  sprite_snake_tail_down(8) 			<=	"0111111111111110";
+--  sprite_snake_tail_down(9) 			<=	"0111111111111110";
+--  sprite_snake_tail_down(10) 			<=	"1111111111111111";
+--  sprite_snake_tail_down(11) 			<=	"1111111111111111";
+--  sprite_snake_tail_down(12) 	   	<=	"0111111111111110";
+--  sprite_snake_tail_down(13) 	   	<=	"0011111111111100";
+--  sprite_snake_tail_down(14) 	   	<=	"0000111111110000";
+--  sprite_snake_tail_down(15) 	   	<=	"0000001111000000";
+
+
+--  
+--    -- sprite snake body coloring
+--  sprite_snake_body(0) 			<=	"0000111111110000";
+--  sprite_snake_body(1) 			<=	"0001111111111000";
+--  sprite_snake_body(2) 			<=	"0011111111111100";
+--  sprite_snake_body(3) 			<=	"0011111111111100";
+--  sprite_snake_body(4) 			<=	"0111111111111110";
+--  sprite_snake_body(5) 			<=	"1111111111111111";
+--  sprite_snake_body(6) 			<=	"1111111111111111";
+--  sprite_snake_body(7) 			<=	"1111111111111111";
+--  sprite_snake_body(8) 			<=	"1111111111111111";
+--  sprite_snake_body(9) 			<=	"1111111111111111";
+--  sprite_snake_body(10) 		<=	"1111111111111111";
+--  sprite_snake_body(11) 		<=	"0111111111111110";
+--  sprite_snake_body(12) 	   <=	"0011111111111100";
+--  sprite_snake_body(13) 	   <=	"0011111111111100";
+--  sprite_snake_body(14) 	   <=	"0001111111111000";
+--  sprite_snake_body(15) 	   <=	"0000111111110000";
+--  
+  
+  
+  

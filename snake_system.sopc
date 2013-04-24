@@ -18,6 +18,14 @@
          type = "String";
       }
    }
+   element de2_audio_0.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "64";
+         type = "String";
+      }
+   }
    element de2_vga_controller_0.avalon_slave_0
    {
       datum baseAddress
@@ -45,6 +53,14 @@
       {
          value = "{output_language=VHDL, output_directory=/home/user3/spring13/ie2147/Desktop/Git/Snake_Plus}";
          type = "String";
+      }
+   }
+   element de2_audio_0
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
       }
    }
    element de2_vga_controller_0
@@ -112,8 +128,8 @@
  <parameter name="maxAdditionalLatency" value="0" />
  <parameter name="projectName" value="snakeplus.qpf" />
  <parameter name="sopcBorderPoints" value="true" />
- <parameter name="systemHash" value="-25943327986" />
- <parameter name="timeStamp" value="1366135315671" />
+ <parameter name="systemHash" value="-26447233525" />
+ <parameter name="timeStamp" value="1366646878859" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <module kind="clock_source" version="12.1" enabled="1" name="clk_0">
   <parameter name="clockFrequency" value="50000000" />
@@ -214,7 +230,7 @@
   <parameter name="dcache_numTCDM" value="_0" />
   <parameter name="dcache_lineSize" value="_32" />
   <parameter name="dcache_bursts" value="false" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='de2_vga_controller_0.avalon_slave_0' start='0x0' end='0x40' /><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='ps2.s1' start='0x101040' end='0x101048' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101048' end='0x101050' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='de2_vga_controller_0.avalon_slave_0' start='0x0' end='0x40' /><slave name='de2_audio_0.avalon_slave_0' start='0x40' end='0x50' /><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='ps2.s1' start='0x101040' end='0x101048' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101048' end='0x101050' /></address-map>]]></parameter>
   <parameter name="dataAddrWidth" value="21" />
   <parameter name="customInstSlavesSystemInfo" value="&lt;info/&gt;" />
   <parameter name="cpuReset" value="false" />
@@ -418,7 +434,12 @@
    kind="de2_vga_controller"
    version="1.0"
    enabled="1"
-   name="de2_vga_controller_0" />
+   name="de2_vga_controller_0">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
+ </module>
+ <module kind="de2_audio" version="1.0" enabled="1" name="de2_audio_0">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
+ </module>
  <connection kind="clock" version="12.1" start="clk_0.clk" end="cpu_0.clk" />
  <connection
    kind="avalon"
@@ -485,5 +506,14 @@
    end="de2_vga_controller_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
+ </connection>
+ <connection kind="clock" version="12.1" start="clk_0.clk" end="de2_audio_0.clock" />
+ <connection
+   kind="avalon"
+   version="12.1"
+   start="cpu_0.data_master"
+   end="de2_audio_0.avalon_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0040" />
  </connection>
 </system>

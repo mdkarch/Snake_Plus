@@ -144,7 +144,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 				;
 			// collision
 		}
-		updateSnake(snake, xCoor, yCoor, left_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor, right_dir, old_dir);
 		checkFood(snake, food, left_dir);
 	}else if(left){
 		xCoor-=16;
@@ -152,7 +152,7 @@ static void movement(alt_u8 key, struct Snake *snake[], struct Food *food[]){
 			printf("Collision with left boundary!\n");			
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor,right_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor,left_dir, old_dir);
 		checkFood(snake, food, right_dir);
 	}else if(up){
 		yCoor+=16;
@@ -216,9 +216,9 @@ void writeToHW(struct Snake *snake[], int dir, int old_dir) {
 
 	/* Figure out head */
 	if(dir == right_dir)
-		sprite = SNAKE_HEAD_LEFT;
-	else if(dir == left_dir)
 		sprite = SNAKE_HEAD_RIGHT;
+	else if(dir == left_dir)
+		sprite = SNAKE_HEAD_LEFT;
 	else if(dir == down_dir)
 		sprite = SNAKE_HEAD_UP;
 	else if(dir == up_dir)

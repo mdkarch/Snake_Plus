@@ -93,15 +93,15 @@ begin
 		VGA_SYNC_from_the_de2_vga_controller_0 => VGA_SYNC,
 		VGA_VS_from_the_de2_vga_controller_0 => VGA_VS,
 		
-		AUD_ADCDAT_to_the_de2_audio_0 => AUD_ADCAT,
-      AUD_ADCLRCK_from_the_de2_audio_0 => AUD_ADCLRCK,
-      AUD_BCLK_to_and_from_the_de2_audio_0 => AUD_BCLK,
-      AUD_DACDAT_from_the_de2_audio_0 => AUD_DACDAT,
-      AUD_DACLRCK_from_the_de2_audio_0 => AUD_DACLRCK,
-      AUD_XCK_from_the_de2_audio_0 => AUD_XCK,
-      I2C_SCLK_from_the_de2_audio_0 => I2C_SCLK,
-      I2C_SDAT_to_and_from_the_de2_audio_0 => I2C_SDAT,
-      iCLK_to_the_de2_audio_0 => iCLK,
-      iRST_N_to_the_de2_audio_0 => iRST_N
+		AUD_ADCDAT_to_the_de2_audio_controller_0 => AUD_ADCAT,
+      AUD_ADCLRCK_from_the_de2_audio_controller_0 => AUD_ADCLRCK,
+      AUD_BCLK_to_and_from_the_de2_audio_controller_0 => AUD_BCLK,
+      AUD_DACDAT_from_the_de2_audio_controller_0 => AUD_DACDAT,
+      AUD_DACLRCK_from_the_de2_audio_controller_0 => AUD_DACLRCK,
+      AUD_XCK_from_the_de2_audio_controller_0 => AUD_XCK,
+      I2C_SCLK_from_the_de2_audio_controller_0 => I2C_SCLK,
+      I2C_SDAT_to_and_from_the_de2_audio_controller_0 => I2C_SDAT,
+      iCLK_to_the_de2_audio_controller_0 => iCLK,
+      iRST_N_to_the_de2_audio_controller_0 => iRST_N
 );
 end rtl;

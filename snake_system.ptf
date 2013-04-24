@@ -518,10 +518,10 @@ SYSTEM snake_system
                span = "0x00000040";
                is_bridge = "0";
             }
-            Entry de2_audio_0/avalon_slave_0
+            Entry de2_audio_controller_0/avalon_slave_0
             {
-               address = "0x00000040";
-               span = "0x00000010";
+               address = "0x00000200";
+               span = "0x00000200";
                is_bridge = "0";
             }
          }
@@ -2073,7 +2073,7 @@ SYSTEM snake_system
       {
       }
    }
-   MODULE de2_audio_0
+   MODULE de2_audio_controller_0
    {
       SLAVE avalon_slave_0
       {
@@ -2117,7 +2117,7 @@ SYSTEM snake_system
             PORT address
             {
                type = "address";
-               width = "3";
+               width = "8";
                direction = "input";
                Is_Enabled = "1";
             }
@@ -2147,7 +2147,7 @@ SYSTEM snake_system
             Address_Alignment = "dynamic";
             Well_Behaved_Waitrequest = "0";
             Is_Nonvolatile_Storage = "0";
-            Address_Span = "16";
+            Address_Span = "512";
             Read_Latency = "0";
             Is_Memory_Device = "0";
             Maximum_Pending_Read_Transactions = "0";
@@ -2156,7 +2156,7 @@ SYSTEM snake_system
             Write_Latency = "0";
             Is_Flash = "0";
             Data_Width = "16";
-            Address_Width = "3";
+            Address_Width = "8";
             Maximum_Burst_Size = "1";
             Register_Incoming_Signals = "0";
             Register_Outgoing_Signals = "0";
@@ -2169,9 +2169,9 @@ SYSTEM snake_system
             MASTERED_BY cpu_0/data_master
             {
                priority = "1";
-               Offset_Address = "0x00000040";
+               Offset_Address = "0x00000200";
             }
-            Base_Address = "0x00000040";
+            Base_Address = "0x00000200";
             Address_Group = "0";
             IRQ_MASTER cpu_0/data_master
             {
@@ -2254,7 +2254,7 @@ SYSTEM snake_system
       }
       class = "no_legacy_module";
       class_version = "7.08121";
-      gtf_class_name = "de2_audio";
+      gtf_class_name = "de2_audio_controller";
       gtf_class_version = "1.0";
       SYSTEM_BUILDER_INFO 
       {
@@ -2273,7 +2273,7 @@ SYSTEM snake_system
       }
       HDL_INFO 
       {
-         Simulation_HDL_Files = "__PROJECT_DIRECTORY__/de2_audio.vhd,__PROJECT_DIRECTORY__/de2_audio_0.vhd";
+         Simulation_HDL_Files = "__PROJECT_DIRECTORY__/de2_audio_controller.vhd";
       }
       WIZARD_SCRIPT_ARGUMENTS 
       {

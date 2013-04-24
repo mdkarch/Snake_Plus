@@ -16,7 +16,8 @@
 			--26-27: Which segment referring to
 			--			00=head, 01=second to head
 			--			10=second to tail 11=tail
-			--26-31: UNUSED (MSB)
+			--28: increment flag, move all pieces, move head to new x & y
+			--29-31: UNUSED (MSB)
 --
 -------------------------------------------------------------------------------
 library ieee;

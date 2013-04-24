@@ -18,7 +18,8 @@ use work.definitions.all;
 			--			00=head, 01=second to head
 			--			10=second to tail 11=tail
 			--			( only used for snakes, not tiles )
-			--28-31: UNUSED (MSB)
+			--28: increment flag, move all pieces, move head to new x & y
+			--29-31: UNUSED (MSB)
 			
 		--Tiles protocol ( in tiles_ram, from controller to raster)
 			-- 8 bits
@@ -351,7 +352,7 @@ entity add_remove_snake_part is
 		reset 				: in std_logic;
 		enabled				: in std_logic;
 		data_in				: in std_logic_vector(31 downto 0);
-		snake 				: out snake_ram;
+		snake 				: buffer snake_ram;
 		head_index_out		: out integer;
 		tail_index_out		: out integer;
 		snake_length_out	: out integer
@@ -366,7 +367,8 @@ signal x_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
 signal sprite_select	: std_logic_vector(4 downto 0); 	-- 5 bits ---
 signal add_remove		: std_logic;							-- 1 bit  ---
 signal segment			: std_logic_vector(1 downto 0);	-- 2 bits ---
-signal unused			: std_logic_vector(3 downto 0);	-- 4 bits ---
+signal increment		: std_logic;							-- 1 bit
+signal unused			: std_logic_vector(2 downto 0);	-- 3 bits ---
 
 signal head_index		: integer		:= 0;
 signal tail_index		: integer		:= 0;
@@ -381,6 +383,7 @@ begin
 	tail_index_out <= tail_index;
 	snake_length_out <= snake_length;
 	
+	increment 	<= 	data_in(28);
 	segment 		<= 	data_in(27 downto 26);
 	add_remove 	<= 	data_in(25);
 
@@ -397,8 +400,6 @@ begin
 											& "0011111111" & "0011111111";
 			snake(2) <=  "0000" & "00" & "1" & SNAKE_TAIL_RIGHT 
 											& "0011101111" & "0011111111";
---			snake(3) <=  "0000" & "00" & "1" & SNAKE_TURN_UP_RIGHT 
---											& "0011011111" & "0011111111";
 			head_index		<= 0;
 			tail_index		<= 2;
 			snake_length	<= 3; 
@@ -406,58 +407,43 @@ begin
 		-- Only do something if it was directed at this snake	--
 		elsif enabled = '1' then
 		
+			-- Move all pieces, head moves to new location
+			if increment = '1' then
+				for i in MAX_SNAKE_SIZE downto 1 loop
+					if i <= tail_index then
+						snake(i) <= snake(i-1);
+					end if;
+				end loop;
+				snake(0) <= data_in;
+		
 			---- Add situation -----
-			if add_remove = '1' then
+			elsif add_remove = '1' then
 			
 				if segment = "00" then
-					
-					--Increment snake length
-					snake_length <= snake_length + 1;
-					
-					--Increment head pointer --
-					head_index <= head_index + 1;
-					
-					-- Overflow happened
-					if head_index + 1 > MAX_SNAKE_SIZE - 1 then
-						snake(0) <= data_in;
-						head_index <= 0;
-					else
-						-- Set actual snake
-						snake(head_index + 1) <= data_in ; 
-					end if;
+					-- Do nothing, not allowed
 				
 				-- Second to head
 				elsif segment = "01" then
-					if head_index - 1 < 0 then
-						snake(MAX_SNAKE_SIZE- 1)(24 downto 20) <= data_in(24 downto 20);
-					else
-						snake(head_index - 1)(24 downto 20) <= data_in(24 downto 20);
-					end if;
+						snake(1)(24 downto 20) <= data_in(24 downto 20);
 					
 				-- Second to tail
 				elsif segment = "10" then
-					if tail_index + 1 > MAX_SNAKE_SIZE - 1 then
-						snake(0)(24 downto 20) <= data_in(24 downto 20);
-					else 
-						snake(tail_index + 1)(24 downto 20) <= data_in(24 downto 20);
-					end if;
+						snake(tail_index - 1)(24 downto 20) <= data_in(24 downto 20);
 					
 				-- Tail
 				elsif segment = "11" then
-					
-					--Increment snake length
-					snake_length <= snake_length + 1;
-					
-					-- Update index
-					tail_index <= tail_index - 1;
+				
 
 					--Overflow case
-					if tail_index - 1 < 0 then
-						tail_index <= MAX_SNAKE_SIZE - 1;
-						snake(MAX_SNAKE_SIZE - 1) <= data_in; 
+					if tail_index + 1 > MAX_SNAKE_SIZE then
+						-- Do nothing
 					else
+						--Increment snake length
+						snake_length <= snake_length + 1;
+						-- Update index
+						tail_index <= tail_index + 1;
 						-- Set actual snake
-						snake(tail_index - 1) <= data_in;
+						snake(tail_index + 1) <= data_in;
 					end if;
 					
 				end if; -- segments
@@ -470,11 +456,12 @@ begin
 				if segment = "00" or segment = "01" or segment = "10"  then
 					-- CANT DO THIS
 				elsif segment = "11" then
-					snake(tail_index)(25) <= '0';
-					tail_index <= tail_index + 1;
-					snake_length <= snake_length - 1;
-					if tail_index + 1 > MAX_SNAKE_SIZE - 1 then
-						tail_index <= 0;
+					if tail_index - 1 <= 0 then
+						-- Do nothing
+					else
+						snake(tail_index)(25) <= '0';
+						tail_index <= tail_index -1;
+						snake_length <= snake_length - 1;
 					end if;
 				end if;
 					

@@ -29,6 +29,24 @@ void initFood(struct Food food[]){
 	food[1].xCoord = x;
 	food[1].yCoord = y;
 	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
+	x = (100/16)*16; y = (355/16)*16;
+
+	food[2].enable = 1;
+	food[2].xCoord = x;
+	food[2].yCoord = y;
+	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
+	x = (400/16)*16; y = (355/16)*16;
+
+	food[3].enable = 1;
+	food[3].xCoord = x;
+	food[3].yCoord = y;
+	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
+	x = (10/16)*16; y = (355/16)*16;
+
+	food[4].enable = 1;
+	food[4].xCoord = x;
+	food[4].yCoord = y;
+	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
 	printf("food location x:%d, y:%d\n", x, y);
 
 }

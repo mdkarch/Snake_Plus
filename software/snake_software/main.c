@@ -32,7 +32,7 @@
  */
 
 #define LENGTH		1200
-#define MAX_FOOD	1
+#define MAX_FOOD	5
 #define col_offset  14
 #define left_dir	0
 #define right_dir	1

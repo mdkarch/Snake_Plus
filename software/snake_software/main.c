@@ -7,6 +7,27 @@
 #include <unistd.h>
 #include "snake_io.h"
 
+/*
+ * I have a way to generate random numbers
+ * assign every power up a random loc in 2d array
+ * i need to keep track of two 2d array
+ * one will contain type of power up stored there
+ * other one will contain the actual struct of the power up
+ * for collisions, if the snake currently occupies the same tile 
+ * that an enableed power up is in activate it
+ * to do this check:
+ * 1. see what tile the snake is in
+ * 2. check if the power up is enabled
+ * 3. if not move one
+ * 4. if so check what power up it is and apply it and remove it from the board
+ * 5. eventually some algorithm will be created to determine when to display powerups or how many
+ *
+ * enable N randomly selected powers
+ * after a snake eats a powerup, place a new randomly selected one on the board
+ * assuming the power up can take up a free slot
+ * do a for loop, once a free spot has been selected, break
+ * worst case, go through the entire for loop and no power up enabled because entire board is occupied
+ */
 
 #define LENGTH		1200
 #define MAX_FOOD	1
@@ -101,6 +122,17 @@ int checkFood(struct Snake snake[], struct Food food[], int dir)
 			}
 	}
 	return 0;
+}
+
+
+int checkSpeed(struct Snake snake[], struct Speed speed[], int dir){
+
+
+}
+
+int checkFreeze(struct Snake snake[], struct Freeze freeze[], int dir){
+
+
 }
 
 // track snake movement

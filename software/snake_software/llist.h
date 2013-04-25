@@ -13,16 +13,6 @@ struct Snake{
 	int enable;
 };
 
-/*void initSnake(struct Snake *snake[]){
-	int x = 50;
-	int y = 50;
-	snake[0].enable = 1;
-	snake[0].xCoord = 16;
-	snake[0].yCoord = 8;
-	printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-
-}*/
-
 void initSnake(struct Snake snake[], int xCoord, int yCoord){
 	head = 0;
 	tail = 1;
@@ -30,7 +20,7 @@ void initSnake(struct Snake snake[], int xCoord, int yCoord){
 	snake[0].yCoord = yCoord;//8;
 	snake[0].enable = 1;
 	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
-	printf("IN INIT x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+	//printf("IN INIT x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
 
 	snake[tail].xCoord = snake[0].xCoord - 8; //hardcoded to move right
 	snake[tail].yCoord = snake[0].yCoord;//8;

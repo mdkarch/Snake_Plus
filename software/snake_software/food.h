@@ -42,7 +42,7 @@ void initFood(struct Food food[]){
 	food[2].xCoord = 400;
 	food[2].yCoord = y;*/
 
-	addTilePiece(RABBIT_CODE, (short) y/16, (short)x/16 );
+	addTilePiece(RABBIT_CODE, (short) y/16, (short) x/16 );
 	printf("food location x:%d, y:%d\n", x, y);
 
 }
@@ -50,6 +50,7 @@ void initFood(struct Food food[]){
 void removeFood(struct Food food[], int index){
 	printf("Removing food\n");
 	food[index].enable = 0;
+	removeTilePiece((short) food[index].yCoord/16, (short) food[index].xCoord/16)
 }
 
 #endif

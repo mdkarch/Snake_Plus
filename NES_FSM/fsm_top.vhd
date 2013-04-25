@@ -24,7 +24,7 @@ entity fsm_top is
     
     GPIO_0,                                      -- GPIO Connection 0
     GPIO_1 : inout std_logic_vector(35 downto 0) -- GPIO Connection 1   
-    );
+    ); 
   
 end fsm_top;
 
@@ -34,13 +34,15 @@ architecture datapath of fsm_top is
 
 begin
 
+
 	controller : entity work.controller port map(
-		clk		=> CLOCK_50,
-		latch	 	=> GPIO_1(1), -- WRONG PIN
-		pulse		=> GPIO_1(2),	-- WRONG PIN
-		data		=> GPIO_1(3),	-- WRONG PIN
-		leds		=> LEDR(15 downto 0),
-		counter_c	=> counter
+		clk			=> CLOCK_50,
+		latch1	 	=> GPIO_0(2), 
+		pulse1		=> GPIO_0(4),	
+		data1			=> GPIO_0(6),	
+		latch2	 	=> GPIO_0(28), 
+		pulse2		=> GPIO_0(30),	
+		data2			=> GPIO_0(32),	
 	  );
 	
 

@@ -2,21 +2,24 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity controller is
+entity nes_fsm is
     port (
 		clk			: in std_logic;
+		reset			: in std_logic;
 		latch1		: out std_logic;
 		pulse1		: out std_logic;
 		data1			: in std_logic;
 		latch2		: out std_logic;
 		pulse2		: out std_logic;
 		data2			: in std_logic;
+		buttons1_out: out std_logic_vector(7 downto 0);
+		buttons2_out: out std_logic_vector(7 downto 0)
 	  );
 
 
-end controller;
+end nes_fsm;
 
-architecture arch of controller is
+architecture arch of nes_fsm is
 
 	signal latch					:	std_logic	:= '0';
 	signal pulse					:	std_logic	:= '0';
@@ -45,19 +48,28 @@ begin  -- arch
 	pulse1 <= pulse;
 	pulse2 <= pulse;
 	
+	buttons1_out <= buttons1;
+	buttons2_out <= buttons2;
+	
 	-- Generate 60HZ clock to poll controllers
 	clockprocess_60hz : process(clk)
 	begin
 		if rising_edge(clk) then
 			
-			clock_60hz_counter <= clock_60hz_counter + 1;
-			
-			clock_60hz <= '0'; -- Always zero except for the one cycle it isnt
-			
-			if clock_60hz_counter >= MILLI_8P3  then
+			if reset = '1' then
 				clock_60hz_counter <= 0;
-				clock_60hz <= '1'; -- Set clock HIGH here
-			end if;
+				clock_60hz <= '0';
+			else
+				clock_60hz_counter <= clock_60hz_counter + 1;
+				
+				clock_60hz <= '0'; -- Always zero except for the one cycle it isnt
+				
+				if clock_60hz_counter >= MILLI_8P3  then
+					clock_60hz_counter <= 0;
+					clock_60hz <= '1'; -- Set clock HIGH here
+				end if;
+				
+			end if; -- end reset
 			
 			
 		end if; -- rising edge clk
@@ -72,8 +84,16 @@ begin  -- arch
 			latch <= '0';
 			pulse <= '0';
 			
-		 
-			if clock_60hz = '0' and in_state_machine = '0' then
+			if reset = '1' then
+				counter <= 0;
+				in_state_machine <= '0';
+				n_s <= latch_state;
+				pulse <= '0';
+				latch <= '0';
+				buttons1 <= (others => '0');
+				buttons2 <= (others => '0');
+				
+			elsif clock_60hz = '0' and in_state_machine = '0' then
 				-- Do nothing
 			else
 				

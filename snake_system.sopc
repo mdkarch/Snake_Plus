@@ -18,7 +18,15 @@
          type = "String";
       }
    }
-   element de2_audio_0.avalon_slave_0
+   element de2_audio_controller_0.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "512";
+         type = "String";
+      }
+   }
+   element nes_controller.avalon_slave_0
    {
       datum baseAddress
       {
@@ -31,14 +39,6 @@
       datum baseAddress
       {
          value = "524288";
-         type = "String";
-      }
-   }
-   element de2_audio_controller_0.avalon_slave_0
-   {
-      datum baseAddress
-      {
-         value = "512";
          type = "String";
       }
    }
@@ -95,6 +95,14 @@
          type = "int";
       }
    }
+   element nes_controller
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+   }
    element ps2
    {
       datum _sortIndex
@@ -136,8 +144,8 @@
  <parameter name="maxAdditionalLatency" value="0" />
  <parameter name="projectName" value="snakeplus.qpf" />
  <parameter name="sopcBorderPoints" value="true" />
- <parameter name="systemHash" value="-27607306662" />
- <parameter name="timeStamp" value="1366832874979" />
+ <parameter name="systemHash" value="-31666800215" />
+ <parameter name="timeStamp" value="1366932576258" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <module kind="clock_source" version="12.1" enabled="1" name="clk_0">
   <parameter name="clockFrequency" value="50000000" />
@@ -238,7 +246,7 @@
   <parameter name="dcache_numTCDM" value="_0" />
   <parameter name="dcache_lineSize" value="_32" />
   <parameter name="dcache_bursts" value="false" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='de2_vga_controller_0.avalon_slave_0' start='0x0' end='0x40' /><slave name='de2_audio_controller_0.avalon_slave_0' start='0x200' end='0x400' /><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='ps2.s1' start='0x101040' end='0x101048' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101048' end='0x101050' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='de2_vga_controller_0.avalon_slave_0' start='0x0' end='0x40' /><slave name='nes_controller.avalon_slave_0' start='0x40' end='0x50' /><slave name='de2_audio_controller_0.avalon_slave_0' start='0x200' end='0x400' /><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='ps2.s1' start='0x101040' end='0x101048' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101048' end='0x101050' /></address-map>]]></parameter>
   <parameter name="dataAddrWidth" value="21" />
   <parameter name="customInstSlavesSystemInfo" value="&lt;info/&gt;" />
   <parameter name="cpuReset" value="false" />
@@ -449,7 +457,16 @@
    kind="de2_audio_controller"
    version="1.0"
    enabled="1"
-   name="de2_audio_controller_0" />
+   name="de2_audio_controller_0">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
+ </module>
+ <module
+   kind="de2_nes_controller"
+   version="1.0"
+   enabled="1"
+   name="nes_controller">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
+ </module>
  <connection kind="clock" version="12.1" start="clk_0.clk" end="cpu_0.clk" />
  <connection
    kind="avalon"
@@ -529,5 +546,18 @@
    end="de2_audio_controller_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0200" />
+ </connection>
+ <connection
+   kind="clock"
+   version="12.1"
+   start="clk_0.clk"
+   end="nes_controller.clock" />
+ <connection
+   kind="avalon"
+   version="12.1"
+   start="cpu_0.data_master"
+   end="nes_controller.avalon_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0040" />
  </connection>
 </system>

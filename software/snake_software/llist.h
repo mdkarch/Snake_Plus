@@ -59,6 +59,7 @@ void traverseList(struct Snake snake[])
 		int xDiff = abs(snake[0].xCoord - snake[count].xCoord);
 		int yDiff = abs(snake[0].yCoord - snake[count].yCoord);
 		printf("traverse x:%d y:%d\n", snake[count].xCoord, snake[count].yCoord);
+		printf("diff xdiff:%d ydiff:%d\n", xDiff, yDiff);
 
 		if(xDiff <= col_offset && yDiff <= col_offset){
 			printf("Collision!");

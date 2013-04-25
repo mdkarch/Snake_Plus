@@ -14,7 +14,7 @@ struct Speed{
 void initSpeed(struct Speed speed[]){
 	printf("Initializing speed\n");
 	int x,y;
-	x = (350/16)*16; y = (255/16)*16;
+	x = (150/16)*16; y = (255/16)*16;
 	/*PRNG_seed = PRNG_seed *1103515245 + 12345;
 	PRNG_seed = (PRNG_seed/65536)%32768;
 	x = PRNG_seed;
@@ -38,7 +38,7 @@ void initSpeed(struct Speed speed[]){
 	speed[2].xCoord = 400;
 	speed[2].yCoord = y;*/
 
-	//addTilePiece(RABBIT_CODE, (short) y/16, (short) x/16 );
+	addTilePiece(SPEED_CODE, (short) y/16, (short) x/16 );
 	//printf("speed location x:%d, y:%d\n", x, y);
 
 }

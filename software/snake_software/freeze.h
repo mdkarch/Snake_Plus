@@ -3,7 +3,6 @@
 #include "snake_io.h"
 
 int FREEZE_SIZE = 1;
-unsigned long PRNG_seed = 15;
 
 struct Freeze{
 	int xCoord;

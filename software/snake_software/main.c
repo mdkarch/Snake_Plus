@@ -4,6 +4,8 @@
 #include "ps2_keyboard.h"
 #include "llist.h"
 #include "food.h"
+#include "speed.h"
+#include "freeze.h"
 #include <unistd.h>
 #include "snake_io.h"
 
@@ -37,6 +39,7 @@
 #define up_dir		2
 #define down_dir	3
 
+unsigned int seed = 5323;
 /* will be put in a struct eventually*/
 /* start at location (0,0) */
 int xCoor = 255;
@@ -127,12 +130,12 @@ int checkFood(struct Snake snake[], struct Food food[], int dir)
 
 int checkSpeed(struct Snake snake[], struct Speed speed[], int dir){
 
-
+	return 0;
 }
 
 int checkFreeze(struct Snake snake[], struct Freeze freeze[], int dir){
 
-
+	return 0;
 }
 
 // track snake movement
@@ -302,6 +305,21 @@ int kb_input(){
 	return code;
 }
 
+int PRNG(int n){
+	seed = (8253729 * seed + + 2396403);
+	return seed % n;
+}
+
+void shuffle(int arr[], int n){
+	int i;
+	for(i = 0; i < n; i++){
+		int index = PRNG(n);
+		int temp = arr[index];
+		arr[index] = arr[i];
+		arr[i] = temp;
+	}
+}
+
 int main(){
 	alt_u8 key = 0;
 	/* Initialize the keyboard */
@@ -326,19 +344,28 @@ int main(){
 	struct Snake snake[100];
 	initSnake(snake, xCoor, yCoor);
 	struct Food food[MAX_FOOD];
+	struct Speed speed[1];
 	initFood(food);
+	//initSpeed(speed);
 
-	addSnakePiece(PLAYER1, SEG_HEAD, SNAKE_HEAD_RIGHT, (short)xCoor, (short)yCoor);
-	addSnakePiece(PLAYER1, SEG_SECOND_HEAD, SNAKE_BODY_RIGHT, ((short)xCoor), (short)yCoor);
+	//addSnakePiece(PLAYER1, SEG_HEAD, SNAKE_HEAD_RIGHT, (short)xCoor, (short)yCoor);
+	//addSnakePiece(PLAYER1, SEG_SECOND_HEAD, SNAKE_BODY_RIGHT, ((short)xCoor), (short)yCoor);
 
 	unsigned char code;
-
+	int count = 0;
 	while(1) {
+		/*if(count == 5){
+			code = kb_input();
+			movement(code, snake, food);
+			count = 0;
+		}*/
 		code = kb_input();
 		movement(code, snake, food);
+		count++;
 		printf("H: %d\n",READ_SNAKE1_HEAD() );
 		printf("T: %d\n",READ_SNAKE1_TAIL() );
 		printf("L: %d\n",READ_SNAKE1_LENGTH() );
+		//printf("Random: %d", PRNG(40));
 		usleep(500*1000);
 	}
 

@@ -1,8 +1,7 @@
-
 library ieee;
-use ieee.std_logic_1164.all;
+use ieee.std_logic_1164.all; 
 
-entity nes_fsm is
+entity nes_fsm is 
     port (
 		clk			: in std_logic;
 		reset			: in std_logic;

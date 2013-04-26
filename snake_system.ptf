@@ -520,8 +520,8 @@ SYSTEM snake_system
             }
             Entry de2_audio_controller_0/avalon_slave_0
             {
-               address = "0x00000200";
-               span = "0x00000200";
+               address = "0x00000040";
+               span = "0x00000040";
                is_bridge = "0";
             }
          }
@@ -2031,13 +2031,6 @@ SYSTEM snake_system
             direction = "output";
             Is_Enabled = "1";
          }
-         PORT leds
-         {
-            type = "export";
-            width = "16";
-            direction = "output";
-            Is_Enabled = "1";
-         }
          PORT sw
          {
             type = "export";
@@ -2117,21 +2110,21 @@ SYSTEM snake_system
             PORT address
             {
                type = "address";
-               width = "8";
+               width = "4";
                direction = "input";
                Is_Enabled = "1";
             }
             PORT readdata
             {
                type = "readdata";
-               width = "16";
+               width = "32";
                direction = "output";
                Is_Enabled = "1";
             }
             PORT writedata
             {
                type = "writedata";
-               width = "16";
+               width = "32";
                direction = "input";
                Is_Enabled = "1";
             }
@@ -2147,7 +2140,7 @@ SYSTEM snake_system
             Address_Alignment = "dynamic";
             Well_Behaved_Waitrequest = "0";
             Is_Nonvolatile_Storage = "0";
-            Address_Span = "512";
+            Address_Span = "64";
             Read_Latency = "0";
             Is_Memory_Device = "0";
             Maximum_Pending_Read_Transactions = "0";
@@ -2155,8 +2148,8 @@ SYSTEM snake_system
             Accepts_Internal_Connections = "1";
             Write_Latency = "0";
             Is_Flash = "0";
-            Data_Width = "16";
-            Address_Width = "8";
+            Data_Width = "32";
+            Address_Width = "4";
             Maximum_Burst_Size = "1";
             Register_Incoming_Signals = "0";
             Register_Outgoing_Signals = "0";
@@ -2169,9 +2162,9 @@ SYSTEM snake_system
             MASTERED_BY cpu_0/data_master
             {
                priority = "1";
-               Offset_Address = "0x00000200";
+               Offset_Address = "0x00000040";
             }
-            Base_Address = "0x00000200";
+            Base_Address = "0x00000040";
             Address_Group = "0";
             IRQ_MASTER cpu_0/data_master
             {
@@ -2181,13 +2174,6 @@ SYSTEM snake_system
       }
       PORT_WIRING 
       {
-         PORT AUD_ADCLRCK
-         {
-            type = "export";
-            width = "1";
-            direction = "output";
-            Is_Enabled = "1";
-         }
          PORT AUD_ADCDAT
          {
             type = "export";
@@ -2249,6 +2235,20 @@ SYSTEM snake_system
             type = "export";
             width = "1";
             direction = "inout";
+            Is_Enabled = "1";
+         }
+         PORT leds
+         {
+            type = "export";
+            width = "16";
+            direction = "output";
+            Is_Enabled = "1";
+         }
+         PORT AUD_ADCLRCK
+         {
+            type = "export";
+            width = "1";
+            direction = "output";
             Is_Enabled = "1";
          }
       }

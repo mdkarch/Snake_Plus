@@ -23,7 +23,7 @@
       VGA_R_from_the_de2_vga_controller_0 => VGA_R_from_the_de2_vga_controller_0,
       VGA_SYNC_from_the_de2_vga_controller_0 => VGA_SYNC_from_the_de2_vga_controller_0,
       VGA_VS_from_the_de2_vga_controller_0 => VGA_VS_from_the_de2_vga_controller_0,
-      leds_from_the_de2_vga_controller_0 => leds_from_the_de2_vga_controller_0,
+      leds_from_the_de2_audio_controller_0 => leds_from_the_de2_audio_controller_0,
       AUD_ADCDAT_to_the_de2_audio_controller_0 => AUD_ADCDAT_to_the_de2_audio_controller_0,
       PS2_Clk_to_the_ps2 => PS2_Clk_to_the_ps2,
       PS2_Data_to_the_ps2 => PS2_Data_to_the_ps2,

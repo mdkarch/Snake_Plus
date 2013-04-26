@@ -25,7 +25,6 @@ entity de2_vga_controller_0 is
 		VGA_R      : out std_logic_vector(9 downto 0);                     --               .export
 		VGA_G      : out std_logic_vector(9 downto 0);                     --               .export
 		VGA_B      : out std_logic_vector(9 downto 0);                     --               .export
-		leds       : out std_logic_vector(15 downto 0);                    --               .export
 		sw         : in  std_logic_vector(17 downto 0) := (others => '0')  --               .export
 	);
 end entity de2_vga_controller_0;
@@ -49,7 +48,6 @@ architecture rtl of de2_vga_controller_0 is
 			VGA_R      : out std_logic_vector(9 downto 0);                     -- export
 			VGA_G      : out std_logic_vector(9 downto 0);                     -- export
 			VGA_B      : out std_logic_vector(9 downto 0);                     -- export
-			leds       : out std_logic_vector(15 downto 0);                    -- export
 			sw         : in  std_logic_vector(17 downto 0) := (others => 'X')  -- export
 		);
 	end component snake_plus_vga;
@@ -74,7 +72,6 @@ begin
 			VGA_R      => VGA_R,      --               .export
 			VGA_G      => VGA_G,      --               .export
 			VGA_B      => VGA_B,      --               .export
-			leds       => leds,       --               .export
 			sw         => sw          --               .export
 		);
 

@@ -1,7 +1,7 @@
 PACKAGE install2 
 {
    # This file informs the Nios II IDE of non-legacy component paths.
-   # Generated 2013.04.24.15:48:11
+   # Generated 2013.04.25.12:49:32
    COMPONENT alt_e100_adapter_rx 
    {
       VERSION 12.1 

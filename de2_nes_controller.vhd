@@ -19,15 +19,16 @@ entity de2_nes_controller is
 		write      	: in  std_logic;
 		chipselect 	: in  std_logic;
 		address    	: in  std_logic_vector(3 downto 0);
-		readdata   	: out std_logic_vector(7 downto 0);
-		writedata  	: in  std_logic_vector(7 downto 0);	
+		readdata   	: out std_logic_vector(31 downto 0);
+		writedata  	: in  std_logic_vector(31 downto 0);	
 		
 		latch1		: out std_logic;
 		pulse1		: out std_logic;
 		data1			: in std_logic;
 		latch2		: out std_logic;
 		pulse2		: out std_logic;
-		data2			: in std_logic
+		data2			: in std_logic;
+		leds			: out std_logic_vector(15 downto 0)
 	  
 	);
   
@@ -72,10 +73,14 @@ begin
 				if chipselect = '1' then -- This chip is right one
 					-- Read --
 					if read = '1' then
+						leds(15) <= '1';
+						leds(14 downto 11) <= address;
+						leds(7 downto 0) <= buttons1;
+						readdata(31 downto 8) <= (others => '0');
 						if address = "0001" then -- First player
-							readdata <= buttons1;
+							readdata(7 downto 0) <= buttons1;
 						elsif address = "0010" then -- Second player
-							readdata <= buttons2;
+							readdata(7 downto 0) <= buttons2;
 						end if; -- end address
 					end if; -- end read
 				end if; --end chipselect
@@ -84,7 +89,7 @@ begin
 		end if;	-- end rising edge
 	end process;
 	
-	NES1: nes_fsm port map(
+	NES2: nes_fsm port map(
 
 		clk 					=> clk,
 		reset					=> reset,

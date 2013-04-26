@@ -50,6 +50,7 @@ begin  -- arch
 	buttons1_out <= buttons1;
 	buttons2_out <= buttons2;
 	
+	
 	-- Generate 60HZ clock to poll controllers
 	clockprocess_60hz : process(clk)
 	begin

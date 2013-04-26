@@ -15,6 +15,8 @@ IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 1 * 4)
 #define READ_SNAKE1_LENGTH() \
 IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4)
 
+#define READ_PLAYER_CONTROLLER(player) \
+IORD_32DIRECT(NES_CONTROLLER_BASE, player * 4);
 
 
 /* Player/Tile/Address codes */
@@ -125,6 +127,29 @@ void inline removeTilePiece(short tile_x, short tile_y){
 	char sprite = 0; // Dont care
 	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
 	WRITE_SPRITE(TILES,code);
+}
+
+int inline getPlayer1Controller(){
+
+	int controls = READ_PLAYER_CONTROLLER(1);
+	int right = controls 	& (0x00000001);
+	int left = controls 	& (0x00000002);
+	int down = controls 	& (0x00000004);
+	int up = controls 		& (0x00000008);
+	int start = controls 	& (0x00000010);
+	int select = controls 	& (0x00000020);
+	int b = controls 		& (0x00000040);
+	int a = controls 		& (0x00000080);
+	if( right )
+		return 0;
+	if( left )
+		return 1;
+	if( up )
+		return 2;
+	if( down )
+		return 3;
+	//printf("%d-%d-%d-%d-%d-%d-%d-%d\n",a,b,start,select,up,down,left,right);
+	//return controls;
 }
 
 

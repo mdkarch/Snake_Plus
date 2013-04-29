@@ -118,10 +118,10 @@ int checkFood(struct Snake snake[], struct Food food[], int dir)
 				printf("Eating Food!\n");
 				removeFood(food,j);
 				addEnd(snake, dir);
-				if(food_index == 400){
+				if(food_index == 40){
 					food_index = 0;
 				}
-				drawFood(food, food_index++);
+				while(!drawFood(food, food_index++));
 				break;
 			}
 		}
@@ -335,6 +335,10 @@ int main(){
 	struct Food food[MAX_FOOD];
 	initFood(food, board);
 	startFood(food);
+	int i;
+	for(i = 0; i < 400; i++){
+		printf("food location x:%d, y:%d\n", food[i].xCoord, food[i].yCoord);
+	}
 
 	//struct Speed speed[1];
 	//initSpeed(speed);

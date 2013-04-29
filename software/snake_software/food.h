@@ -70,13 +70,19 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 }
 
 void startFood(struct Food food[]){
-	food[0].enable = 1;
-	addTilePiece(RABBIT_CODE, (short) food[0].xCoord, (short) food[0].yCoord);
+	food[15].enable = 1;
+	addTilePiece(RABBIT_CODE, (short) food[15].xCoord, (short) food[15].yCoord);
 }
 
-void drawFood(struct Food food[], int index){
+int drawFood(struct Food food[], int index){
+	if((food[index].xCoord == 0 || food[index].xCoord == 29)
+			&& (food[index].yCoord == 0 || food[index].yCoord == 39)){
+		return 0;
+	}
+
 	food[index].enable = 1;
 	addTilePiece(RABBIT_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	return 1;
 }
 
 void removeFood(struct Food food[], int index){

@@ -5,9 +5,10 @@ use work.definitions.all;
 --
 ---- PROTOCOL:
 --		-- ADDRESS
---			-- 0001 = SNAKE1s
+--			-- 0001 = SNAKE1
 --			-- 0010 = SNAKE2
 --			-- 0011 = TILES
+--			-- 0100 = RESET
 --		
 --		--WRITEDATA
 --			--9-0: Y (LSB)
@@ -28,7 +29,7 @@ use work.definitions.all;
 --			-- 7	: Enabled/Active signal 
 --			
 ---- On Add:
----- 	Adding to head or tail
+---- 	Only to tail
 ----		NEED to send second change for second to head
 ---- On Remove:
 ----		Can only happen on tail
@@ -65,6 +66,7 @@ end snake_plus_vga;
 architecture rtl of snake_plus_vga is
 
 	signal reset				: std_logic;
+	signal soft_reset			: std_logic				:= '0';
 
   -- Main memory elements
   signal tiles 				: tiles_ram;
@@ -92,6 +94,7 @@ architecture rtl of snake_plus_vga is
   constant W_SNAKE1_SELECT	: std_logic_vector	:= "0001"; -- Write only
   constant W_SNAKE2_SELECT	: std_logic_vector	:= "0010"; -- Write only
   constant W_TILES_SELECT	: std_logic_vector	:= "0011"; -- Write only
+  constant W_SOFT_RESET		: std_logic_vector	:= "0100"; -- Write only
 		-- Read -- 	
   constant R_SNAKE1_HEAD	: std_logic_vector	:= "0000"; -- Read only
   constant R_SNAKE1_TAIL	: std_logic_vector	:= "0001"; -- Read only
@@ -154,8 +157,9 @@ begin
 --		end if;
 --		
 		
-      if reset = '1' then
+      if reset = '1' or soft_reset = '1' then
 			readdata <= (others => '0');
+			soft_reset <= '0';
       else
 			
 			if chipselect = '1' then -- This chip is right one
@@ -176,6 +180,10 @@ begin
 					-- Select tiles --
 					if address = W_TILES_SELECT then
 						tiles_enabled <= '1';
+					end if;
+					
+					if address = W_SOFT_RESET then
+						soft_reset <= '1';
 					end if;
 				
 				-- Read --
@@ -228,7 +236,7 @@ V1: entity work.de2_vga_raster port map (
 DD1: entity work.manage_tiles port map(
 
 		clk 					=> clk,
-		reset					=> reset,
+		reset					=> (reset or soft_reset),
 		enabled 				=> tiles_enabled,
 		data_in 				=> writedata,
 		tiles 				=> tiles
@@ -237,7 +245,7 @@ DD1: entity work.manage_tiles port map(
 AD1: entity work.add_remove_snake_part port map (
 
 		clk 					=> clk,
-		reset					=> reset,
+		reset					=> (reset or soft_reset),
 		enabled 				=> snake1_enabled,
 		data_in 				=> writedata,
 		snake 				=> snake1,
@@ -320,9 +328,9 @@ begin
 					 to_integer( unsigned( y_val ) ) ) <= add_remove & "00" & sprite_select;
 		end if; -- reset/ enabled
 		
-		tiles( 30, 1 ) 	<= '1' & "00" & RABBIT_CODE;
-		tiles( 10, 1 ) 	<= '1' & "00" & MOUSE_CODE;
-		tiles( 15, 20 ) 	<= '1' & "00" & WALL_CODE;
+		--tiles( 30, 1 ) 	<= '1' & "00" & RABBIT_CODE;
+		--tiles( 10, 1 ) 	<= '1' & "00" & MOUSE_CODE;
+		--tiles( 15, 20 ) 	<= '1' & "00" & WALL_CODE;
 
 		
 	end if; -- rising edge
@@ -377,6 +385,8 @@ signal snake_length	: integer		:= 1;
 --Index that new value will assigned to: head, second head, second tail, tail --
 signal seg_index		: integer;
 
+signal seg_second_tail : std_logic_vector(4 downto 0);
+
 begin
 
 	head_index_out <= head_index;
@@ -386,6 +396,8 @@ begin
 	increment 	<= 	data_in(28);
 	segment 		<= 	data_in(27 downto 26);
 	add_remove 	<= 	data_in(25);
+	
+	seg_second_tail <= snake(tail_index - 1)(24 downto 20);
 
 	process (clk)
 	begin
@@ -395,11 +407,11 @@ begin
 		if reset = '1' then
 			snake <= (others=>(others=>'0'));
 			snake(0) <=  "0000" & "00" & "1" & SNAKE_HEAD_RIGHT 
-											& "0100001111" & "0011111111";
+											& "0100010000" & "0100000000";
 			snake(1) <=  "0000" & "00" & "1" & SNAKE_BODY_RIGHT 
-											& "0011111111" & "0011111111";
+											& "0100000000" & "0100000000";
 			snake(2) <=  "0000" & "00" & "1" & SNAKE_TAIL_RIGHT 
-											& "0011101111" & "0011111111";
+											& "0011110000" & "0100000000";
 			head_index		<= 0;
 			tail_index		<= 2;
 			snake_length	<= 3; 
@@ -407,7 +419,8 @@ begin
 		-- Only do something if it was directed at this snake	--
 		elsif enabled = '1' then
 		
-			-- Move all pieces, head moves to new location
+		
+			----- Move all pieces, head moves to new location ------
 			if increment = '1' then
 				for i in MAX_SNAKE_SIZE downto 1 loop
 					if i <= tail_index then
@@ -415,8 +428,11 @@ begin
 					end if;
 				end loop;
 				snake(0) <= data_in;
+				--snake(tail_index)(24 downto 20) <= std_logic_vector(unsigned(seg_second_tail) - 4);
+				
 		
-			---- Add situation -----
+			--------------------------------------------
+			----  Add situation  ---
 			elsif add_remove = '1' then
 			
 				if segment = "00" then

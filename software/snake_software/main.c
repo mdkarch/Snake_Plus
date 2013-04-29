@@ -45,12 +45,6 @@ unsigned int seed = 5323;
 int xCoor = 255;
 int yCoor = 255;
 
-/* flags to determine the direction of the snake */
-/* maybe put this init in an init func */
-int left = 0;
-int right = 1; //have snake start moving right first
-int up = 0;
-int down = 0;
 
 /* used for kb input, removed eventually when nes controller is up and running */
 int status = 0;
@@ -71,39 +65,39 @@ KB_CODE_TYPE decode_mode;
 /* should update snake when new direction is known*/
 
 /* go left */
-static void moveLeft(){
+static void moveLeft(int dir_array []){
 	printf("Changed direction to left\n");
-	right = 0;
-	left = 1;
-	up = 0;
-	down = 0;
+	dir_array[right_dir] 	= 0;
+	dir_array[left_dir]  	= 1;
+	dir_array[up_dir]  		= 0;
+	dir_array[down_dir]  	= 0;
 }
 
 /* go right */
-static void moveRight(){
+static void moveRight(int dir_array []){
 	printf("Changed direction to right\n");
-	right = 1;
-	left = 0;
-	up = 0;
-	down = 0;
+	dir_array[right_dir] 	= 1;
+	dir_array[left_dir]  	= 0;
+	dir_array[up_dir]  		= 0;
+	dir_array[down_dir]  	= 0;
 }
 
 /* go up */
-static void moveUp(){
+static void moveUp(int dir_array []){
 	printf("Changed direction to up\n");
-	right = 0;
-	left = 0;
-	up = 1;
-	down = 0;
+	dir_array[right_dir] 	= 0;
+	dir_array[left_dir]  	= 0;
+	dir_array[up_dir]  		= 1;
+	dir_array[down_dir]  	= 0;
 }
 
 /* go down */
-static void moveDown(){
+static void moveDown(int dir_array []){
 	printf("Changed direction to down\n");
-	right = 0;
-	left = 0;
-	up = 0;
-	down = 1;
+	dir_array[right_dir] 	= 0;
+	dir_array[left_dir]  	= 0;
+	dir_array[up_dir]  		= 0;
+	dir_array[down_dir]  	= 1;
 }
 
 int checkFood(struct Snake snake[], struct Food food[], int dir)
@@ -139,68 +133,70 @@ int checkFreeze(struct Snake snake[], struct Freeze freeze[], int dir){
 }
 
 // track snake movement
-static void movement(alt_u8 key, struct Snake snake[], struct Food food[]){
+static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct Food food[], int pressed){
 
 	int old_dir = -1;
-	if( left )
+	if( dir_array[left_dir] )
 		old_dir = left_dir;
-	else if( right )
+	else if( dir_array[right_dir] )
 		old_dir = right_dir;
-	else if( up )
+	else if( dir_array[up_dir] )
 		old_dir = up_dir;
-	else if( down )
+	else if( dir_array[down_dir] )
 		old_dir = down_dir;
 
-	switch(key){
-		case 0x1C://'a'
-			if(up || down)
-				moveLeft();
+
+	printf("Pressed: %d\n", pressed);
+	switch(pressed){
+		case 1://0x1C://'a'
+			if( dir_array[up_dir] || dir_array[down_dir] )
+				moveLeft(dir_array);
 			break;
-		case 0x1D://'w'
-			if(left || right)
-				moveUp();
+		case 2://0x1D://'w'
+			if( dir_array[left_dir] || dir_array[right_dir] )
+				moveUp(dir_array);
 			break;
-		case 0x23://'d'
-			if(up || down)
-				moveRight();
+		case 0://0x23://'d'
+			if( dir_array[up_dir] || dir_array[down_dir] )
+				moveRight(dir_array);
 			break;
-		case 0x1B://'s'
-			if(left || right)
-				moveDown();
+		case 3://0x1B://'s'
+			if( dir_array[left_dir] || dir_array[right_dir])
+				moveDown(dir_array);
 			break;
 		default:
 			break;
 	}
-	if(right){
+	if(dir_array[right_dir]){
 		xCoor+=16;
-		if(xCoor >= RIGHT_BOUND - col_offset){
+		if(xCoor > RIGHT_BOUND - col_offset){
 			printf("Collision with right boundary!\n");
 			while(1);
 			// collision
 		}
 		updateSnake(snake, xCoor, yCoor, right_dir, old_dir);
 		checkFood(snake, food, right_dir);
-	}else if(left){
+	}else if(dir_array[left_dir]){
 		xCoor-=16;
-		if(xCoor <= LEFT_BOUND + col_offset){
+		if(xCoor < LEFT_BOUND){
 			printf("Collision with left boundary!\n");			
 			while(1);
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor,left_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor, left_dir, old_dir);
 		checkFood(snake, food, left_dir);
-	}else if(up){
+	}else if(dir_array[up_dir]){
 		yCoor-=16;
-		if(yCoor <= TOP_BOUND + col_offset){
+		if(yCoor < TOP_BOUND){
 			printf("Collision with up boundary!\n");
 			while(1);
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, up_dir, old_dir);
 		checkFood(snake, food, up_dir);
-	}else if(down){
+	}else if(dir_array[down_dir]){
 		yCoor+=16;
-		if(yCoor >= BOT_BOUND - col_offset){
+		if(yCoor > BOT_BOUND - col_offset){
 			printf("Collision with bot boundary!\n");
 			while(1);
 			//collision
@@ -285,6 +281,7 @@ void writeToHW(struct Snake snake[], int dir, int old_dir) {
 		 }
 	}
 
+	//addSnakePiece(PLAYER1, SEG_SECOND_TAIL, )
 	incrementSnake(PLAYER1, sprite, x, y);
 	//addSnakePiece(PLAYER1, SEG_HEAD/*head*/	, sprite, x, y);
 	addSnakePiece(PLAYER1, SEG_SECOND_HEAD, sprite_second, 0/*dontcare*/,0/*dontcare*/);
@@ -325,24 +322,19 @@ int main(){
 	/* Initialize the keyboard */
 	printf("Pretty please wait three seconds to initialize keyboard\n");
 	clear_FIFO();
-	/*switch (get_mode()) {
-		case PS2_KEYBOARD:
-			break;
-		case PS2_MOUSE:
-			printf("Error: Mouse detected on PS/2 port\n");
-			break;
-		default:
-			printf("Error: Unrecognized or no device on PS/2 port\n");
-			break;
-	}
-	*/
-	//alt_irq_register(PS2_0_IRQ, NULL, (void*)kb_interrupt_handler);
 
-	//WRITE_SPRITE(0,0x2137CF0);
-	//WRITE_SPRITE(0,0x2137C0F);
+	reset_hardware();
 
-	struct Snake snake[100];
-	initSnake(snake, xCoor, yCoor);
+	struct Snake snake_player1[100];
+	initSnake(snake_player1, xCoor, yCoor);
+	//struct Snake snake_player2[100];
+	//initSnake(snake_player2, xCoor, yCoor);
+
+	int player1_dir[4];
+	int player2_dir[4];
+	player1_dir[right_dir] = 1;
+	//player2_dir[right_dir] = 1;
+
 	struct Food food[MAX_FOOD];
 	struct Speed speed[1];
 	initFood(food);
@@ -352,21 +344,55 @@ int main(){
 	//addSnakePiece(PLAYER1, SEG_SECOND_HEAD, SNAKE_BODY_RIGHT, ((short)xCoor), (short)yCoor);
 
 	unsigned char code;
-	int count = 0;
-	while(1) {
-		/*if(count == 5){
-			code = kb_input();
-			movement(code, snake, food);
+	int count 					= 0;
+	int SLEEP_TIME 				= 50; 							// milli
+	int PLAYER1_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+	int PLAYER2_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+
+	int pressed_player1 		= getPlayer1Controller();
+	int pressed_player2 		= getPlayer2Controller();
+	int potential_pressed;
+
+	while(0) {
+
+		/* Move player 1 */
+		if(count >= PLAYER1_SLEEP_CYCLES){
+			//code = kb_input();
+			movement(code, snake_player1, player1_dir, food, pressed_player1);
 			count = 0;
-		}*/
-		code = kb_input();
-		movement(code, snake, food);
-		count++;
+			pressed_player1 = -1;
+		}
+
+		/* Move player 2 */
+//		if(count >= PLAYER2_SLEEP_CYCLES){
+//			//code = kb_input();
+//			movement(code, snake_player2, player2_dir, food, pressed_player2);
+//			count = 0;
+//			pressed_player2 = -1;
+//		}
+
+		/* Get controls from player1 everytime and store control for later if pressed */
+		potential_pressed = getPlayer1Controller();
+		if( potential_pressed != -1){
+			pressed_player1 = potential_pressed;
+			printf("pressed player1: %d\n", pressed_player1);
+		}
+
+		/* Get controls from player2 everytime and store control for later if pressed */
+//		potential_pressed = getPlayer2Controller();
+//		if( potential_pressed != -1){
+//			pressed_player2 = potential_pressed;
+//		}
+
+		//code = kb_input();
+		//movement(code, snake, food);
+
 		printf("H: %d\n",READ_SNAKE1_HEAD() );
 		printf("T: %d\n",READ_SNAKE1_TAIL() );
 		printf("L: %d\n",READ_SNAKE1_LENGTH() );
 		//printf("Random: %d", PRNG(40));
-		usleep(500*1000);
+		count++;
+		usleep(SLEEP_TIME*1000);
 	}
 
 

@@ -112,7 +112,7 @@ void updateBody(struct Snake snake[]){
 	}
 }
 
-void updateSnake(struct Snake snake[], int xCoord, int yCoord, int dir, int old_dir){
+void updateSnake(struct Snake snake[], int xCoord, int yCoord, int dir, int old_dir, int player){
 	printf("Updating snake\n");
 	updateBody(snake);
 	snake[0].xCoord = xCoord;
@@ -126,7 +126,7 @@ void updateSnake(struct Snake snake[], int xCoord, int yCoord, int dir, int old_
 			printf("snake part at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
 		}
 	}
-	writeToHW(snake, dir, old_dir);
+	writeToHW(snake, dir, old_dir, player, xCoord, yCoord);
 }
 
 

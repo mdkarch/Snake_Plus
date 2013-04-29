@@ -14,7 +14,7 @@ package DEFINITIONS is
 		constant MAX_SNAKE_SIZE	: integer := 10;	
 		
 	--Sprite Constants
-		constant SPRITE_LEN: integer := 15;
+		constant SPRITE_LEN: integer := 15; 
 	
 	
 	-- Color declarations

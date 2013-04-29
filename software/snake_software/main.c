@@ -33,7 +33,7 @@
  */
 
 #define LENGTH		1200
-#define MAX_FOOD	400
+#define MAX_FOOD	40
 #define col_offset  14
 #define left_dir	0
 #define right_dir	1
@@ -45,8 +45,6 @@
 #define TOP_BOUND	0
 
 /* start at location (0,0) */
-int xCoor = 255;
-int yCoor = 255;
 int board[X_LEN][Y_LEN];
 int food_index = 1;
 
@@ -121,7 +119,7 @@ int checkFood(struct Snake snake[], struct Food food[], int dir)
 				if(food_index == 40){
 					food_index = 0;
 				}
-				while(!drawFood(food, food_index++));
+				while( !drawFood(food, food_index++) );
 				break;
 			}
 		}
@@ -140,7 +138,7 @@ int checkFreeze(struct Snake snake[], struct Freeze freeze[], int dir){
 }
 
 // track snake movement
-static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct Food food[], int pressed){
+static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct Food food[], int pressed, int player){
 
 	int old_dir = -1;
 	if( dir_array[left_dir] )
@@ -152,9 +150,13 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 	else if( dir_array[down_dir] )
 		old_dir = down_dir;
 
+	int xCoor = snake[0].xCoord;
+	int yCoor = snake[0].yCoord;
+
+	int pressed_dir = get_dir_from_pressed(pressed);
 
 	printf("Pressed: %d\n", pressed);
-	switch(pressed){
+	switch(pressed_dir){
 	case 1://0x1C://'a'
 		if( dir_array[up_dir] || dir_array[down_dir] )
 			moveLeft(dir_array);
@@ -181,7 +183,7 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 			while(1);
 			// collision
 		}
-		updateSnake(snake, xCoor, yCoor, right_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor, right_dir, old_dir, player);
 		checkFood(snake, food, right_dir);
 	}else if(dir_array[left_dir]){
 		xCoor-=16;
@@ -190,7 +192,7 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 			while(1);
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor, left_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor, left_dir, old_dir,player);
 		checkFood(snake, food, left_dir);
 	}else if(dir_array[up_dir]){
 		yCoor-=16;
@@ -199,7 +201,7 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 			while(1);
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor, up_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor, up_dir, old_dir,player);
 		checkFood(snake, food, up_dir);
 	}else if(dir_array[down_dir]){
 		yCoor+=16;
@@ -208,7 +210,7 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 			while(1);
 			//collision
 		}
-		updateSnake(snake, xCoor, yCoor, down_dir, old_dir);
+		updateSnake(snake, xCoor, yCoor, down_dir, old_dir,player);
 		checkFood(snake, food, down_dir);
 	}
 	traverseList(snake);
@@ -245,13 +247,11 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
 	return PS2_SUCCESS;
 }
 
-void writeToHW(struct Snake snake[], int dir, int old_dir) {
+void writeToHW(struct Snake snake[], int dir, int old_dir, int player, int xCoord, int yCoord) {
 
-	char segment = 0;
-	char add_remove = 1;
 	char sprite = 1;
-	short x = (short)xCoor;
-	short y = (short)yCoor;
+	short x = (short)xCoord;
+	short y = (short)yCoord;
 
 	char sprite_second;
 
@@ -289,9 +289,9 @@ void writeToHW(struct Snake snake[], int dir, int old_dir) {
 	}
 
 	//addSnakePiece(PLAYER1, SEG_SECOND_TAIL, )
-	incrementSnake(PLAYER1, sprite, x, y);
+	incrementSnake(player, sprite, x, y);
 	//addSnakePiece(PLAYER1, SEG_HEAD/*head*/	, sprite, x, y);
-	addSnakePiece(PLAYER1, SEG_SECOND_HEAD, sprite_second, 0/*dontcare*/,0/*dontcare*/);
+	addSnakePiece(player, SEG_SECOND_HEAD, sprite_second, 0/*dontcare*/,0/*dontcare*/);
 	//removeSnakeTail(PLAYER1);
 }
 
@@ -319,9 +319,9 @@ int main(){
 
 	initPowBoard(board);
 	struct Snake snake_player1[100];
-	initSnake(snake_player1, xCoor, yCoor);
-	//struct Snake snake_player2[100];
-	//initSnake(snake_player2, xCoor, yCoor);
+	initSnake(snake_player1, 255, 255);
+	struct Snake snake_player2[100];
+	initSnake(snake_player2, 255, 320);
 
 	int player1_dir[4];
 	int player2_dir[4];
@@ -330,15 +330,15 @@ int main(){
 	player1_dir[left_dir] = 0;
 	player1_dir[up_dir] = 0;
 	player1_dir[down_dir] = 0;
-	//player2_dir[right_dir] = 1;
+
+	player2_dir[right_dir] = 1;
+	player2_dir[left_dir] = 0;
+	player2_dir[up_dir] = 0;
+	player2_dir[down_dir] = 0;
 
 	struct Food food[MAX_FOOD];
 	initFood(food, board);
 	startFood(food);
-	int i;
-	for(i = 0; i < 400; i++){
-		printf("food location x:%d, y:%d\n", food[i].xCoord, food[i].yCoord);
-	}
 
 	//struct Speed speed[1];
 	//initSpeed(speed);
@@ -346,33 +346,48 @@ int main(){
 	//addSnakePiece(PLAYER1, SEG_HEAD, SNAKE_HEAD_RIGHT, (short)xCoor, (short)yCoor);
 	//addSnakePiece(PLAYER1, SEG_SECOND_HEAD, SNAKE_BODY_RIGHT, ((short)xCoor), (short)yCoor);
 
+	int paused = 0;
+
 	unsigned char code;
-	int count 					= 0;
+	int count_player1 			= 0;
+	int count_player2 			= 0;
 	int SLEEP_TIME 				= 50; 							// milli
 	int PLAYER1_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
 	int PLAYER2_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
 
 	int pressed_player1 		= getPlayer1Controller();
-	//int pressed_player2 		= getPlayer2Controller();
+	int pressed_player2 		= getPlayer2Controller();
 	int potential_pressed;
 
-	while(0) {
+	while(1) {
+
+		/*Check if paused button pushed*/
+		if( (count_player1 >= PLAYER1_SLEEP_CYCLES && check_paused(pressed_player1)) ||
+			(count_player2 >= PLAYER2_SLEEP_CYCLES && check_paused(pressed_player2)) ){
+			pressed_player1 = -1;
+			pressed_player2 = -1;
+			count_player1 = 0;
+			count_player2 = 0;
+			paused = !paused;
+			printf('Paused is now %d\n', paused);
+		}
 
 		/* Move player 1 */
-		if(count >= PLAYER1_SLEEP_CYCLES){
+		if(count_player1 >= PLAYER1_SLEEP_CYCLES && !paused ){
 			//code = kb_input();
-			movement(code, snake_player1, player1_dir, food, pressed_player1);
-			count = 0;
+			movement(code, snake_player1, player1_dir, food, pressed_player1, PLAYER1);
+			movement(code, snake_player2, player2_dir, food, pressed_player1, PLAYER2);
+			count_player1 = 0;
 			pressed_player1 = -1;
 		}
 
 		/* Move player 2 */
-		//		if(count >= PLAYER2_SLEEP_CYCLES){
-		//			//code = kb_input();
-		//			movement(code, snake_player2, player2_dir, food, pressed_player2);
-		//			count = 0;
-		//			pressed_player2 = -1;
-		//		}
+//		if(count_player2 >= PLAYER2_SLEEP_CYCLES && !paused){
+//			//code = kb_input();
+//			movement(code, snake_player2, player2_dir, food, pressed_player2, PLAYER2);
+//			count_player2 = 0;
+//			pressed_player2 = -1;
+//		}
 
 		/* Get controls from player1 everytime and store control for later if pressed */
 		potential_pressed = getPlayer1Controller();
@@ -382,10 +397,11 @@ int main(){
 		}
 
 		/* Get controls from player2 everytime and store control for later if pressed */
-		//		potential_pressed = getPlayer2Controller();
-		//		if( potential_pressed != -1){
-		//			pressed_player2 = potential_pressed;
-		//		}
+		potential_pressed = getPlayer2Controller();
+		if( potential_pressed != -1){
+			pressed_player2 = potential_pressed;
+		}
+
 
 		//code = kb_input();
 		//movement(code, snake, food);
@@ -394,7 +410,8 @@ int main(){
 		printf("T: %d\n",READ_SNAKE1_TAIL() );
 		printf("L: %d\n",READ_SNAKE1_LENGTH() );
 		//printf("Random: %d", PRNG(40));
-		count++;
+		count_player1++;
+		count_player2++;
 		usleep(SLEEP_TIME*1000);
 	}
 

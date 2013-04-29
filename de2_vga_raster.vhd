@@ -72,6 +72,8 @@ architecture rtl of de2_vga_raster is
     vga_vblank, vga_vsync : std_logic;  -- Sync. signals
 
 	signal snake1_segment			: integer;
+	signal snake2_segment			: integer;
+	
 	signal inner_tile_h_pos			: integer;
 	signal inner_tile_v_pos			: integer;
 	signal tiles_h_pos				: integer;
@@ -384,7 +386,7 @@ begin
   ---------------------------------------------------------------
   
 	FindSnake1: process(clk)
-	variable x, y : integer;
+		variable x, y : integer;
 	begin
   
   	snake1_segment <= -1;
@@ -406,11 +408,33 @@ begin
   end process FindSnake1;
   
   
-	-- snake sprite head generation
+  FindSnake2: process(clk)
+		variable x, y : integer;
+	begin
+  	snake2_segment <= -1;
+	for i in MAX_SNAKE_SIZE downto 0 loop
+		y := to_integer(UNSIGNED(SNAKE2_IN(i)(9 downto 0)));
+		x := to_integer(UNSIGNED(SNAKE2_IN(i)(19 downto 10)));
+		
+		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
+			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
+		
+			if(SNAKE2_IN(i)(25) = '1') then
+				snake2_segment <= i;
+			end if;
+		
+		end if;
+	end loop;
+  end process FindSnake2;
+  
+  
+	-- snake sprite generation
   SnakeSpriteGen : process (clk)
-  variable sprite_h_pos, sprite_v_pos : integer;
-  variable x, y 	: integer;
-  variable orient : std_logic_vector(4 downto 0);
+	variable sprite_h_pos, sprite_v_pos : integer;
+	variable x, y 	: integer;
+	variable orient : std_logic_vector(4 downto 0);
   begin
 	if rising_edge(clk) then	
 		if reset = '1' then
@@ -431,11 +455,17 @@ begin
 			snake_tail_orange 	<= '0';
 			snake_tail_yellow 	<= '0';
 		else
-			if snake1_segment /= -1 then
+			if snake1_segment /= -1 or snake2_segment /= -1 then
 			
+				if snake1_segment /= -1 then
 					y := to_integer(UNSIGNED(SNAKE1_IN(snake1_segment)(9 downto 0)));
 					x := to_integer(UNSIGNED(SNAKE1_IN(snake1_segment)(19 downto 10)));
 					orient := SNAKE1_IN(snake1_segment)(24 downto 20);
+				else 
+					y := to_integer(UNSIGNED(SNAKE2_IN(snake2_segment)(9 downto 0)));
+					x := to_integer(UNSIGNED(SNAKE2_IN(snake2_segment)(19 downto 10)));
+					orient := SNAKE2_IN(snake2_segment)(24 downto 20);
+				end if;
 					
 					sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
 					sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);

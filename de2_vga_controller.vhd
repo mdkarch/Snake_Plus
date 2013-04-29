@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.definitions.all;
+--use work.definitions.all;
 --
 ---- PROTOCOL:
 --		-- ADDRESS
@@ -248,24 +248,26 @@ AD1: entity work.add_remove_snake_part port map (
 		reset					=> (reset or soft_reset),
 		enabled 				=> snake1_enabled,
 		data_in 				=> writedata,
+		default_y_coor		=> "0100000000",
 		snake 				=> snake1,
 		head_index_out		=> snake1_head_index,
 		tail_index_out		=> snake1_tail_index,
 		snake_length_out	=> snake1_length
 );
 
---AD2: entity work.add_remove_snake_part port map (
---
---		clk 					=> clk,
---		reset					=> reset,
---		enabled 				=> snake2_enabled,
---		data_in 				=> writedata,
---		snake 				=> snake2,
---		head_index_out		=> snake2_head_index,
---		tail_index_out		=> snake2_tail_index,
---		snake_length_out	=> snake2_length
---);
---
+AD2: entity work.add_remove_snake_part port map (
+
+		clk 					=> clk,
+		reset					=> (reset or soft_reset),
+		enabled 				=> snake2_enabled,
+		data_in 				=> writedata,
+		default_y_coor		=> "0101000000",
+		snake 				=> snake2,
+		head_index_out		=> snake2_head_index,
+		tail_index_out		=> snake2_tail_index,
+		snake_length_out	=> snake2_length
+);
+
 end rtl;
 --
 --
@@ -360,6 +362,7 @@ entity add_remove_snake_part is
 		reset 				: in std_logic;
 		enabled				: in std_logic;
 		data_in				: in std_logic_vector(31 downto 0);
+		default_y_coor		: in std_logic_vector(9 downto 0);
 		snake 				: buffer snake_ram;
 		head_index_out		: out integer;
 		tail_index_out		: out integer;
@@ -407,11 +410,11 @@ begin
 		if reset = '1' then
 			snake <= (others=>(others=>'0'));
 			snake(0) <=  "0000" & "00" & "1" & SNAKE_HEAD_RIGHT 
-											& "0100010000" & "0100000000";
+											& "0100010000" & default_y_coor;
 			snake(1) <=  "0000" & "00" & "1" & SNAKE_BODY_RIGHT 
-											& "0100000000" & "0100000000";
+											& "0100000000" & default_y_coor;
 			snake(2) <=  "0000" & "00" & "1" & SNAKE_TAIL_RIGHT 
-											& "0011110000" & "0100000000";
+											& "0011110000" & default_y_coor;
 			head_index		<= 0;
 			tail_index		<= 2;
 			snake_length	<= 3; 

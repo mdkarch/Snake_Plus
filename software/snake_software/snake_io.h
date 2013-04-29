@@ -77,6 +77,16 @@ const char SEG_TAIL					= 3;
 const char REMOVE_CODE				= 0;
 const char ADD_CODE					= 1;
 
+/* Button codes */
+const int RIGHT_CODE 				= 	(0x00000001);
+const int LEFT_CODE 				= 	(0x00000002);
+const int DOWN_CODE 				= 	(0x00000004);
+const int UP_CODE 					= 	(0x00000008);
+const int START_CODE				= 	(0x00000010);
+const int SELECT_CODE 				= 	(0x00000020);
+const int B_CODE 					= 	(0x00000040);
+const int A_CODE 					= 	(0x00000080);
+
 
 
 void inline incrementSnake(int player, char sprite, short x, short y){
@@ -137,25 +147,25 @@ void inline removeTilePiece(short tile_x, short tile_y){
 int inline getController(player){
 
 	int controls = READ_PLAYER_CONTROLLER(player);
-	int right = controls 	& (0x00000001);
-	int left = controls 	& (0x00000002);
-	int down = controls 	& (0x00000004);
-	int up = controls 		& (0x00000008);
-	int start = controls 	& (0x00000010);
-	int select = controls 	& (0x00000020);
-	int b = controls 		& (0x00000040);
-	int a = controls 		& (0x00000080);
-	printf("%d-%d-%d-%d-%d-%d-%d-%d\n",a,b,start,select,up,down,left,right);
-	if( right )
-		return 0;
-	if( left )
-		return 1;
-	if( up )
-		return 2;
-	if( down )
-		return 3;
+//	int right = controls 	& (0x00000001);
+//	int left = controls 	& (0x00000002);
+//	int down = controls 	& (0x00000004);
+//	int up = controls 		& (0x00000008);
+//	int start = controls 	& (0x00000010);
+//	int select = controls 	& (0x00000020);
+//	int b = controls 		& (0x00000040);
+//	int a = controls 		& (0x00000080);
+//	printf("%d-%d-%d-%d-%d-%d-%d-%d\n",a,b,start,select,up,down,left,right);
+//	if( right )
+//		return 0;
+//	if( left )
+//		return 1;
+//	if( up )
+//		return 2;
+//	if( down )
+//		return 3;
 
-	return -1;
+	return controls;
 }
 
 int inline getPlayer1Controller(){
@@ -168,6 +178,28 @@ int inline getPlayer2Controller(){
 
 	int c = getController(PLAYER2);
 	return c;
+}
+
+int inline get_dir_from_pressed(int pressed){
+	int right 	= pressed 	& RIGHT_CODE;
+	int left 	= pressed 	& LEFT_CODE;
+	int down 	= pressed	& DOWN_CODE;
+	int up 		= pressed 	& UP_CODE;
+	if( right )
+		return 0;
+	if( left )
+		return 1;
+	if( up )
+		return 2;
+	if( down )
+		return 3;
+
+	return -1;
+}
+
+int inline check_paused(int pressed){
+
+	return pressed & SELECT_CODE;
 }
 
 void reset_hardware(){

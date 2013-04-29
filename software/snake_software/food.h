@@ -10,10 +10,12 @@ struct Food{
 	int xCoord;
 	int yCoord;
 	int enable;
+	int type;
 };
 
 void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 	printf("Initializing food\n");
+	int t = 0;
 	int i;
 	int j;
 	int count = 0;
@@ -21,9 +23,13 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 		for(j = 0; j < Y_LEN; j++){
 			if(board[i][j] == 0){
 				food[count].enable = 0;
+				food[count].type = t;
 				food[count].xCoord = i;
 				food[count].yCoord = j;
 				count++;
+				if(t == 0){
+					t = 1;
+				}
 			}
 		}
 	}
@@ -75,7 +81,11 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 
 void startFood(struct Food food[]){
 	food[15].enable = 1;
-	addTilePiece(RABBIT_CODE, (short) food[15].xCoord, (short) food[15].yCoord);
+	if(food[index].type){
+		addTilePiece(RABBIT_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	}else{
+		addTilePiece(MOUSE_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	}
 }
 
 int drawFood(struct Food food[], int index){
@@ -85,7 +95,11 @@ int drawFood(struct Food food[], int index){
 	}
 
 	food[index].enable = 1;
-	addTilePiece(RABBIT_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	if(food[index].type){
+		addTilePiece(RABBIT_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	}else{
+		addTilePiece(MOUSE_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	}
 	return 1;
 }
 

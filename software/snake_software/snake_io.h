@@ -155,7 +155,7 @@ int inline getController(player){
 //	int select = controls 	& (0x00000020);
 //	int b = controls 		& (0x00000040);
 //	int a = controls 		& (0x00000080);
-//	printf("%d-%d-%d-%d-%d-%d-%d-%d\n",a,b,start,select,up,down,left,right);
+//	printf("%d-%d-%d-%d-%d-%d-%d-%d\n",a,b,select,start,up,down,left,right);
 //	if( right )
 //		return 0;
 //	if( left )
@@ -180,7 +180,7 @@ int inline getPlayer2Controller(){
 	return c;
 }
 
-int inline get_dir_from_pressed(int pressed){
+int get_dir_from_pressed(int pressed){
 	int right 	= pressed 	& RIGHT_CODE;
 	int left 	= pressed 	& LEFT_CODE;
 	int down 	= pressed	& DOWN_CODE;
@@ -197,7 +197,7 @@ int inline get_dir_from_pressed(int pressed){
 	return -1;
 }
 
-int inline check_paused(int pressed){
+int check_paused(int pressed){
 
 	return pressed & SELECT_CODE;
 }

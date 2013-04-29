@@ -44,7 +44,7 @@ void shuffle2d(int board[X_LEN][Y_LEN]){
 
 }
 
-void randCoords(int board[X_LEN][Y_LEN]){
+void initPowBoard(int board[X_LEN][Y_LEN]){
 	int i;
 	for (i = 0; i < X_LEN; i++){
 		x[i] = i;		

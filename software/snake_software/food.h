@@ -1,8 +1,10 @@
 #ifndef _FOOD_H_
 #define _FOOD_H_
 #include "snake_io.h"
+#include "powboard.h"
 #define X_LEN 40
 #define Y_LEN 30
+#define MAX_FOOD	400
 
 struct Food{
 	int xCoord;
@@ -25,6 +27,8 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 			}
 		}
 	}
+
+	shuffle_food(food,MAX_FOOD);
 
 
 	/*for(i = 0; i < X_LEN; i++){
@@ -76,7 +80,7 @@ void startFood(struct Food food[]){
 
 int drawFood(struct Food food[], int index){
 	if((food[index].xCoord == 0 || food[index].xCoord == 29)
-			&& (food[index].yCoord == 0 || food[index].yCoord == 39)){
+			|| (food[index].yCoord == 0 || food[index].yCoord == 39)){
 		return 0;
 	}
 
@@ -88,7 +92,18 @@ int drawFood(struct Food food[], int index){
 void removeFood(struct Food food[], int index){
 	printf("Removing food\n");
 	food[index].enable = 0;
-	removeTilePiece((short) food[index].xCoord/16, (short) food[index].yCoord/16);
+	removeTilePiece((short) food[index].xCoord, (short) food[index].yCoord);
 }
+
+void shuffle_food(struct Food arr[], int n){
+	int i;
+	for(i = 0; i < n; i++){
+		int index = PRNG(n);
+		struct Food temp = arr[index];
+		arr[index] = arr[i];
+		arr[i] = temp;
+	}
+}
+
 
 #endif

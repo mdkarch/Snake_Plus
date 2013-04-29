@@ -27,8 +27,7 @@ entity de2_nes_controller is
 		data1			: in std_logic;
 		latch2		: out std_logic;
 		pulse2		: out std_logic;
-		data2			: in std_logic;
-		leds			: out std_logic_vector(15 downto 0)
+		data2			: in std_logic
 	  
 	);
   
@@ -73,9 +72,9 @@ begin
 				if chipselect = '1' then -- This chip is right one
 					-- Read --
 					if read = '1' then
-						leds(15) <= '1';
-						leds(14 downto 11) <= address;
-						leds(7 downto 0) <= buttons1;
+						--leds(15) <= '1';
+						--leds(14 downto 11) <= address;
+						--leds(7 downto 0) <= buttons1;
 						readdata(31 downto 8) <= (others => '0');
 						if address = "0001" then -- First player
 							readdata(7 downto 0) <= buttons1;

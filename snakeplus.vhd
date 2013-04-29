@@ -76,12 +76,13 @@ begin
 
 		
 		
+		
+		
+		
 		nios : entity work.snake_system port map (
 			clk_0 => CLOCK_50,
 			reset_n => reset_n,
 			
-			leds_from_the_de2_vga_controller_0 => LEDR(15 downto 0),
-			sw_to_the_de2_vga_controller_0 => SW(17 downto 0),
 			
 			SRAM_ADDR_from_the_sram => SRAM_ADDR,
 			SRAM_CE_N_from_the_sram => SRAM_CE_N,
@@ -91,26 +92,25 @@ begin
 			SRAM_UB_N_from_the_sram => SRAM_UB_N,
 			SRAM_WE_N_from_the_sram => SRAM_WE_N,
 				
-			data1_to_the_nes_controller 		=> GPIO_0(2),
-			latch1_from_the_nes_controller	=> GPIO_0(4),
-			pulse1_from_the_nes_controller 	=> GPIO_0(6),
-			data2_to_the_nes_controller 		=> GPIO_0(28),
-			latch2_from_the_nes_controller 	=> GPIO_0(30),
-			pulse2_from_the_nes_controller 	=> GPIO_0(32),
+			latch1_from_the_nes_controller 	=> GPIO_0(2),
+			pulse1_from_the_nes_controller	=> GPIO_0(4),
+			data1_to_the_nes_controller 		=> GPIO_0(6),
+			latch2_from_the_nes_controller 	=> GPIO_0(28),
+			pulse2_from_the_nes_controller 	=> GPIO_0(30),
+			data2_to_the_nes_controller 		=> GPIO_0(32),
 
 			PS2_Clk_to_the_ps2 => PS2_CLK,
 			PS2_Data_to_the_ps2 => PS2_DAT,
 		  
 			VGA_BLANK_from_the_de2_vga_controller_0 => VGA_BLANK,
-		  
 			VGA_B_from_the_de2_vga_controller_0 => VGA_B,
 			VGA_CLK_from_the_de2_vga_controller_0 => VGA_CLK,
 			VGA_G_from_the_de2_vga_controller_0 => VGA_G,
 			VGA_HS_from_the_de2_vga_controller_0 => VGA_HS,
 			VGA_R_from_the_de2_vga_controller_0 => VGA_R,
-			
 			VGA_SYNC_from_the_de2_vga_controller_0 => VGA_SYNC,
 			VGA_VS_from_the_de2_vga_controller_0 => VGA_VS,
+			sw_to_the_de2_vga_controller_0 => SW(17 downto 0),
 			
 			AUD_ADCDAT_to_the_de2_audio_controller_0 => AUD_ADCAT,
 			AUD_ADCLRCK_from_the_de2_audio_controller_0 => AUD_ADCLRCK,
@@ -121,7 +121,8 @@ begin
 			I2C_SCLK_from_the_de2_audio_controller_0 => I2C_SCLK,
 			I2C_SDAT_to_and_from_the_de2_audio_controller_0 => I2C_SDAT,
 			iCLK_to_the_de2_audio_controller_0 => iCLK,
-			iRST_N_to_the_de2_audio_controller_0 => iRST_N
+			iRST_N_to_the_de2_audio_controller_0 => iRST_N,
+			leds_from_the_de2_audio_controller_0 => LEDR(15 downto 0)
 	);
 	
 	

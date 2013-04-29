@@ -82,7 +82,7 @@ void snakeCol(struct Snake snake1[], struct Snake snake2[]){
 				break;
 			int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
 			int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
-			if(xDiff < offset && yDiff < offset){
+			if(xDiff <= offset && yDiff <= offset){
 				printf("Collision!");
 				while(1);
 			}

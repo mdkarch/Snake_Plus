@@ -6,15 +6,7 @@
    {
       datum baseAddress
       {
-         value = "1053320";
-         type = "String";
-      }
-   }
-   element de2_vga_controller_0.avalon_slave_0
-   {
-      datum baseAddress
-      {
-         value = "1053248";
+         value = "1052872";
          type = "String";
       }
    }
@@ -22,7 +14,7 @@
    {
       datum baseAddress
       {
-         value = "1052672";
+         value = "1052800";
          type = "String";
       }
    }
@@ -30,7 +22,15 @@
    {
       datum baseAddress
       {
-         value = "0";
+         value = "1052672";
+         type = "String";
+      }
+   }
+   element de2_vga_controller_0.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "1052736";
          type = "String";
       }
    }
@@ -115,7 +115,7 @@
    {
       datum baseAddress
       {
-         value = "1053312";
+         value = "1052864";
          type = "String";
       }
    }
@@ -144,8 +144,8 @@
  <parameter name="maxAdditionalLatency" value="0" />
  <parameter name="projectName" value="snakeplus.qpf" />
  <parameter name="sopcBorderPoints" value="true" />
- <parameter name="systemHash" value="-28204401321" />
- <parameter name="timeStamp" value="1367243260069" />
+ <parameter name="systemHash" value="-29380785541" />
+ <parameter name="timeStamp" value="1367256396130" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <module kind="clock_source" version="12.1" enabled="1" name="clk_0">
   <parameter name="clockFrequency" value="50000000" />
@@ -246,7 +246,7 @@
   <parameter name="dcache_numTCDM" value="_0" />
   <parameter name="dcache_lineSize" value="_32" />
   <parameter name="dcache_bursts" value="false" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='nes_controller.avalon_slave_0' start='0x0' end='0x40' /><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='de2_audio_controller_0.avalon_slave_0' start='0x101000' end='0x101040' /><slave name='de2_vga_controller_0.avalon_slave_0' start='0x101240' end='0x101280' /><slave name='ps2.s1' start='0x101280' end='0x101288' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x101288' end='0x101290' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sram.avalon_slave_0' start='0x80000' end='0x100000' /><slave name='cpu_0.jtag_debug_module' start='0x100800' end='0x101000' /><slave name='nes_controller.avalon_slave_0' start='0x101000' end='0x101040' /><slave name='de2_vga_controller_0.avalon_slave_0' start='0x101040' end='0x101080' /><slave name='de2_audio_controller_0.avalon_slave_0' start='0x101080' end='0x1010C0' /><slave name='ps2.s1' start='0x1010C0' end='0x1010C8' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x1010C8' end='0x1010D0' /></address-map>]]></parameter>
   <parameter name="dataAddrWidth" value="21" />
   <parameter name="customInstSlavesSystemInfo" value="&lt;info/&gt;" />
   <parameter name="cpuReset" value="false" />
@@ -507,7 +507,7 @@
    start="cpu_0.data_master"
    end="jtag_uart_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00101288" />
+  <parameter name="baseAddress" value="0x001010c8" />
  </connection>
  <connection
    kind="interrupt"
@@ -519,7 +519,7 @@
  <connection kind="clock" version="12.1" start="clk_0.clk" end="ps2.s1_clock" />
  <connection kind="avalon" version="12.1" start="cpu_0.data_master" end="ps2.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00101280" />
+  <parameter name="baseAddress" value="0x001010c0" />
  </connection>
  <connection
    kind="clock"
@@ -532,7 +532,7 @@
    start="cpu_0.data_master"
    end="de2_audio_controller_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00101000" />
+  <parameter name="baseAddress" value="0x00101080" />
  </connection>
  <connection
    kind="clock"
@@ -545,7 +545,7 @@
    start="cpu_0.data_master"
    end="de2_vga_controller_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00101240" />
+  <parameter name="baseAddress" value="0x00101040" />
  </connection>
  <connection
    kind="clock"
@@ -558,6 +558,6 @@
    start="cpu_0.data_master"
    end="nes_controller.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="baseAddress" value="0x00101000" />
  </connection>
 </system>

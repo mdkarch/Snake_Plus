@@ -213,7 +213,7 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 		checkFood(snake, food, down_dir, player);
 	}
 	traverseList(snake);
-	printf("x: %d y: %d\n", xCoor, yCoor);
+	//printf("x: %d y: %d\n", xCoor, yCoor);
 }
 
 
@@ -353,8 +353,8 @@ int main(){
 	int count_player1 			= 0;
 	int count_player2 			= 0;
 	int SLEEP_TIME 				= 50; 							// milli
-	int PLAYER1_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
-	int PLAYER2_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+	int PLAYER1_SLEEP_CYCLES 	= 100 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+	int PLAYER2_SLEEP_CYCLES 	= 100 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
 
 	int pressed_player1 		= getPlayer1Controller();
 	int pressed_player2 		= getPlayer2Controller();
@@ -362,6 +362,9 @@ int main(){
 	int old_potential;
 
 	while(1) {
+
+		// Check for collisions between snakes
+		snakeCol(snake_player1, snake_player2);
 
 		/*Check if paused button pushed*/
 		if( (count_player1 >= PLAYER1_SLEEP_CYCLES && (check_paused(pressed_player1) != 0) ) ||
@@ -394,7 +397,7 @@ int main(){
 		/* Get controls from player1 everytime and store control for later if pressed */
 		old_potential = potential_pressed;
 		potential_pressed = getPlayer1Controller();
-		if( potential_pressed != 0){
+		if( potential_pressed != 0 && old_potential != potential_pressed){
 			pressed_player1 = potential_pressed;
 			printf("pressed player1: %d\n", pressed_player1);
 		}

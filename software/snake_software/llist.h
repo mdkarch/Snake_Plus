@@ -74,7 +74,7 @@ void traverseList(struct Snake snake[])
 void snakeCol(struct Snake snake1[], struct Snake snake2[]){
 	int i;
 	int j;
-	for(i = 0; i < SNAKE_SZIE; i++){
+	for(i = 0; i < SNAKE_SIZE; i++){
 		if(!snake1[i].enable)
 			break;
 		for(j = 0; j < SNAKE_SIZE; j++){
@@ -82,7 +82,7 @@ void snakeCol(struct Snake snake1[], struct Snake snake2[]){
 				break;
 			int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
 			int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
+			if(xDiff < offset && yDiff < offset){
 				printf("Collision!");
 				while(1);
 			}

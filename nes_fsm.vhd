@@ -126,8 +126,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l0;
-							 buttons1(0) <= not data1;
-							 buttons2(0) <= not data2;
+							 buttons1(7) <= not data1;
+							 buttons2(7) <= not data2;
 						end if;
 						
 					-- Pulse
@@ -150,8 +150,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l1;
-							 buttons1(1) <= not data1;
-							 buttons2(1) <= not data2;
+							 buttons1(6) <= not data1;
+							 buttons2(6) <= not data2;
 						end if;
 				
 					-- Pulse
@@ -174,8 +174,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l2;
-							 buttons1(2) <= not data1;
-							 buttons2(2) <= not data2;
+							 buttons1(5) <= not data1;
+							 buttons2(5) <= not data2;
 						end if;
 				
 					-- Pulse
@@ -198,8 +198,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l3;
-							 buttons1(3) <= not data1;
-							 buttons2(3) <= not data2;
+							 buttons1(4) <= not data1;
+							 buttons2(4) <= not data2;
 						end if;
 				
 					-- Pulse
@@ -221,8 +221,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l4;
-							 buttons1(4) <= not data1;
-							 buttons2(4) <= not data2;
+							 buttons1(3) <= not data1;
+							 buttons2(3) <= not data2;
 						end if;
 				
 					-- Pulse
@@ -246,8 +246,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l5;
-							 buttons1(5) <= not data1;
-							 buttons2(5) <= not data2;
+							 buttons1(2) <= not data1;
+							 buttons2(2) <= not data2;
 						end if;
 				
 				
@@ -272,8 +272,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l6;
-							 buttons1(6) <= not data1;
-							 buttons2(6) <= not data2;
+							 buttons1(1) <= not data1;
+							 buttons2(1) <= not data2;
 						end if;
 				
 					-- Pulse
@@ -297,8 +297,8 @@ begin  -- arch
 							 counter <= 0;
 						else
 							 n_s <= l7;
-							 buttons1(7) <= not data1;
-							 buttons2(7) <= not data2;
+							 buttons1(0) <= not data1;
+							 buttons2(0) <= not data2;
 						end if;
 				
 					-- Pulse

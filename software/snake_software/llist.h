@@ -15,18 +15,20 @@ struct Snake{
 
 void initSnake(struct Snake snake[], int xCoord, int yCoord){
 	head = 0;
-	tail = 1;
+	tail = 2;
 	snake[0].xCoord = xCoord;//16;
 	snake[0].yCoord = yCoord;//8;
 	snake[0].enable = 1;
 	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
 	//printf("IN INIT x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-
-	snake[tail].xCoord = snake[0].xCoord - 8; //hardcoded to move right
-	snake[tail].yCoord = snake[0].yCoord;//8;
+	snake[1].xCoord = snake[0].xCoord - 8; //hardcoded to move right
+	snake[1].yCoord = snake[0].yCoord;//8;
+	snake[1].enable = 1;
+	snake[tail].xCoord = snake[1].xCoord - 8; //hardcoded to move right
+	snake[tail].yCoord = snake[1].yCoord;//8;
 	snake[tail].enable = 1;
 	int i;
-	for(i = 2; i < SNAKE_SIZE; i++){
+	for(i = tail + 1; i < SNAKE_SIZE; i++){
 		snake[i].enable = 0;
 	}
 

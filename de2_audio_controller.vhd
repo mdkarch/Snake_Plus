@@ -90,6 +90,8 @@ begin
 				else 
 					start <= '0';
 				end if;
+			else
+				start <= '0';
 			end if;
 		end if;
 	end process;
@@ -107,8 +109,8 @@ begin
 		clk				=> audio_clock(1),
 		reset_n			=> reset_n,
 		start_sound		=> start,
---		select_sound	=> address,
-		select_sound	=> X"0",
+		select_sound	=> address,
+--		select_sound	=> X"0",
 		  
 		  -- 	Audio interface signals
 		AUD_ADCLRCK		=> AUD_ADCLRCK,

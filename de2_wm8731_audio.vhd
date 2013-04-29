@@ -39,12 +39,15 @@ signal lrck_lat 	: std_logic;
 
 
 signal sound_on 	: std_logic := '0';
+signal sound_end1 	: std_logic := '1';
+signal sound_end2 	: std_logic := '1';
 signal sound	 	: std_logic_vector(3 downto 0) := X"0";
 
 signal sound1_out	: unsigned(15 downto 0);
 signal sound2_out	: unsigned(15 downto 0);
 
-signal counter 	: unsigned(15 downto 0);
+signal counter1 	: unsigned(15 downto 0);
+signal counter2	: unsigned(11 downto 0);
  
 signal shift_out	: unsigned(15 downto 0);
 
@@ -55,8 +58,8 @@ begin
 	-- Divider is 25 MHz / 47KHz = 532 (X"214")
 	-- Left justify mode set by I2C controller
 
-	--leds(15) <= sound_on;
-	leds(13 downto 0) <= std_logic_vector(counter)(13 downto 0);
+	leds(13) <= sound_on;
+	--leds(13 downto 0) <= std_logic_vector(counter)(13 downto 0);
 	 
 	process (clk)
 	begin
@@ -134,8 +137,8 @@ begin
 		end if;   
 	end process;
 
-	sound1_out <= sound1(to_integer(counter));
-	sound2_out <= sound2(to_integer(counter));
+	sound1_out <= sound1(to_integer(counter1));
+	sound2_out <= sound2(to_integer(counter2));
 	  
 	-- Audio outputs
 
@@ -150,9 +153,15 @@ begin
 			if reset_n = '0' then 
 				sound_on <= '0';
 				leds(15) <= '0';
+				leds(14) <= '0';
+				sound <= X"0";
 			elsif start_sound = '1' then
 				sound_on <= '1';
 				leds(15) <= '1';
+				sound <= select_sound;
+			elsif sound_end1 = '1' or sound_end2 = '1' then
+				sound_on <= '0';
+				leds(14) <= '1';
 			end if;
 		end if;
 	end process;
@@ -162,23 +171,42 @@ begin
 	begin
 		if rising_edge(clk) then
 			if reset_n = '0' then 
-				counter <= (others => '0');
-				leds(14) <= '0';
+				counter1 <= (others => '0');
+				sound_end1 <= '0';
+				leds(12) <= '0';
 			elsif lrck_lat = '1' and lrck = '0'  then 	
-				if sound_on = '1' then
-					leds(14) <= '1';
-					if (counter < X"FFFF") then 
-						counter <= counter + 1;
-						--sound_on <= '1';
+				if sound_on = '1' and sound <= X"0"then				
+					if (counter1 < X"100B") then 
+						counter1 <= counter1 + 1;
 					else
-						counter <= X"0000";
-						--sound_on <= '0';
-					end if;					
+						leds(12) <= '1';
+						counter1 <= (others => '0');
+						sound_end1 <= '1';
+					end if;	
 				end if;
 			end if;
 		end if;
 	end process;
 
+	process(clk)      
+	begin
+		if rising_edge(clk) then
+			if reset_n = '0' then 
+				counter2 <= (others => '0');
+				sound_end2 <= '0';
+			elsif lrck_lat = '1' and lrck = '0'  then 	
+				if sound_on = '1' and sound <= X"1" then				
+					if (counter2 < X"556") then 
+						counter2 <= counter2 + 1;
+					else
+						counter2 <= (others => '0');
+						sound_end2 <= '1';
+					end if;	
+				end if;
+			end if;
+		end if;
+	end process;
+	
 	process(clk)
 	begin
 		if rising_edge(clk) then

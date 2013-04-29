@@ -22,7 +22,29 @@ void shuffle(int arr[], int n){
 	}
 }
 
-void initPowBoard(int board[X_LEN][Y_LEN]){
+void shuffle2d(int board[X_LEN][Y_LEN]){
+	int arr[1200];
+	int i;
+	int j;
+	int count = 0;
+	for(i = 0; i < X_LEN; i++){
+		for(j = 0; j < Y_LEN; j++){
+			arr[count] = board[i][j];
+			count++;
+		}
+	}
+	shuffle(arr, 1200);
+	count = 0;
+	for(i = 0; i < X_LEN; i++){
+		for(j = 0; j < Y_LEN; j++){
+			board[i][j]= arr[count];
+			count++;
+		}
+	}
+
+}
+
+void randCoords(int board[X_LEN][Y_LEN]){
 	int i;
 	for (i = 0; i < X_LEN; i++){
 		x[i] = i;		
@@ -48,6 +70,8 @@ void initPowBoard(int board[X_LEN][Y_LEN]){
 			i++;
 		}
 	}
+	shuffle2d(board);
+	
 	//return board;
 }
 #endif

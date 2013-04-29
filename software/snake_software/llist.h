@@ -33,11 +33,11 @@ void initSnake(struct Snake snake[], int xCoord, int yCoord){
 	}
 
 	//print snake - for testing
-	for(i = 0; i < SNAKE_SIZE; i++){
+	/*for(i = 0; i < SNAKE_SIZE; i++){
 		if(snake[i].enable == 1){
 			printf("snake part at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
 		}
-	}
+	}*/
 }
 
 int abs(int n)
@@ -60,8 +60,8 @@ void traverseList(struct Snake snake[])
 	{
 		int xDiff = abs(snake[0].xCoord - snake[count].xCoord);
 		int yDiff = abs(snake[0].yCoord - snake[count].yCoord);
-		printf("traverse x:%d y:%d\n", snake[count].xCoord, snake[count].yCoord);
-		printf("diff xdiff:%d ydiff:%d\n", xDiff, yDiff);
+		//printf("traverse x:%d y:%d\n", snake[count].xCoord, snake[count].yCoord);
+		//printf("diff xdiff:%d ydiff:%d\n", xDiff, yDiff);
 
 		if(xDiff <= col_offset && yDiff <= col_offset){
 			printf("Collision!");
@@ -69,12 +69,31 @@ void traverseList(struct Snake snake[])
 		}
 		count++;
 	}
-};
+}
+
+void snakeCol(struct Snake snake1[], struct Snake snake2[]){
+	int i;
+	int j;
+	for(i = 0; i < SNAKE_SZIE; i++){
+		if(!snake1[i].enable)
+			break;
+		for(j = 0; j < SNAKE_SIZE; j++){
+			if(!snake2[j].enable)
+				break;
+			int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
+			int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
+			if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Collision!");
+				while(1);
+			}
+		}
+	}
+}
 
 void addEnd(struct Snake snake[], int dir, int player)
 {
-	printf("Adding to the end of the snake\n");
-	printf("original tail at x:%d, y%d\n", snake[tail].xCoord, snake[tail].yCoord);
+	//printf("Adding to the end of the snake\n");
+	//printf("original tail at x:%d, y%d\n", snake[tail].xCoord, snake[tail].yCoord);
 
 	tail++;
 	snake[tail].enable = 1;
@@ -96,7 +115,7 @@ void addEnd(struct Snake snake[], int dir, int player)
 		snake[tail].yCoord = snake[tail-1].yCoord - offset;
 		addSnakePiece(player, SEG_TAIL, SNAKE_TAIL_DOWN, (short) snake[tail].xCoord , (short) snake[tail].yCoord );
 	}
-	printf("new tail at x:%d, y%d\n", snake[tail].xCoord, snake[tail].yCoord);
+	//printf("new tail at x:%d, y%d\n", snake[tail].xCoord, snake[tail].yCoord);
 
 
 }
@@ -105,27 +124,27 @@ void updateBody(struct Snake snake[]){
 	int i;
 	for(i = tail; i >= 1; i--){
 		if(snake[i].enable==1){
-			printf("snake before '=' at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
+			//printf("snake before '=' at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
 			snake[i] = snake[i-1];
-			printf("snake after '=' at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
+			//printf("snake after '=' at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
 		}
 	}
 }
 
 void updateSnake(struct Snake snake[], int xCoord, int yCoord, int dir, int old_dir, int player){
-	printf("Updating snake\n");
+	//printf("Updating snake\n");
 	updateBody(snake);
 	snake[0].xCoord = xCoord;
 	snake[0].yCoord = yCoord;
 
 	// print snake - for testing
-	printf("printing entire snake\n");
+	//printf("printing entire snake\n");
 	int i;
-	for(i = 0; i < SNAKE_SIZE; i++){
+	/*for(i = 0; i < SNAKE_SIZE; i++){
 		if(snake[i].enable==1){
 			printf("snake part at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
 		}
-	}
+	}*/
 	writeToHW(snake, dir, old_dir, player, xCoord, yCoord);
 }
 

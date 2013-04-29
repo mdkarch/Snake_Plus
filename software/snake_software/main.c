@@ -8,6 +8,7 @@
 #include "freeze.h"
 #include <unistd.h>
 #include "snake_io.h"
+#include "powboard.h"
 
 /*
  * I have a way to generate random numbers
@@ -32,18 +33,22 @@
  */
 
 #define LENGTH		1200
-#define MAX_FOOD	5
+#define MAX_FOOD	400
 #define col_offset  14
 #define left_dir	0
 #define right_dir	1
 #define up_dir		2
 #define down_dir	3
+#define LEFT_BOUND	0
+#define RIGHT_BOUND	640
+#define BOT_BOUND	480
+#define TOP_BOUND	0
 
-unsigned int seed = 5323;
-/* will be put in a struct eventually*/
 /* start at location (0,0) */
 int xCoor = 255;
 int yCoor = 255;
+int board[X_LEN][Y_LEN];
+int food_index = 1;
 
 
 /* used for kb input, removed eventually when nes controller is up and running */
@@ -63,7 +68,6 @@ KB_CODE_TYPE decode_mode;
 }*/
 
 /* should update snake when new direction is known*/
-
 /* go left */
 static void moveLeft(int dir_array []){
 	printf("Changed direction to left\n");
@@ -105,22 +109,25 @@ int checkFood(struct Snake snake[], struct Food food[], int dir)
 	//struct Snake *head = snake[0];
 	int j;
 	for(j = 0; j < MAX_FOOD; j++){
-			if(food[j].enable){
-				int xDiff = abs(snake[0].xCoord - food[j].xCoord);
-				int yDiff = abs(snake[0].yCoord - food[j].yCoord);
-				//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-				//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
-				if(xDiff <= col_offset && yDiff <= col_offset){
-					printf("Eating Food!\n");
-					removeFood(food,j);
-					addEnd(snake, dir);
-					break;
+		if(food[j].enable){
+			int xDiff = abs(snake[0].xCoord - food[j].xCoord);
+			int yDiff = abs(snake[0].yCoord - food[j].yCoord);
+			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
+			if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Eating Food!\n");
+				removeFood(food,j);
+				addEnd(snake, dir);
+				if(food_index == 400){
+					food_index = 0;
 				}
+				drawFood(food, food_index++);
+				break;
 			}
+		}
 	}
 	return 0;
 }
-
 
 int checkSpeed(struct Snake snake[], struct Speed speed[], int dir){
 
@@ -148,24 +155,24 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 
 	printf("Pressed: %d\n", pressed);
 	switch(pressed){
-		case 1://0x1C://'a'
-			if( dir_array[up_dir] || dir_array[down_dir] )
-				moveLeft(dir_array);
-			break;
-		case 2://0x1D://'w'
-			if( dir_array[left_dir] || dir_array[right_dir] )
-				moveUp(dir_array);
-			break;
-		case 0://0x23://'d'
-			if( dir_array[up_dir] || dir_array[down_dir] )
-				moveRight(dir_array);
-			break;
-		case 3://0x1B://'s'
-			if( dir_array[left_dir] || dir_array[right_dir])
-				moveDown(dir_array);
-			break;
-		default:
-			break;
+	case 1://0x1C://'a'
+		if( dir_array[up_dir] || dir_array[down_dir] )
+			moveLeft(dir_array);
+		break;
+	case 2://0x1D://'w'
+		if( dir_array[left_dir] || dir_array[right_dir] )
+			moveUp(dir_array);
+		break;
+	case 0://0x23://'d'
+		if( dir_array[up_dir] || dir_array[down_dir] )
+			moveRight(dir_array);
+		break;
+	case 3://0x1B://'s'
+		if( dir_array[left_dir] || dir_array[right_dir])
+			moveDown(dir_array);
+		break;
+	default:
+		break;
 	}
 	if(dir_array[right_dir]){
 		xCoor+=16;
@@ -210,12 +217,12 @@ static void movement(alt_u8 key, struct Snake snake[], int dir_array [], struct 
 
 
 typedef enum
-  {
-    STATE_INIT,
-    STATE_LONG_BINARY_MAKE_CODE,
-    STATE_BREAK_CODE ,
-    STATE_DONE
-  } DECODE_STATE;
+{
+	STATE_INIT,
+	STATE_LONG_BINARY_MAKE_CODE,
+	STATE_BREAK_CODE ,
+	STATE_DONE
+} DECODE_STATE;
 
 
 /* "interrupt" */
@@ -229,13 +236,13 @@ int read_make_code_with_timeout(KB_CODE_TYPE *decode_mode, alt_u8 *buf) {
 		//FIXME: When the user press the keyboard extremely fast, data may get
 		//occasionally get lost
 
-	    if (status_read == PS2_ERROR)
+		if (status_read == PS2_ERROR)
 			return PS2_ERROR;
 
 		state = get_next_state(state, byte, decode_mode, buf);
-  } while (state != STATE_DONE);
+	} while (state != STATE_DONE);
 
-  return PS2_SUCCESS;
+	return PS2_SUCCESS;
 }
 
 void writeToHW(struct Snake snake[], int dir, int old_dir) {
@@ -263,22 +270,22 @@ void writeToHW(struct Snake snake[], int dir, int old_dir) {
 	} else {
 		/* Turn piece */
 		if( dir == right_dir && old_dir == up_dir ||
-			dir == down_dir && old_dir == left_dir){
+				dir == down_dir && old_dir == left_dir){
 			printf("old dir:%d new dir:%d", old_dir, dir);
 			sprite_second = SNAKE_TURN_UP_RIGHT;
 		}
 		else if( (dir == down_dir) && (old_dir == right_dir) ||
-				 (dir == left_dir) && (old_dir == up_dir)){
+				(dir == left_dir) && (old_dir == up_dir)){
 			sprite_second = SNAKE_TURN_RIGHT_DOWN;
 		}
 		else if( (dir == left_dir) && (old_dir == down_dir) ||
-				 (dir == up_dir) && (old_dir == right_dir)){
+				(dir == up_dir) && (old_dir == right_dir)){
 			sprite_second = SNAKE_TURN_DOWN_LEFT;
-		 }
+		}
 		else if( (dir == up_dir) && (old_dir == left_dir) ||
-				 (dir == right_dir) && (old_dir == down_dir)){
-			 sprite_second = SNAKE_TURN_LEFT_UP;
-		 }
+				(dir == right_dir) && (old_dir == down_dir)){
+			sprite_second = SNAKE_TURN_LEFT_UP;
+		}
 	}
 
 	//addSnakePiece(PLAYER1, SEG_SECOND_TAIL, )
@@ -302,29 +309,15 @@ int kb_input(){
 	return code;
 }
 
-int PRNG(int n){
-	seed = (8253729 * seed + + 2396403);
-	return seed % n;
-}
-
-void shuffle(int arr[], int n){
-	int i;
-	for(i = 0; i < n; i++){
-		int index = PRNG(n);
-		int temp = arr[index];
-		arr[index] = arr[i];
-		arr[i] = temp;
-	}
-}
-
 int main(){
 	alt_u8 key = 0;
 	/* Initialize the keyboard */
 	printf("Pretty please wait three seconds to initialize keyboard\n");
 	clear_FIFO();
 
-	reset_hardware();
+	//reset_hardware();
 
+	initPowBoard(board);
 	struct Snake snake_player1[100];
 	initSnake(snake_player1, xCoor, yCoor);
 	//struct Snake snake_player2[100];
@@ -332,12 +325,18 @@ int main(){
 
 	int player1_dir[4];
 	int player2_dir[4];
+
 	player1_dir[right_dir] = 1;
+	player1_dir[left_dir] = 0;
+	player1_dir[up_dir] = 0;
+	player1_dir[down_dir] = 0;
 	//player2_dir[right_dir] = 1;
 
 	struct Food food[MAX_FOOD];
-	struct Speed speed[1];
-	initFood(food);
+	initFood(food, board);
+	startFood(food);
+
+	//struct Speed speed[1];
 	//initSpeed(speed);
 
 	//addSnakePiece(PLAYER1, SEG_HEAD, SNAKE_HEAD_RIGHT, (short)xCoor, (short)yCoor);
@@ -350,7 +349,7 @@ int main(){
 	int PLAYER2_SLEEP_CYCLES 	= 200 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
 
 	int pressed_player1 		= getPlayer1Controller();
-	int pressed_player2 		= getPlayer2Controller();
+	//int pressed_player2 		= getPlayer2Controller();
 	int potential_pressed;
 
 	while(0) {
@@ -364,12 +363,12 @@ int main(){
 		}
 
 		/* Move player 2 */
-//		if(count >= PLAYER2_SLEEP_CYCLES){
-//			//code = kb_input();
-//			movement(code, snake_player2, player2_dir, food, pressed_player2);
-//			count = 0;
-//			pressed_player2 = -1;
-//		}
+		//		if(count >= PLAYER2_SLEEP_CYCLES){
+		//			//code = kb_input();
+		//			movement(code, snake_player2, player2_dir, food, pressed_player2);
+		//			count = 0;
+		//			pressed_player2 = -1;
+		//		}
 
 		/* Get controls from player1 everytime and store control for later if pressed */
 		potential_pressed = getPlayer1Controller();
@@ -379,10 +378,10 @@ int main(){
 		}
 
 		/* Get controls from player2 everytime and store control for later if pressed */
-//		potential_pressed = getPlayer2Controller();
-//		if( potential_pressed != -1){
-//			pressed_player2 = potential_pressed;
-//		}
+		//		potential_pressed = getPlayer2Controller();
+		//		if( potential_pressed != -1){
+		//			pressed_player2 = potential_pressed;
+		//		}
 
 		//code = kb_input();
 		//movement(code, snake, food);

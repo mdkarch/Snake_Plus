@@ -12,14 +12,14 @@ struct Speed{
 	int enable;
 };
 
-void initSpeed(struct Speed speed[]){
+void initSpeed(struct Speed speed[], int board[X_LEN][Y_LEN]){
 	printf("Initializing speed\n");
 	int i;
 	int j;
 	int count = 0;
 	for(i = 0; i < X_LEN; i++){
 		for(j = 0; j < Y_LEN; j++){
-			if(board[i][j] == 1){
+			if(board[i][j] == 2){
 				speed[count].enable = 0;
 				speed[count].xCoord = i;
 				speed[count].yCoord = j;

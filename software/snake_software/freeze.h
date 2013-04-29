@@ -12,7 +12,7 @@ struct Freeze{
 	int enable;
 };
 
-void initFreeze(struct Freeze freeze[]){
+void initFreeze(struct Freeze freeze[], int board[X_LEN][Y_LEN]){
 	printf("Initializing freeze\n");
 	int i;
 	int j;

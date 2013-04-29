@@ -1,8 +1,10 @@
 #ifndef _FREEZE_H_
 #define _FREEZE_H_
 #include "snake_io.h"
-
-int FREEZE_SIZE = 1;
+#include "powboard.h"
+#define X_LEN		40
+#define Y_LEN		30
+#define MAX_FREEZE	400
 
 struct Freeze{
 	int xCoord;
@@ -12,40 +14,53 @@ struct Freeze{
 
 void initFreeze(struct Freeze freeze[]){
 	printf("Initializing freeze\n");
-	int x,y;
-	x = (350/16)*16; y = (255/16)*16;
-	/*PRNG_seed = PRNG_seed *1103515245 + 12345;
-	PRNG_seed = (PRNG_seed/65536)%32768;
-	x = PRNG_seed;
-	PRNG_seed = PRNG_seed *1103515245 + 12345;
-	PRNG_seed = (PRNG_seed/65536)%32768;
-	y = PRNG_seed;
+	int i;
+	int j;
+	int count = 0;
+	for(i = 0; i < X_LEN; i++){
+		for(j = 0; j < Y_LEN; j++){
+			if(board[i][j] == 1){
+				freeze[count].enable = 0;
+				freeze[count].xCoord = i;
+				freeze[count].yCoord = j;
+				count++;
+			}
+		}
+	}
 
-	x = x%RIGHT_BOUND;
-	y = y%BOT_BOUND;*/
+	shuffle_freeze(freeze,MAX_FREEZE);
+}
 
-	freeze[0].enable = 1;
-	freeze[0].xCoord = x;
-	freeze[0].yCoord = y;
+void startFreeze(struct Freeze freeze[]){
+	freeze[15].enable = 1;
+	addTilePiece(FREEZE_CODE, (short) freeze[15].xCoord, (short) freeze[15].yCoord);
+}
 
-	/*
-	freeze[1].enable = 1;
-	freeze[1].xCoord = 370;
-	freeze[1].yCoord = y;
+int drawFreeze(struct Freeze freeze[], int index){
+	if((freeze[index].xCoord == 0 || freeze[index].xCoord == 29)
+			|| (freeze[index].yCoord == 0 || freeze[index].yCoord == 39)){
+		return 0;
+	}
 
-	freeze[2].enable = 1;
-	freeze[2].xCoord = 400;
-	freeze[2].yCoord = y;*/
-
-	//addTilePiece(RABBIT_CODE, (short) y/16, (short) x/16 );
-	//printf("freeze location x:%d, y:%d\n", x, y);
-
+	freeze[index].enable = 1;
+	addTilePiece(FREEZE_CODE, (short) freeze[index].xCoord, (short) freeze[index].yCoord);
+	return 1;
 }
 
 void removeFreeze(struct Freeze freeze[], int index){
 	printf("Removing freeze\n");
 	freeze[index].enable = 0;
-	//removeTilePiece((short) freeze[index].yCoord/16, (short) freeze[index].xCoord/16)
+	removeTilePiece((short) freeze[index].xCoord, (short) freeze[index].yCoord);
+}
+
+void shuffle_freeze(struct Freeze arr[], int n){
+	int i;
+	for(i = 0; i < n; i++){
+		int index = PRNG(n);
+		struct Freeze temp = arr[index];
+		arr[index] = arr[i];
+		arr[i] = temp;
+	}
 }
 
 #endif

@@ -2,8 +2,8 @@
 #define _FOOD_H_
 #include "snake_io.h"
 #include "powboard.h"
-#define X_LEN 40
-#define Y_LEN 30
+#define X_LEN		40
+#define Y_LEN		30
 #define MAX_FOOD	400
 
 struct Food{

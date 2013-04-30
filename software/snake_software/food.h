@@ -30,6 +30,9 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 				if(t == 0){
 					t = 1;
 				}
+				else {
+					t = 0;
+				}
 			}
 		}
 	}
@@ -90,8 +93,8 @@ void startFood(struct Food food[]){
 }
 
 int drawFood(struct Food food[], int index){
-	if((food[index].xCoord == 0 || food[index].xCoord == 29)
-			|| (food[index].yCoord == 0 || food[index].yCoord == 39)){
+	if((food[index].xCoord <= 2 || food[index].xCoord >= 37)
+			|| (food[index].yCoord <= 2 || food[index].yCoord >= 27)){
 		return 0;
 	}
 

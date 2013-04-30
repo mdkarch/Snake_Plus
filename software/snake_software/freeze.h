@@ -37,8 +37,8 @@ void startFreeze(struct Freeze freeze[]){
 }
 
 int drawFreeze(struct Freeze freeze[], int index){
-	if((freeze[index].xCoord == 0 || freeze[index].xCoord == 29)
-			|| (freeze[index].yCoord == 0 || freeze[index].yCoord == 39)){
+	if((freeze[index].xCoord <= 1 || freeze[index].xCoord <= X_LEN-1)
+			|| (freeze[index].yCoord <= 1 || freeze[index].yCoord <= Y_LEN-1)){
 		return 0;
 	}
 

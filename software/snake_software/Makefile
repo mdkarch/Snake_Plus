@@ -145,7 +145,6 @@ ELF := snake_software.elf
 C_SRCS += hello_world.c
 C_SRCS += PS2.c
 C_SRCS += main.c
-C_SRCS += snake.c
 C_SRCS += alt_up_ps2_port.c
 C_SRCS += ps2_keyboard.c
 CXX_SRCS :=

@@ -184,6 +184,8 @@ begin
 						sound_end1 <= '1';
 					end if;	
 				end if;
+			elsif sound_end1 = '1' then
+				sound_end1 <= '0';
 			end if;
 		end if;
 	end process;
@@ -203,6 +205,8 @@ begin
 						sound_end2 <= '1';
 					end if;	
 				end if;
+			elsif sound_end2 = '1' then
+				sound_end2 <= '0';
 			end if;
 		end if;
 	end process;

@@ -1,7 +1,7 @@
 #ifndef _SNAKE_IO_H_
 #define _SNAKE_IO_H_
 
-#include <system.h>
+#include "../snake_software_bsp/system.h"
 
 #define WRITE_SPRITE(select,data) \
 IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, select * 4, data)

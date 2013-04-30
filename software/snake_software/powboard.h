@@ -5,11 +5,11 @@
 int x[X_LEN];
 int y[Y_LEN];
 
-unsigned int seed = 5323;
+unsigned int n_seed = 5323;
 
 int PRNG(int n){
-	seed = (8253729 * seed + + 2396403);
-	return seed % n;
+	n_seed = (8253729 * n_seed + + 2396403);
+	return n_seed % n;
 }
 
 void shuffle(int arr[], int n){
@@ -44,8 +44,9 @@ void shuffle2d(int board[X_LEN][Y_LEN]){
 
 }
 
-void initPowBoard(int board[X_LEN][Y_LEN]){
+void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
 	int i;
+	n_seed = seed;
 	for (i = 0; i < X_LEN; i++){
 		x[i] = i;		
 	}

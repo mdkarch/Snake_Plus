@@ -1,6 +1,8 @@
 #ifndef _LLIST_H_
 #define _LLIST_H_
 #include "snake_io.h"
+
+
 int SNAKE_SIZE = 100;
 
 int head;
@@ -51,7 +53,7 @@ int abs(int n)
 /*
  * check collision between head and other parts of body
  */
-void traverseList(struct Snake snake[])
+int traverseList(struct Snake snake[])
 {
 	int count = 1;
 	/* collision offset - distance between two pieces to be considered a collision */
@@ -65,13 +67,14 @@ void traverseList(struct Snake snake[])
 
 		if(xDiff <= col_offset && yDiff <= col_offset){
 			printf("Collision!");
-			while(1);
+			return 0;
 		}
 		count++;
 	}
+	return 1;
 }
 
-void snakeCol(struct Snake snake1[], struct Snake snake2[]){
+int snakeCol(struct Snake snake1[], struct Snake snake2[]){
 	int i;
 	int j;
 	for(i = 0; i < SNAKE_SIZE; i++){
@@ -82,12 +85,13 @@ void snakeCol(struct Snake snake1[], struct Snake snake2[]){
 				break;
 			int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
 			int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
-			if(xDiff <= offset && yDiff <= offset){
+			if(xDiff < offset && yDiff < offset){
 				printf("Collision!");
-				while(1);
+				return 0;
 			}
 		}
 	}
+	return 1;
 }
 
 void addEnd(struct Snake snake[], int dir, int player)

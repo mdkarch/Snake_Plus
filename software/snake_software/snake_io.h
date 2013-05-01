@@ -190,6 +190,16 @@ int get_dir_from_pressed(int pressed){
 	return -1;
 }
 
+int get_button_from_pressed(int pressed){
+	int a 		= pressed 	& A_CODE;
+	int b	 	= pressed 	& B_CODE;
+	if( a )
+		return 1;
+	if( b )
+		return 2;
+	return -1;
+}
+
 int check_paused(int pressed){
 
 	return pressed & SELECT_CODE;

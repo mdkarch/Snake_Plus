@@ -2,15 +2,7 @@
 #define _SPEED_H_
 #include "snake_io.h"
 #include "powboard.h"
-#define X_LEN		40
-#define Y_LEN		30
-#define MAX_SPEED	400
-
-struct Speed{
-	int xCoord;
-	int yCoord;
-	int enable;
-};
+#include "constants.h"
 
 void initSpeed(struct Speed speed[], int board[X_LEN][Y_LEN]){
 	printf("Initializing speed\n");
@@ -28,7 +20,7 @@ void initSpeed(struct Speed speed[], int board[X_LEN][Y_LEN]){
 		}
 	}
 
-	shuffle_speed(speed,MAX_SPEED);
+	shuffle_speed(speed,MAX_POWERUP_SIZE);
 }
 
 void startSpeed(struct Speed speed[]){
@@ -37,13 +29,13 @@ void startSpeed(struct Speed speed[]){
 }
 
 int drawSpeed(struct Speed speed[], int index){
-	if((speed[index].xCoord <= 2 || speed[index].xCoord == X_LEN-1)
-			|| (speed[index].yCoord <= 2 || speed[index].yCoord == Y_LEN-1)){
+	if((speed[index].xCoord <= 2 || speed[index].xCoord >= X_LEN-1)
+			|| (speed[index].yCoord <= 2 || speed[index].yCoord >= Y_LEN-1)){
 		return 0;
 	}
 
 	speed[index].enable = 1;
-	addTilePiece(FREEZE_CODE, (short) speed[index].xCoord, (short) speed[index].yCoord);
+	addTilePiece(SPEED_CODE, (short) speed[index].xCoord, (short) speed[index].yCoord);
 	return 1;
 }
 

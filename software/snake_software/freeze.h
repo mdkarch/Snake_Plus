@@ -1,16 +1,14 @@
 #ifndef _FREEZE_H_
 #define _FREEZE_H_
+
 #include "snake_io.h"
 #include "powboard.h"
-#define X_LEN		40
-#define Y_LEN		30
-#define MAX_FREEZE	400
+#include "constants.h"
 
-struct Freeze{
-	int xCoord;
-	int yCoord;
-	int enable;
-};
+
+int freeze_index = 1;
+
+
 
 void initFreeze(struct Freeze freeze[], int board[X_LEN][Y_LEN]){
 	printf("Initializing freeze\n");
@@ -28,22 +26,85 @@ void initFreeze(struct Freeze freeze[], int board[X_LEN][Y_LEN]){
 		}
 	}
 
-	shuffle_freeze(freeze,MAX_FREEZE);
+	shuffle_freeze(freeze,MAX_POWERUP_SIZE);
 }
 
-void startFreeze(struct Freeze freeze[]){
-	freeze[15].enable = 1;
-	addTilePiece(FREEZE_CODE, (short) freeze[15].xCoord, (short) freeze[15].yCoord);
+int checkFreeze(struct Snake snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
+
+	int j;
+	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+		if(freeze[j].enable){
+			int xDiff = abs(snake[0].xCoord - freeze[j].xCoord*16);
+			int yDiff = abs(snake[0].yCoord - freeze[j].yCoord*16);
+			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+			if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Eating Freeze!\n");
+				removeFreeze(freeze,j);
+				info->has_freeze = 1;
+				if(freeze_index == MAX_POWERUP_SIZE){
+					freeze_index = 0;
+				}
+				while( !drawFreeze(freeze) );
+				break;
+			}
+		}
+	}
+	return 0;
 }
 
-int drawFreeze(struct Freeze freeze[], int index){
-	if((freeze[index].xCoord <= 2 || freeze[index].xCoord <= X_LEN-1)
-			|| (freeze[index].yCoord <= 2 || freeze[index].yCoord <= Y_LEN-1)){
+void apply_freeze(struct Snake snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
+
+	if( !info->has_freeze ){
+		printf("PLAYER%d DOESNT HAVE FREEZE\n", player);
+		return;
+	}
+
+	printf("PLAYER%d used his freeze\n",player);
+	info->has_freeze = 0;
+	info->freeze_enabled = 1;
+	info->freeze_count = 0;
+
+	if(player == PLAYER1){
+		PLAYER2_SLEEP_CYCLES 	= FREEZE_SLEEP_CYCLE / SLEEP_TIME;
+	} else{
+		PLAYER1_SLEEP_CYCLES 	= FREEZE_SLEEP_CYCLE / SLEEP_TIME;
+	}
+
+}
+
+int recalc_freeze_times(struct Snake snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
+
+	if(info->freeze_enabled){
+		info->freeze_count++;
+		if(info->freeze_count >=  FREEZE_TIME){
+			info->freeze_enabled = 0;
+			info->freeze_count = 0;
+			if(player == PLAYER1){
+				PLAYER2_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
+			}else{
+				PLAYER1_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
+			}
+
+		}
+	}
+	return 1;
+}
+
+int drawFreeze(struct Freeze freeze[]){
+
+	if((freeze[freeze_index].xCoord <= 2 || freeze[freeze_index].xCoord >= X_LEN-1)
+			|| (freeze[freeze_index].yCoord <= 2 || freeze[freeze_index].yCoord >= Y_LEN-1)){
+		freeze_index++;
 		return 0;
 	}
 
-	freeze[index].enable = 1;
-	addTilePiece(FREEZE_CODE, (short) freeze[index].xCoord, (short) freeze[index].yCoord);
+	freeze[freeze_index].enable = 1;
+	printf("Freeze ENABLED at x: %d y: %d\n",freeze[freeze_index].xCoord, freeze[freeze_index].yCoord);
+	addTilePiece(FREEZE_CODE, (short) freeze[freeze_index].xCoord, (short) freeze[freeze_index].yCoord);
+
+	printf("Freeze index: %d\n", freeze_index);
+	freeze_index++;
+
 	return 1;
 }
 

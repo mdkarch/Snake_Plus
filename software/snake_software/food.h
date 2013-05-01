@@ -2,16 +2,8 @@
 #define _FOOD_H_
 #include "snake_io.h"
 #include "powboard.h"
-#define X_LEN		40
-#define Y_LEN		30
-#define MAX_FOOD	400
+#include "constants.h"
 
-struct Food{
-	int xCoord;
-	int yCoord;
-	int enable;
-	int type;
-};
 
 void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 	printf("Initializing food\n");
@@ -37,7 +29,7 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 		}
 	}
 
-	shuffle_food(food,MAX_FOOD);
+	shuffle_food(food,MAX_POWERUP_SIZE);
 }
 
 

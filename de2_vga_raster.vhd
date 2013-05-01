@@ -312,12 +312,14 @@ begin
 		if rising_edge(clk) then
 			if reset = '1' then
 				inner_tile_h_pos <= 0;
-				tiles_h_pos <= 0;
+				tiles_h_pos <= -1;
 			elsif EndOfLine = '1' then
 				inner_tile_h_pos <= 0;
+				tiles_h_pos <= -1;
+			elsif HCount = HSYNC + HBACK_PORCH then
 				tiles_h_pos <= 0;
-			elsif 	HCount >= HSYNC + HBACK_PORCH - 1 and 
-						HCount <= HSYNC + HBACK_PORCH + HACTIVE - 1 then
+			elsif 	HCount > HSYNC + HBACK_PORCH  and 
+						HCount < HSYNC + HBACK_PORCH + HACTIVE then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
 				if inner_tile_h_pos >= 15 then -- 0-15 should be used
 					inner_tile_h_pos <= 0;
@@ -370,50 +372,6 @@ begin
   ---------------------------------------------------------------
   ----------- Begin Sprite Display Logic ------------------------
   ---------------------------------------------------------------
-  
---	FindSnake1: process(clk)
---		variable x, y : integer;
---	begin
---  
---  	snake1_segment <= -1;
---	for i in MAX_SNAKE_SIZE downto 0 loop
---		y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
---		x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
---		
---		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
---			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
---			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
---			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
---		
---			if(SNAKE1_IN(i)(25) = '1') then
---				snake1_segment <= i;
---			end if;
---		
---		end if;
---	end loop;
---  end process FindSnake1;
---  
---  
---  FindSnake2: process(clk)
---		variable x, y : integer;
---	begin
---  	snake2_segment <= -1;
---	for i in MAX_SNAKE_SIZE downto 0 loop
---		y := to_integer(UNSIGNED(SNAKE2_IN(i)(9 downto 0)));
---		x := to_integer(UNSIGNED(SNAKE2_IN(i)(19 downto 10)));
---		
---		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
---			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
---			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
---			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
---		
---			if(SNAKE2_IN(i)(25) = '1') then
---				snake2_segment <= i;
---			end if;
---		
---		end if;
---	end loop;
---  end process FindSnake2;
   
   
 	-- snake sprite generation
@@ -1135,6 +1093,10 @@ begin
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0010100000";
 		  VGA_B <= "0000000000";
+		elsif (player_select = '1' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1'or snake_tail_orange = '1')) then
+			VGA_R <= "0000000000";
+			VGA_G <= "1111111111";
+			VGA_B <= "0000000000";
 		elsif red = '1' or wall = '1' 
 								or growth_r = '1' then
 		  VGA_R <= "1111111111";
@@ -1175,13 +1137,10 @@ begin
 		  VGA_R <= "0011111111";
 		  VGA_G <= "0011101111";
 		  VGA_B <= "0011010101";
-	  -- blue
-      elsif (vga_hblank = '0' and vga_vblank ='0') or  
-				(player_select = '1' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1' or snake_tail_orange = '1'))
-				then
-        VGA_R <= "0000100000";
-        VGA_G <= "0001100110";
-        VGA_B <= "0011001100";
+      elsif vga_hblank = '0' and vga_vblank ='0' then
+        VGA_R <= "0000000000";
+        VGA_G <= "0000000000";
+        VGA_B <= "0000000000";
       else -- black
         VGA_R <= "0000000000";
         VGA_G <= "0000000000";

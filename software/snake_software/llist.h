@@ -1,28 +1,10 @@
 #ifndef _LLIST_H_
 #define _LLIST_H_
 #include "snake_io.h"
+#include "constants.h"
 
 
-int SNAKE_SIZE = 100;
-
-int head_snake1;
-int tail_snake2;
-int tail_snake1;
-int tail_snake2;
 int offset = 16;
-
-struct Snake{
-	int xCoord;
-	int yCoord;
-	int enable;
-};
-
-struct SnakeInfo{
-	int head;
-	int tail;
-	int speed_count;
-	int speed_enabled;
-};
 
 void initSnake(struct Snake snake[], int xCoord, int yCoord, int player, struct SnakeInfo * info){
 	info->head = 0;
@@ -70,7 +52,6 @@ int traverseList(struct Snake snake[])
 {
 	int count = 1;
 	/* collision offset - distance between two pieces to be considered a collision */
-	int col_offset = 14;
 	while(snake[count].enable)
 	{
 		int xDiff = abs(snake[0].xCoord - snake[count].xCoord);
@@ -115,7 +96,6 @@ void addEnd(struct Snake snake[], int dir, int player, struct SnakeInfo * info)
 	info->tail = info->tail + 1;
 	snake[info->tail].enable = 1;
 
-	int sprite = -1;
 	if(dir == 0){//left
 		snake[info->tail].xCoord = snake[info->tail-1].xCoord + offset;
 		snake[info->tail].yCoord = snake[info->tail-1].yCoord;
@@ -191,15 +171,6 @@ void updateSnake(struct Snake snake[], int xCoord, int yCoord, int dir, int old_
 	// Then do new hardware display
 	writeToHW(snake, dir, old_dir, player, xCoord, yCoord, info, tail_sprite);
 
-
-	// print snake - for testing
-	//printf("printing entire snake\n");
-	int i;
-	/*for(i = 0; i < SNAKE_SIZE; i++){
-		if(snake[i].enable==1){
-			printf("snake part at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
-		}
-	}*/
 
 }
 

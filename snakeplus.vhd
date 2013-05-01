@@ -99,8 +99,8 @@ begin
 			pulse2_from_the_nes_controller 	=> GPIO_0(30),
 			data2_to_the_nes_controller 		=> GPIO_0(32),
 
-			PS2_Clk_to_the_ps2 => PS2_CLK,
-			PS2_Data_to_the_ps2 => PS2_DAT,
+			--PS2_Clk_to_the_ps2 => PS2_CLK,
+			--PS2_Data_to_the_ps2 => PS2_DAT,
 		  
 			VGA_BLANK_from_the_de2_vga_controller_0 => VGA_BLANK,
 			VGA_B_from_the_de2_vga_controller_0 => VGA_B,

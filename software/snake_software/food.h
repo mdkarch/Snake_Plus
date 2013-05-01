@@ -82,15 +82,6 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 
 }
 
-void startFood(struct Food food[]){
-	int index = 15;
-	food[15].enable = 1;
-	if(food[index].type){
-		addTilePiece(RABBIT_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
-	}else{
-		addTilePiece(MOUSE_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
-	}
-}
 
 int drawFood(struct Food food[], int index){
 	if((food[index].xCoord <= 2 || food[index].xCoord >= 37)

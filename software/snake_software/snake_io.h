@@ -6,17 +6,17 @@
 #define WRITE_SPRITE(select,data) \
 IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, select * 4, data)
 
-#define READ_SNAKE1_HEAD() \
-IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 0 * 4)
-
-#define READ_SNAKE1_TAIL() \
-IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 1 * 4)
-
-#define READ_SNAKE1_LENGTH() \
-IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4)
+//#define READ_SNAKE1_HEAD() \
+//IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 0 * 4)
+//
+//#define READ_SNAKE1_TAIL() \
+//IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 1 * 4)
+//
+//#define READ_SNAKE1_LENGTH() \
+//IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4)
 
 #define SOFT_RESET() \
-IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 4 * 4, 0);
+IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4, 0);
 
 #define READ_PLAYER_CONTROLLER(player) \
 IORD_32DIRECT(NES_CONTROLLER_BASE, player * 4);
@@ -25,9 +25,11 @@ IORD_32DIRECT(NES_CONTROLLER_BASE, player * 4);
 
 
 /* Player/Tile/Address codes */
+const char SNAKE_ADDR 	= 1;
+const char TILES_ADDR 	= 2;
+
 const char PLAYER1 	= 1;
 const char PLAYER2 	= 2;
-const char TILES	= 3;
 
 
 /* Snake sprite codes */
@@ -88,37 +90,28 @@ const int B_CODE 					= 	(0x00000040);
 const int A_CODE 					= 	(0x00000080);
 
 
-
-void inline incrementSnake(int player, char sprite, short x, short y){
-	char unused = 0;
-	char increment = 1; // Increment flag is set high
-	char segment = 0; // Head
-	char add_remove = ADD_CODE; // Add
-	int code = (unused << 29) | (increment << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
-	WRITE_SPRITE(player,code);
-}
-
 /*
- * 	Player : 1 = player1, 2 = player2
- * 	Segment 0=head, 1= second to head, 2 = second to tail 3 = tail
+ * 	Player : 1 = player1, 2 = player2d
  * 	Sprite: Choose sprite constant
+ * NOTE: The snake_x and snake_y are NOT x and y coordinatees.
+ * 		They are the tile numbers (X:0-40, Y:0-30).
+ * 		Please keep track of their actual x,y locations in software
  */
-void inline addSnakePiece(int player, char segment, char sprite, short x, short y){
+void inline addSnakePiece(int player, char sprite, short snake_x, short snake_y){
 	char unused = 0;
 	char add_remove = ADD_CODE;
-	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
-	WRITE_SPRITE(player,code);
+	player = player - 1; // For controller, it expects 0 or 1
+	int code = (unused << 27) | (player << 26) | (add_remove << 25) | (sprite << 20) |  ((snake_x & 0x03FF) << 10) | (snake_y & 0x03FF);
+	WRITE_SPRITE(SNAKE_ADDR,code);
 }
 
-void inline removeSnakeTail(int player){
+void inline removeSnakePiece(int player, short tile_x, short tile_y){
 	char unused = 0;
-	char segment = SEG_TAIL; // Must be tail
-	char add_remove = REMOVE_CODE; // Remove
-	char sprite = 0; //Dont care
-	short x = 0; // Dont care
-	short y = 0; // Dont care
-	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((x & 0x03FF) << 10) | (y & 0x03FF);
-	WRITE_SPRITE(player,code);
+	char add_remove = REMOVE_CODE;
+	char sprite = 0; // Dont care
+	player = player - 1; // For controller, it expects 0 or 1
+	int code = (unused << 27) | (player << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
+	WRITE_SPRITE(SNAKE_ADDR,code);
 }
 
 
@@ -132,7 +125,7 @@ void inline addTilePiece(char sprite, short tile_x, short tile_y){
 	char segment = 0; // Dont care
 	char add_remove = ADD_CODE;
 	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
-	WRITE_SPRITE(TILES,code);
+	WRITE_SPRITE(TILES_ADDR,code);
 }
 
 void inline removeTilePiece(short tile_x, short tile_y){
@@ -141,7 +134,7 @@ void inline removeTilePiece(short tile_x, short tile_y){
 	char add_remove = REMOVE_CODE;
 	char sprite = 0; // Dont care
 	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
-	WRITE_SPRITE(TILES,code);
+	WRITE_SPRITE(TILES_ADDR,code);
 }
 
 int inline getController(player){

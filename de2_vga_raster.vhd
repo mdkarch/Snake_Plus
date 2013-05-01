@@ -32,8 +32,7 @@ entity de2_vga_raster is
     clk   					: in std_logic;                    -- Should be 25.125 MHz
 	 
 	 TILES_IN 				: in tiles_ram;
-	 SNAKE1_IN 				: in snake_ram;
-	 SNAKE2_IN 				: in snake_ram;
+	 SNAKE_IN 				: in tiles_ram;
 
     VGA_CLK,                         				-- Clock
     VGA_HS,                          				-- H_SYNC
@@ -72,15 +71,15 @@ architecture rtl of de2_vga_raster is
     vga_vblank, vga_vsync : std_logic;  -- Sync. signals
 
 	signal snake1_segment			: integer;
-	signal snake2_segment			: integer;
 	
 	signal inner_tile_h_pos			: integer;
 	signal inner_tile_v_pos			: integer;
 	signal tiles_h_pos				: integer;
 	signal tiles_v_pos				: integer;
+	
 	signal sprite_select				: std_logic_vector(7 downto 0);
-	
-	
+	signal snake_select				: std_logic_vector(7 downto 0);
+	signal player_select				: std_logic;
 	
 	
 			-- process signals
@@ -350,23 +349,10 @@ begin
 		end if; --end clk
   end process InnerTileV;
   
-  sprite_select <= TILES_IN(tiles_h_pos,tiles_v_pos);
   
-  
-  --This is garbage right now
-  SpriteSelect : process(clk)
-  begin
-		if rising_edge(clk) then
-			if reset = '1' then
-				--sprite_select <= (others => '0');
-			else
-				
-			end if; --reset
-		end if; --reset
-  end process SpriteSelect;
-  
-  
-  
+  sprite_select 	<= TILES_IN(tiles_h_pos,tiles_v_pos);
+  snake_select 	<= SNAKE_IN(tiles_h_pos,tiles_v_pos);
+
   ---------------------------------------------------------------
   ------------ End Tile Calculation Logic -----------------------
   ---------------------------------------------------------------
@@ -385,56 +371,54 @@ begin
   ----------- Begin Sprite Display Logic ------------------------
   ---------------------------------------------------------------
   
-	FindSnake1: process(clk)
-		variable x, y : integer;
-	begin
-  
-  	snake1_segment <= -1;
-	for i in MAX_SNAKE_SIZE downto 0 loop
-		y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
-		x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
-		
-		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
-			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
-			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
-			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
-		
-			if(SNAKE1_IN(i)(25) = '1') then
-				snake1_segment <= i;
-			end if;
-		
-		end if;
-	end loop;
-  end process FindSnake1;
-  
-  
-  FindSnake2: process(clk)
-		variable x, y : integer;
-	begin
-  	snake2_segment <= -1;
-	for i in MAX_SNAKE_SIZE downto 0 loop
-		y := to_integer(UNSIGNED(SNAKE2_IN(i)(9 downto 0)));
-		x := to_integer(UNSIGNED(SNAKE2_IN(i)(19 downto 10)));
-		
-		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
-			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
-			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
-			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
-		
-			if(SNAKE2_IN(i)(25) = '1') then
-				snake2_segment <= i;
-			end if;
-		
-		end if;
-	end loop;
-  end process FindSnake2;
+--	FindSnake1: process(clk)
+--		variable x, y : integer;
+--	begin
+--  
+--  	snake1_segment <= -1;
+--	for i in MAX_SNAKE_SIZE downto 0 loop
+--		y := to_integer(UNSIGNED(SNAKE1_IN(i)(9 downto 0)));
+--		x := to_integer(UNSIGNED(SNAKE1_IN(i)(19 downto 10)));
+--		
+--		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+--			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
+--			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+--			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
+--		
+--			if(SNAKE1_IN(i)(25) = '1') then
+--				snake1_segment <= i;
+--			end if;
+--		
+--		end if;
+--	end loop;
+--  end process FindSnake1;
+--  
+--  
+--  FindSnake2: process(clk)
+--		variable x, y : integer;
+--	begin
+--  	snake2_segment <= -1;
+--	for i in MAX_SNAKE_SIZE downto 0 loop
+--		y := to_integer(UNSIGNED(SNAKE2_IN(i)(9 downto 0)));
+--		x := to_integer(UNSIGNED(SNAKE2_IN(i)(19 downto 10)));
+--		
+--		if (to_integer(Hcount) >= HSYNC + HBACK_PORCH + x) 
+--			and (to_integer(Hcount) <= HSYNC + HBACK_PORCH + x + SPRITE_LEN) 
+--			and (to_integer(Vcount) >= VSYNC + VBACK_PORCH + y) 
+--			and (to_integer(Vcount) <= VSYNC + VBACK_PORCH + y + SPRITE_LEN) then
+--		
+--			if(SNAKE2_IN(i)(25) = '1') then
+--				snake2_segment <= i;
+--			end if;
+--		
+--		end if;
+--	end loop;
+--  end process FindSnake2;
   
   
 	-- snake sprite generation
   SnakeSpriteGen : process (clk)
 	variable sprite_h_pos, sprite_v_pos : integer;
-	variable x, y 	: integer;
-	variable orient : std_logic_vector(4 downto 0);
   begin
 	if rising_edge(clk) then	
 		if reset = '1' then
@@ -454,207 +438,200 @@ begin
 			snake_tail_black 		<= '0';
 			snake_tail_orange 	<= '0';
 			snake_tail_yellow 	<= '0';
-		else
-			if snake1_segment /= -1 or snake2_segment /= -1 then
 			
-				if snake1_segment /= -1 then
-					y := to_integer(UNSIGNED(SNAKE1_IN(snake1_segment)(9 downto 0)));
-					x := to_integer(UNSIGNED(SNAKE1_IN(snake1_segment)(19 downto 10)));
-					orient := SNAKE1_IN(snake1_segment)(24 downto 20);
-				else 
-					y := to_integer(UNSIGNED(SNAKE2_IN(snake2_segment)(9 downto 0)));
-					x := to_integer(UNSIGNED(SNAKE2_IN(snake2_segment)(19 downto 10)));
-					orient := SNAKE2_IN(snake2_segment)(24 downto 20);
-				end if;
+		
+		else -- Not reset
 					
-					sprite_h_pos := to_integer(Hcount) - (HSYNC + HBACK_PORCH + x);
-					sprite_v_pos := to_integer(Vcount) - (VSYNC + VBACK_PORCH + y);
+			sprite_h_pos := inner_tile_h_pos; 
+			sprite_v_pos := inner_tile_v_pos;
 				 
-					-- Snake head color signals
-					snake_head_black 		<= '0';
-					snake_head_orange 	<= '0';
+			-- Snake head color signals
+			snake_head_black 		<= '0';
+			snake_head_orange 	<= '0';
+			
+			-- Snake body color signals
+			snake_body_black 		<= '0';
+			snake_body_grey		<= '0';
+			snake_body_orange		<= '0';
+			snake_body_white		<= '0';
+			
+			--Snake body turn
+			snake_turn_black		<= '0';
+			snake_turn_grey		<= '0';
+			snake_turn_orange		<= '0';
+			snake_turn_white		<= '0';
+			
+			-- Snake tail color signals
+			snake_tail_black 		<= '0';
+			snake_tail_orange 	<= '0';
+			snake_tail_yellow 	<= '0';
+			
+			-- Choose which player
+			player_select <= snake_select(5);
 					
-					-- Snake body color signals
-					snake_body_black 		<= '0';
-					snake_body_grey		<= '0';
-					snake_body_orange		<= '0';
-					snake_body_white		<= '0';
+			-- HEAD ORIENTATIONS
+			if snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_HEAD_RIGHT then 
+				 if sprite_head_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_head_black <= '1';
+				 elsif sprite_head_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_head_orange <= '1';
+				 end if; -- end sprite snake head
+				 
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_HEAD_LEFT then
+					if sprite_head_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_black <= '1';
+					elsif sprite_head_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_orange <= '1';
+				 end if; -- end sprite snake head
+				
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_HEAD_UP then
+					if sprite_head_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_black <= '1';
+					elsif sprite_head_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_orange <= '1';
+				 end if; -- end sprite snake head					
+				
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_HEAD_DOWN then
+					if sprite_head_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_black <= '1';
+					elsif sprite_head_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_head_orange <= '1';
+				 end if; -- end sprite snake head	
 					
-					--Snake body turn
-					snake_turn_black		<= '0';
-					snake_turn_grey		<= '0';
-					snake_turn_orange		<= '0';
-					snake_turn_white		<= '0';
-					
-					-- Snake tail color signals
-					snake_tail_black 		<= '0';
-					snake_tail_orange 	<= '0';
-					snake_tail_yellow 	<= '0';
-					
-					-- HEAD ORIENTATIONS
-					if orient = SNAKE_HEAD_RIGHT then 
-						 if sprite_head_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_head_black <= '1';
-						 elsif sprite_head_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_head_orange <= '1';
-						 end if; -- end sprite snake head
-						 
-					elsif orient = SNAKE_HEAD_LEFT then
-							if sprite_head_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_black <= '1';
-							elsif sprite_head_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_orange <= '1';
-						 end if; -- end sprite snake head
-						
-					elsif orient = SNAKE_HEAD_UP then
-							if sprite_head_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_black <= '1';
-							elsif sprite_head_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_orange <= '1';
-						 end if; -- end sprite snake head					
-						
-					elsif orient = SNAKE_HEAD_DOWN then
-							if sprite_head_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_black <= '1';
-							elsif sprite_head_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_head_orange <= '1';
-						 end if; -- end sprite snake head	
-							
-					
-					--BODY ORIENTATIONS
-					elsif orient = SNAKE_BODY_RIGHT then 
-						  if sprite_body_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_black <= '1';
-							elsif sprite_body_right_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_grey <= '1';
-							elsif sprite_body_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_orange <= '1';
-							elsif sprite_body_right_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-						 
-					elsif orient = SNAKE_BODY_LEFT then 
-						  if sprite_body_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_black <= '1';
-							elsif sprite_body_left_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_grey <= '1';
-							elsif sprite_body_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_orange <= '1';
-							elsif sprite_body_left_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-					
-					elsif orient = SNAKE_BODY_UP then 
-						  if sprite_body_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_black <= '1';
-							elsif sprite_body_up_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_grey <= '1';
-							elsif sprite_body_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_orange <= '1';
-							elsif sprite_body_up_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-					
-					elsif orient = SNAKE_BODY_DOWN then 
-						  if sprite_body_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_black <= '1';
-							elsif sprite_body_down_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_grey <= '1';
-							elsif sprite_body_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_orange <= '1';
-							elsif sprite_body_down_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-					
-					
-					
-					--TURN ORIENTATIONS
-					elsif orient = SNAKE_TURN_UP_RIGHT then 
-						  if sprite_turn_up_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_black <= '1';
-							elsif sprite_turn_up_right_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_grey <= '1';
-							elsif sprite_turn_up_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_orange <= '1';
-							elsif sprite_turn_up_right_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-						 
-					elsif orient = SNAKE_TURN_RIGHT_DOWN then 
-						  if sprite_turn_right_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_black <= '1';
-							elsif sprite_turn_right_down_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_grey <= '1';
-							elsif sprite_turn_right_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_orange <= '1';
-							elsif sprite_turn_right_down_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-					
-					elsif orient = SNAKE_TURN_DOWN_LEFT then 
-						  if sprite_turn_down_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_black <= '1';
-							elsif sprite_turn_down_left_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_grey <= '1';
-							elsif sprite_turn_down_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_orange <= '1';
-							elsif sprite_turn_down_left_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-					
-					elsif orient = SNAKE_TURN_LEFT_UP then 
-						  if sprite_turn_left_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_black <= '1';
-							elsif sprite_turn_left_up_grey(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_grey <= '1';
-							elsif sprite_turn_left_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_turn_orange <= '1';
-							elsif sprite_turn_left_up_white(sprite_v_pos)(sprite_h_pos) = '1' then
-								snake_body_white <= '1';
-						 end if; -- end sprite snake tail
-					
-					
-					
-					--TAIL ORIENTATIONS
-					-- Right orientation for snake tail
-					elsif orient = SNAKE_TAIL_RIGHT then 
-						 if sprite_tail_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_black <= '1';
-						 elsif sprite_tail_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_orange <= '1';
-						 elsif sprite_tail_right_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_yellow <= '1';
-						 end if; -- end sprite snake tail
-						 
-					elsif orient = SNAKE_TAIL_LEFT then
-						 if sprite_tail_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_black <= '1';
-						 elsif sprite_tail_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_orange <= '1';
-						 elsif sprite_tail_left_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_yellow <= '1';
-						 end if; -- end sprite snake tail
-					
-					elsif orient = SNAKE_TAIL_UP then
-						 if sprite_tail_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_black <= '1';
-						 elsif sprite_tail_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_orange <= '1';
-						 elsif sprite_tail_up_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_yellow <= '1';
-						 end if; -- end sprite snake tail
-					
-					elsif orient = SNAKE_TAIL_DOWN then
-						 if sprite_tail_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_black <= '1';
-						 elsif sprite_tail_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_orange <= '1';
-						 elsif sprite_tail_down_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
-							snake_tail_yellow <= '1';
-						 end if; -- end sprite snake tail
-					end if; -- orient
-
-
+			
+			--BODY ORIENTATIONS
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_BODY_RIGHT then 
+				  if sprite_body_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_black <= '1';
+					elsif sprite_body_right_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_grey <= '1';
+					elsif sprite_body_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_orange <= '1';
+					elsif sprite_body_right_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+				 
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_BODY_LEFT then 
+				  if sprite_body_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_black <= '1';
+					elsif sprite_body_left_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_grey <= '1';
+					elsif sprite_body_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_orange <= '1';
+					elsif sprite_body_left_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+			
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_BODY_UP then 
+				  if sprite_body_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_black <= '1';
+					elsif sprite_body_up_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_grey <= '1';
+					elsif sprite_body_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_orange <= '1';
+					elsif sprite_body_up_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+			
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_BODY_DOWN then 
+				  if sprite_body_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_black <= '1';
+					elsif sprite_body_down_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_grey <= '1';
+					elsif sprite_body_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_orange <= '1';
+					elsif sprite_body_down_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+			
+			
+			
+			--TURN ORIENTATIONS
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TURN_UP_RIGHT then 
+				  if sprite_turn_up_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_black <= '1';
+					elsif sprite_turn_up_right_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_grey <= '1';
+					elsif sprite_turn_up_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_orange <= '1';
+					elsif sprite_turn_up_right_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+				 
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TURN_RIGHT_DOWN then 
+				  if sprite_turn_right_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_black <= '1';
+					elsif sprite_turn_right_down_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_grey <= '1';
+					elsif sprite_turn_right_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_orange <= '1';
+					elsif sprite_turn_right_down_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+			
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TURN_DOWN_LEFT then 
+				  if sprite_turn_down_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_black <= '1';
+					elsif sprite_turn_down_left_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_grey <= '1';
+					elsif sprite_turn_down_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_orange <= '1';
+					elsif sprite_turn_down_left_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+			
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TURN_LEFT_UP then 
+				  if sprite_turn_left_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_black <= '1';
+					elsif sprite_turn_left_up_grey(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_grey <= '1';
+					elsif sprite_turn_left_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_turn_orange <= '1';
+					elsif sprite_turn_left_up_white(sprite_v_pos)(sprite_h_pos) = '1' then
+						snake_body_white <= '1';
+				 end if; -- end sprite snake tail
+			
+			
+			
+			--TAIL ORIENTATIONS
+			-- Right orientation for snake tail
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TAIL_RIGHT then 
+				 if sprite_tail_right_black(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_black <= '1';
+				 elsif sprite_tail_right_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_orange <= '1';
+				 elsif sprite_tail_right_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_yellow <= '1';
+				 end if; -- end sprite snake tail
+				 
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TAIL_LEFT then
+				 if sprite_tail_left_black(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_black <= '1';
+				 elsif sprite_tail_left_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_orange <= '1';
+				 elsif sprite_tail_left_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_yellow <= '1';
+				 end if; -- end sprite snake tail
+			
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TAIL_UP then
+				 if sprite_tail_up_black(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_black <= '1';
+				 elsif sprite_tail_up_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_orange <= '1';
+				 elsif sprite_tail_up_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_yellow <= '1';
+				 end if; -- end sprite snake tail
+			
+			elsif snake_select(7) = '1' and snake_select(4 downto 0) = SNAKE_TAIL_DOWN then
+				 if sprite_tail_down_black(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_black <= '1';
+				 elsif sprite_tail_down_orange(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_orange <= '1';
+				 elsif sprite_tail_down_yellow(sprite_v_pos)(sprite_h_pos) = '1' then
+					snake_tail_yellow <= '1';
+				 end if; -- end sprite snake tail
+				 
+				 
 			else
 				snake_head_black 		<= '0';
 				snake_head_orange 	<= '0';
@@ -669,9 +646,9 @@ begin
 				snake_tail_black 		<= '0';
 				snake_tail_orange 	<= '0';
 				snake_tail_yellow 	<= '0';
-			end if;
-		end if;
-	end if;		
+			end if; -- end sprite select
+		end if; -- end reset 
+	end if; --end clck/rising edge		
   end process SnakeSpriteGen;
   
   
@@ -1152,8 +1129,9 @@ begin
 		  VGA_B <= "1111111111";
 		 
 		--This got changed to orange, was green, now its orange
-		elsif green = '1' or snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1'
-								or snake_tail_orange = '1' or ed_b_eye = '1' then
+		elsif green = '1' or ed_b_eye = '1' or
+				(player_select = '0' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1' or snake_tail_orange = '1'))
+				then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0010100000";
 		  VGA_B <= "0000000000";
@@ -1197,10 +1175,13 @@ begin
 		  VGA_R <= "0011111111";
 		  VGA_G <= "0011101111";
 		  VGA_B <= "0011010101";
-      elsif vga_hblank = '0' and vga_vblank ='0' then -- blue background
-        VGA_R <= "0000000000";
-        VGA_G <= "0000000000";
-        VGA_B <= "0000000000";
+	  -- blue
+      elsif (vga_hblank = '0' and vga_vblank ='0') or  
+				(player_select = '1' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1' or snake_tail_orange = '1'))
+				then
+        VGA_R <= "0000100000";
+        VGA_G <= "0001100110";
+        VGA_B <= "0011001100";
       else -- black
         VGA_R <= "0000000000";
         VGA_G <= "0000000000";
@@ -2076,7 +2057,7 @@ sprite_tail_right_yellow(11)			<=      "0000001100000000";
 sprite_tail_right_yellow(12)			<=      "0000000100000000";
 sprite_tail_right_yellow(13)			<=      "0000000000000000";
 sprite_tail_right_yellow(14)			<=      "0000000000000000";
-
+sprite_tail_right_yellow(15)			<=      "0000000000000000";
 
 
 

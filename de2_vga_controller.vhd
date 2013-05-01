@@ -6,26 +6,22 @@ use work.definitions.all;
 ---- PROTOCOL:
 --		-- ADDRESS
 --			-- 0001 = SNAKE1
---			-- 0010 = SNAKE2
---			-- 0011 = TILES
---			-- 0100 = RESET
+--			-- 0010 = TILES
+--			-- 0011 = RESET
 --		
 --		--WRITEDATA
 --			--9-0: Y (LSB)
 --			--19-10: X
 --			--24-20: SPRITE SELECT
 --			--25: 1=ADD, 0=REMOVE
---			--26-27: Which segment referring to
---			--			00=head, 01=second to head
---			--			10=second to tail 11=tail
---			--			( only used for snakes, not tiles )
---			--28: increment flag, move all pieces, move head to new x & y
---			--29-31: UNUSED (MSB)
+--			--26: 0=PLAYER1, 1= PLAYER2
+--			--27-31: UNUSED (MSB)
 --			
---		--Tiles protocol ( in tiles_ram, from controller to raster)
+--		--Tiles/Snakes protocol (in tiles_ram, from controller to raster)
 --			-- 8 bits
 --			-- 4-0: Sprite select
---			-- 6-5: unused
+--			-- 5	: Player select (0 for player1, 1 for player2)
+--			-- 6  : unused
 --			-- 7	: Enabled/Active signal 
 --			
 ---- On Add:
@@ -70,37 +66,34 @@ architecture rtl of snake_plus_vga is
 
   -- Main memory elements
   signal tiles 				: tiles_ram;
-  signal snake1 				: snake_ram;
-  signal snake2  				: snake_ram;
+  signal snake 				: tiles_ram;
   
   --Tile signals 
-  signal tiles_enabled		: std_logic				:= '0';
+	signal tiles_enabled		: std_logic				:= '0';
+	signal snake_enabled		: std_logic				:= '0';
   
   -- Snake signals
-  signal snake1_enabled		: std_logic				:= '0';
-  signal snake1_head_index : integer;
-  signal snake1_tail_index : integer;
-  signal snake1_length		: integer;
-  signal snake2_enabled 	: std_logic				:= '0';
-  signal snake2_head_index : integer;
-  signal snake2_tail_index : integer;
-  signal snake2_length		: integer;
+--  signal snake1_head_index : integer;
+--  signal snake1_tail_index : integer;
+--  signal snake1_length		: integer;
+--  signal snake2_head_index : integer;
+--  signal snake2_tail_index : integer;
+--  signal snake2_length		: integer;
   
   -- For VGA
   signal clk25 				: std_logic 			:= '0';
   
 	--- Constants ---
 		-- Write -- 
-  constant W_SNAKE1_SELECT	: std_logic_vector	:= "0001"; -- Write only
-  constant W_SNAKE2_SELECT	: std_logic_vector	:= "0010"; -- Write only
-  constant W_TILES_SELECT	: std_logic_vector	:= "0011"; -- Write only
-  constant W_SOFT_RESET		: std_logic_vector	:= "0100"; -- Write only
-		-- Read -- 	
-  constant R_SNAKE1_HEAD	: std_logic_vector	:= "0000"; -- Read only
-  constant R_SNAKE1_TAIL	: std_logic_vector	:= "0001"; -- Read only
-  constant R_SNAKE1_LENGTH	: std_logic_vector	:= "0011"; -- Read only
-  constant R_SNAKE2_HEAD	: std_logic_vector	:= "0100"; -- Read only
-  constant R_SNAKE2_TAIL	: std_logic_vector	:= "0101"; -- Read only
+  constant W_SNAKE_SELECT	: std_logic_vector	:= "0001"; -- Write only
+  constant W_TILES_SELECT	: std_logic_vector	:= "0010"; -- Write only
+  constant W_SOFT_RESET		: std_logic_vector	:= "0011"; -- Write only
+--		-- Read -- 	
+--  constant R_SNAKE1_HEAD	: std_logic_vector	:= "0000"; -- Read only
+--  constant R_SNAKE1_TAIL	: std_logic_vector	:= "0001"; -- Read only
+--  constant R_SNAKE1_LENGTH	: std_logic_vector	:= "0011"; -- Read only
+--  constant R_SNAKE2_HEAD	: std_logic_vector	:= "0100"; -- Read only
+--  constant R_SNAKE2_TAIL	: std_logic_vector	:= "0101"; -- Read only
 --
 begin
   
@@ -122,8 +115,7 @@ begin
   begin
     if rising_edge(clk) then
 		
-		snake1_enabled <= '0';
-		snake2_enabled <= '0';
+		snake_enabled <= '0';
 		tiles_enabled 	<= '0';
 		
 --		if sw(3 downto 0) = "0000" then
@@ -168,13 +160,8 @@ begin
 				if write = '1' then
 					
 					-- Select snake1 --
-					if address = W_SNAKE1_SELECT then
-						snake1_enabled <= '1';		
-					end if;
-						
-					-- Select snake2 --
-					if address = W_SNAKE2_SELECT then
-						snake2_enabled <= '1';
+					if address = W_SNAKE_SELECT then
+						snake_enabled <= '1';		
 					end if;
 					
 					-- Select tiles --
@@ -189,19 +176,21 @@ begin
 				-- Read --
 				elsif read = '1' then
 					
-					if address = R_SNAKE1_HEAD then
-						readdata <= std_logic_vector( to_unsigned(snake1_head_index, readdata'length) );
-					elsif address = R_SNAKE1_TAIL then
-						readdata <= std_logic_vector( to_unsigned(snake1_tail_index, readdata'length) );
-					elsif address = R_SNAKE1_LENGTH then
-						readdata <= std_logic_vector( to_unsigned(snake1_length, readdata'length) );
-					elsif address = R_SNAKE2_HEAD then
-						readdata <= std_logic_vector( to_unsigned(snake2_head_index, readdata'length) );
-					elsif address = R_SNAKE1_TAIL then
-						readdata <= std_logic_vector( to_unsigned(snake2_head_index, readdata'length) );
-					elsif address = R_SNAKE1_LENGTH then
-						readdata <= std_logic_vector( to_unsigned(snake2_length, readdata'length) );
-					end if;
+--					if address = R_SNAKE1_HEAD then
+--						readdata <= std_logic_vector( to_unsigned(snake1_head_index, readdata'length) );
+--					elsif address = R_SNAKE1_TAIL then
+--						readdata <= std_logic_vector( to_unsigned(snake1_tail_index, readdata'length) );
+--					elsif address = R_SNAKE1_LENGTH then
+--						readdata <= std_logic_vector( to_unsigned(snake1_length, readdata'length) );
+--					elsif address = R_SNAKE2_HEAD then
+--						readdata <= std_logic_vector( to_unsigned(snake2_head_index, readdata'length) );
+--					elsif address = R_SNAKE1_TAIL then
+--						readdata <= std_logic_vector( to_unsigned(snake2_head_index, readdata'length) );
+--					elsif address = R_SNAKE1_LENGTH then
+--						readdata <= std_logic_vector( to_unsigned(snake2_length, readdata'length) );
+--					end if;
+					
+					readdata <= (others => '0');
 					
 				end if; -- end write/read
 				
@@ -227,8 +216,7 @@ V1: entity work.de2_vga_raster port map (
     VGA_B => VGA_B,
 	 
 	 TILES_IN => tiles,
-	 SNAKE1_IN => snake1,
-	 SNAKE2_IN => snake2
+	 SNAKE_IN => snake
   );
 
   
@@ -246,27 +234,11 @@ AD1: entity work.add_remove_snake_part port map (
 
 		clk 					=> clk,
 		reset					=> (reset or soft_reset),
-		enabled 				=> snake1_enabled,
+		enabled 				=> snake_enabled,
 		data_in 				=> writedata,
-		default_y_coor		=> "0100000000",
-		snake 				=> snake1,
-		head_index_out		=> snake1_head_index,
-		tail_index_out		=> snake1_tail_index,
-		snake_length_out	=> snake1_length
+		snake 				=> snake
 );
 
-AD2: entity work.add_remove_snake_part port map (
-
-		clk 					=> clk,
-		reset					=> (reset or soft_reset),
-		enabled 				=> snake2_enabled,
-		data_in 				=> writedata,
-		default_y_coor		=> "0101000000",
-		snake 				=> snake2,
-		head_index_out		=> snake2_head_index,
-		tail_index_out		=> snake2_tail_index,
-		snake_length_out	=> snake2_length
-);
 
 end rtl;
 --
@@ -362,11 +334,7 @@ entity add_remove_snake_part is
 		reset 				: in std_logic;
 		enabled				: in std_logic;
 		data_in				: in std_logic_vector(31 downto 0);
-		default_y_coor		: in std_logic_vector(9 downto 0);
-		snake 				: buffer snake_ram;
-		head_index_out		: out integer;
-		tail_index_out		: out integer;
-		snake_length_out	: out integer
+		snake 				: buffer tiles_ram
 	);
 
 end add_remove_snake_part;
@@ -377,30 +345,16 @@ signal y_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
 signal x_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
 signal sprite_select	: std_logic_vector(4 downto 0); 	-- 5 bits ---
 signal add_remove		: std_logic;							-- 1 bit  ---
-signal segment			: std_logic_vector(1 downto 0);	-- 2 bits ---
-signal increment		: std_logic;							-- 1 bit
-signal unused			: std_logic_vector(2 downto 0);	-- 3 bits ---
-
-signal head_index		: integer		:= 0;
-signal tail_index		: integer		:= 0;
-signal snake_length	: integer		:= 1;
-
---Index that new value will assigned to: head, second head, second tail, tail --
-signal seg_index		: integer;
-
-signal seg_second_tail : std_logic_vector(4 downto 0);
+signal player_select : std_logic;							-- 1 bit  ---
 
 begin
 
-	head_index_out <= head_index;
-	tail_index_out <= tail_index;
-	snake_length_out <= snake_length;
-	
-	increment 	<= 	data_in(28);
-	segment 		<= 	data_in(27 downto 26);
-	add_remove 	<= 	data_in(25);
-	
-	seg_second_tail <= snake(tail_index - 1)(24 downto 20);
+
+	y_val 			<= 	data_in(9 downto 0);
+	x_val 			<= 	data_in(19 downto 10);
+	sprite_select 	<= 	data_in(24 downto 20);
+	add_remove 		<= 	data_in(25);
+	player_select 	<= 	data_in(26);
 
 	process (clk)
 	begin
@@ -408,87 +362,18 @@ begin
 	
 		-- Reset --
 		if reset = '1' then
-			snake <= (others=>(others=>'0'));
-			snake(0) <=  "0000" & "00" & "1" & SNAKE_HEAD_RIGHT 
-											& "0100010000" & default_y_coor;
-			snake(1) <=  "0000" & "00" & "1" & SNAKE_BODY_RIGHT 
-											& "0100000000" & default_y_coor;
-			snake(2) <=  "0000" & "00" & "1" & SNAKE_TAIL_RIGHT 
-											& "0011110000" & default_y_coor;
-			head_index		<= 0;
-			tail_index		<= 2;
-			snake_length	<= 3; 
-		
-		-- Only do something if it was directed at this snake	--
+			snake <= (others=>(others=>(others=>'0')));
+			
+		-- Enabled --
 		elsif enabled = '1' then
-		
-		
-			----- Move all pieces, head moves to new location ------
-			if increment = '1' then
-				for i in MAX_SNAKE_SIZE downto 1 loop
-					if i <= tail_index then
-						snake(i) <= snake(i-1);
-					end if;
-				end loop;
-				snake(0) <= data_in;
-				--snake(tail_index)(24 downto 20) <= std_logic_vector(unsigned(seg_second_tail) - 4);
-				
-		
-			--------------------------------------------
-			----  Add situation  ---
-			elsif add_remove = '1' then
-			
-				if segment = "00" then
-					-- Do nothing, not allowed
-				
-				-- Second to head
-				elsif segment = "01" then
-						snake(1)(24 downto 20) <= data_in(24 downto 20);
-					
-				-- Second to tail
-				elsif segment = "10" then
-						snake(tail_index - 1)(24 downto 20) <= data_in(24 downto 20);
-					
-				-- Tail
-				elsif segment = "11" then
+																--1=active	-Unused		0=player1 	-Check definitions file
+			snake( to_integer( unsigned( x_val ) ), 
+					 to_integer( unsigned( y_val ) ) ) <= add_remove & "0" & player_select & sprite_select;
+		end if; -- reset/ enabled
 
-					--Overflow case
-					if tail_index + 1 > MAX_SNAKE_SIZE then
-						-- Do nothing
-					else
-						--Increment snake length
-						snake_length <= snake_length + 1;
-						-- Update index
-						tail_index <= tail_index + 1;
-						-- Set actual snake
-						snake(tail_index + 1) <= data_in;
-					end if;
-					
-				end if; -- segments
-										
-										
-			-----------------------------------------
-			-- Remove situation --
-			elsif add_remove = '0' then 
-			
-				if segment = "00" or segment = "01" or segment = "10"  then
-					-- CANT DO THIS
-				elsif segment = "11" then
-					if tail_index - 1 <= 0 then
-						-- Do nothing
-					else
-						snake(tail_index)(25) <= '0';
-						tail_index <= tail_index -1;
-						snake_length <= snake_length - 1;
-					end if;
-				end if;
-					
-			end if; --add remove situation
-			
-		end if; -- end if reset/enabled --
 		
-	end if; -- end rising edge --
-	end process;
+	end if; -- rising edge
+	end process; -- end clk
 
 end arsp;
 

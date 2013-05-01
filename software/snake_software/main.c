@@ -42,12 +42,17 @@
 #define BOT_BOUND	480
 #define TOP_BOUND	0
 
+
 /* start at location (0,0) */
 int board[X_LEN][Y_LEN];
 int food_index = 1;
+int speed_index = 1;
 
-
-
+int SLEEP_TIME 				= 50; 							// milliseconds
+int DEFAULT_SLEEP_CYCLE		= 100;
+int PLAYER1_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+int PLAYER2_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+int SPEED_TIME 				= 50000*1000*5;
 
 /* should update snake when new direction is known*/
 /* go left */
@@ -104,15 +109,55 @@ int checkFood(struct Snake snake[], struct Food food[], int dir, int player, str
 					food_index = 0;
 				}
 				while( !drawFood(food, food_index++) );
-				break;
+				break;int PLAYER1_SLEEP_CYCLES 	= 100 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+				int PLAYER2_SLEEP_CYCLES 	= 100 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
+
 			}
 		}
 	}
 	return 0;
 }
 
-int checkSpeed(struct Snake snake[], struct Speed speed[], int dir){
+int checkSpeed(struct Snake snake[], struct Speed speed[], int player, struct SnakeInfo * info){
+	int j;
+	for(j = 0; j < MAX_SPEED; j++){
+		if(speed[j].enable){
+			int xDiff = abs(snake[0].xCoord - speed[j].xCoord*16);
+			int yDiff = abs(snake[0].yCoord - speed[j].yCoord*16);
+			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
+			if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Eating Speed!\n");
+				removeFood(speed,j);
+				info->speed_enabled = 1;
+				info->speed_count = 0;
+				//addEnd(snake, dir, player, info);
+				if(player == PLAYER1){
+					PLAYER1_SLEEP_CYCLES 	= 75 / SLEEP_TIME;
+				}else{
+					PLAYER2_SLEEP_CYCLES 	= 75 / SLEEP_TIME;
+				}
+				if(speed_index == MAX_SPEED){
+					speed_index = 0;
+				}
+				while( !drawFood(speed, speed_index++) );
+				break;
+			}
+		}
+	}
+	if(info->speed_enabled){
+		info->speed_count++;
+		if(info->speed_count >=  SPEED_TIME){
+			info->speed_enabled = 0;
+			info->speed_count = 0;
+			if(player == PLAYER1){
+				PLAYER1_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
+			}else{
+				PLAYER2_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
+			}
 
+		}
+	}
 	return 0;
 }
 
@@ -123,7 +168,8 @@ int checkFreeze(struct Snake snake[], struct Freeze freeze[], int dir){
 
 // track snake movement
 static int movement(alt_u8 key, struct Snake snake[], int dir_array [],
-		struct Food food[], int pressed, int player, struct SnakeInfo * info){
+		struct Food food[], int pressed, int player, struct SnakeInfo * info,
+		struct Speed speed[]){
 
 	int old_dir = -1;
 	if( dir_array[left_dir] )
@@ -197,6 +243,7 @@ static int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		updateSnake(snake, xCoor, yCoor, down_dir, old_dir,player, info);
 		checkFood(snake, food, down_dir, player, info);
 	}
+	checkSpeed(snake, speed, player, info);
 	return traverseList(snake);
 	//printf("x: %d y: %d\n", xCoor, yCoor);
 }
@@ -303,8 +350,13 @@ int main(){
 
 		struct Food food[MAX_FOOD];
 		initFood(food, board);
+		struct Speed speed[MAX_SPEED];
+		initSpeed(speed, board);
 		while( !drawFood(food, food_index++) ){
 			printf("Attempting to Draw food\n");
+		}
+		while( !drawSpeed(speed, speed_index++) ){
+			printf("Attempting to Draw speed\n");
 		}
 		//startFood(food);
 
@@ -318,9 +370,6 @@ int main(){
 		unsigned char code;
 		int count_player1 			= 0;
 		int count_player2 			= 0;
-		int SLEEP_TIME 				= 50; 							// milliseconds
-		int PLAYER1_SLEEP_CYCLES 	= 100 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
-		int PLAYER2_SLEEP_CYCLES 	= 100 / SLEEP_TIME; 			// Original sleep time/SLEEP_TIME
 
 		int pressed_player1 		= getPlayer1Controller();
 		int pressed_player2 		= getPlayer2Controller();
@@ -340,7 +389,7 @@ int main(){
 			collision = snakeCol(snake_player1, snake_player2);
 			/*Check if paused button pushed*/
 			if( (count_player1 >= PLAYER1_SLEEP_CYCLES && (check_paused(pressed_player1) != 0) ) ||
-				(count_player2 >= PLAYER2_SLEEP_CYCLES && (check_paused(pressed_player2) != 0) ) ){
+					(count_player2 >= PLAYER2_SLEEP_CYCLES && (check_paused(pressed_player2) != 0) ) ){
 				pressed_player1 = 0;
 				pressed_player2 = 0;
 				count_player1 = 0;
@@ -352,7 +401,7 @@ int main(){
 			/* Move player 1 */
 			if(count_player1 >= PLAYER1_SLEEP_CYCLES && !paused ){
 				//code = kb_input();
-				p1_move_collision = movement(code, snake_player1, player1_dir, food, pressed_player1, PLAYER1, &info1);
+				p1_move_collision = movement(code, snake_player1, player1_dir, food, pressed_player1, PLAYER1, &info1, speed);
 				//movement(code, snake_player2, player2_dir, food, pressed_player1, PLAYER2);
 				count_player1 = 0;
 				pressed_player1 = 0;
@@ -360,12 +409,12 @@ int main(){
 			}
 
 			/* Move player 2 */
-//			if(count_player2 >= PLAYER2_SLEEP_CYCLES && !paused){
-//				//code = kb_input();
-//				p2_move_collision = movement(code, snake_player2, player2_dir, food, pressed_player2, PLAYER2, info2);
-//				count_player2 = 0;
-//				pressed_player2 = 0;
-//			}
+			//			if(count_player2 >= PLAYER2_SLEEP_CYCLES && !paused){
+			//				//code = kb_input();
+			//				p2_move_collision = movement(code, snake_player2, player2_dir, food, pressed_player2, PLAYER2, info2);
+			//				count_player2 = 0;
+			//				pressed_player2 = 0;
+			//			}
 
 			/* Get controls from player1 everytime and store control for later if pressed */
 			old_potential1 = potential_pressed1;

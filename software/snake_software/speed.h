@@ -37,8 +37,8 @@ void startSpeed(struct Speed speed[]){
 }
 
 int drawSpeed(struct Speed speed[], int index){
-	if((speed[index].xCoord == 0 || speed[index].xCoord == 29)
-			|| (speed[index].yCoord == 0 || speed[index].yCoord == 39)){
+	if((speed[index].xCoord <= 2 || speed[index].xCoord == X_LEN-1)
+			|| (speed[index].yCoord <= 2 || speed[index].yCoord == Y_LEN-1)){
 		return 0;
 	}
 

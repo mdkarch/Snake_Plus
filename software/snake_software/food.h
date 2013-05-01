@@ -38,54 +38,12 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 	}
 
 	shuffle_food(food,MAX_FOOD);
-
-
-	/*for(i = 0; i < X_LEN; i++){
-		for(j = 0; j < Y_LEN; j++){
-			if(board[i][j] == 0){
-				printf("food location x:%d, y:%d\n", i, j);
-			}
-		}
-	}*/
-	/*int x,y;
-	x = (350/16)*16; y = (255/16)*16;
-
-	food[0].enable = 1;
-	food[0].xCoord = x;
-	food[0].yCoord = y;
-	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
-
-	x = (150/16)*16; y = (355/16)*16;
-	food[1].enable = 1;
-	food[1].xCoord = x;
-	food[1].yCoord = y;
-	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
-	x = (100/16)*16; y = (355/16)*16;
-
-	food[2].enable = 1;
-	food[2].xCoord = x;
-	food[2].yCoord = y;
-	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
-	x = (400/16)*16; y = (355/16)*16;
-
-	food[3].enable = 1;
-	food[3].xCoord = x;
-	food[3].yCoord = y;
-	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
-	x = (10/16)*16; y = (355/16)*16;
-
-	food[4].enable = 1;
-	food[4].xCoord = x;
-	food[4].yCoord = y;
-	addTilePiece(RABBIT_CODE, (short) x/16, (short) y/16 );
-	printf("food location x:%d, y:%d\n", x, y);*/
-
 }
 
 
 int drawFood(struct Food food[], int index){
-	if((food[index].xCoord <= 2 || food[index].xCoord >= 37)
-			|| (food[index].yCoord <= 2 || food[index].yCoord >= 27)){
+	if((food[index].xCoord <= 2 || food[index].xCoord >= X_LEN-1)
+			|| (food[index].yCoord <= 2 || food[index].yCoord >= Y_LEN-1)){
 		return 0;
 	}
 

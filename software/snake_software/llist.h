@@ -20,6 +20,8 @@ struct Snake{
 struct SnakeInfo{
 	int head;
 	int tail;
+	int speed_count;
+	int speed_enabled;
 };
 
 void initSnake(struct Snake snake[], int xCoord, int yCoord, int player, struct SnakeInfo * info){

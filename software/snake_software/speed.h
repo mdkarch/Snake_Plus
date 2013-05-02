@@ -36,6 +36,11 @@ int drawSpeed(struct Speed speed[], int index){
 	if(brick_tiles[t_xCoord][t_yCoord]){
 		return 0;
 	}
+
+	if(freeze[index].enable || food[index].enable || edwards[index].enable){
+			return 0;
+	}
+
 	speed[index].enable = 1;
 	addTilePiece(SPEED_CODE, (short) speed[index].xCoord, (short) speed[index].yCoord);
 	return 1;

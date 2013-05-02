@@ -41,6 +41,12 @@ int drawEdwards(struct Edwards edwards[]){
 	short f_yCoord = edwards[edwards_index].yCoord;
 
 	if(brick_tiles[f_xCoord][f_yCoord]){
+		edwards_index++;
+		return 0;
+	}
+
+	if(freeze[edwards_index].enable || speed[edwards_index].enable || food[edwards_index].enable){
+		edwards_index++;
 		return 0;
 	}
 

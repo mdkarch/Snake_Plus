@@ -32,6 +32,31 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 	shuffle_food(food,MAX_POWERUP_SIZE);
 }
 
+int checkFood(struct Snake snake[], struct Food food[], int dir, int player, struct SnakeInfo * info)
+{
+	//struct Snake *head = snake[0];
+	int j;
+	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+		if(food[j].enable){
+			int xDiff = abs(snake[0].xCoord - food[j].xCoord*16);
+			int yDiff = abs(snake[0].yCoord - food[j].yCoord*16);
+			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
+			if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Eating Food!\n");
+				removeFood(food,j);
+				addEnd(snake, dir, player, info);
+				if(food_index == MAX_POWERUP_SIZE){
+					food_index = 0;
+				}
+				while( !drawFood(food, food_index++) );
+				break;		// Original sleep time/SLEEP_TIME
+
+			}
+		}
+	}
+	return 0;
+}
 
 int drawFood(struct Food food[], int index){
 	if((food[index].xCoord <= 2 || food[index].xCoord >= X_LEN-1)
@@ -42,6 +67,10 @@ int drawFood(struct Food food[], int index){
 	short f_yCoord = food[index].yCoord;
 
 	if(brick_tiles[f_xCoord][f_yCoord]){
+		return 0;
+	}
+
+	if(freeze[index].enable || speed[index].enable || edwards[index].enable){
 		return 0;
 	}
 

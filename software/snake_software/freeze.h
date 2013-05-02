@@ -98,8 +98,15 @@ int drawFreeze(struct Freeze freeze[]){
 	short t_yCoord = freeze[freeze_index].yCoord;
 
 	if(brick_tiles[t_xCoord][t_yCoord]){
+		freeze_index++;
 		return 0;
 	}
+
+	if(food[freeze_index].enable || speed[freeze_index].enable || edwards[freeze_index].enable){
+		freeze_index++;
+			return 0;
+	}
+
 	freeze[freeze_index].enable = 1;
 	printf("Freeze ENABLED at x: %d y: %d\n",freeze[freeze_index].xCoord, freeze[freeze_index].yCoord);
 	addTilePiece(FREEZE_CODE, (short) freeze[freeze_index].xCoord, (short) freeze[freeze_index].yCoord);

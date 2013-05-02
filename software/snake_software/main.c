@@ -54,31 +54,31 @@ void moveDown(int dir_array []){
 	dir_array[down_dir]  	= 1;
 }
 
-int checkFood(struct Snake snake[], struct Food food[], int dir, int player, struct SnakeInfo * info)
-{
-	//struct Snake *head = snake[0];
-	int j;
-	for(j = 0; j < MAX_POWERUP_SIZE; j++){
-		if(food[j].enable){
-			int xDiff = abs(snake[0].xCoord - food[j].xCoord*16);
-			int yDiff = abs(snake[0].yCoord - food[j].yCoord*16);
-			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
-				printf("Eating Food!\n");
-				removeFood(food,j);
-				addEnd(snake, dir, player, info);
-				if(food_index == MAX_POWERUP_SIZE){
-					food_index = 0;
-				}
-				while( !drawFood(food, food_index++) );
-				break;		// Original sleep time/SLEEP_TIME
-
-			}
-		}
-	}
-	return 0;
-}
+//int checkFood(struct Snake snake[], struct Food food[], int dir, int player, struct SnakeInfo * info)
+//{
+//	//struct Snake *head = snake[0];
+//	int j;
+//	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+//		if(food[j].enable){
+//			int xDiff = abs(snake[0].xCoord - food[j].xCoord*16);
+//			int yDiff = abs(snake[0].yCoord - food[j].yCoord*16);
+//			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+//			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
+//			if(xDiff <= col_offset && yDiff <= col_offset){
+//				printf("Eating Food!\n");
+//				removeFood(food,j);
+//				addEnd(snake, dir, player, info);
+//				if(food_index == MAX_POWERUP_SIZE){
+//					food_index = 0;
+//				}
+//				while( !drawFood(food, food_index++) );
+//				break;		// Original sleep time/SLEEP_TIME
+//
+//			}
+//		}
+//	}
+//	return 0;
+//}
 
 int checkSpeed(struct Snake snake[], struct Speed speed[], int player, struct SnakeInfo * info){
 	int j;
@@ -339,12 +339,16 @@ int main(){
 		while( !drawFood(food, food_index++) ){
 			printf("Attempting to Draw food\n");
 		}
+		while( !drawFood(food, food_index++) ){
+			printf("Attempting to Draw food\n");
+		}
 		while( !drawSpeed(speed, speed_index++) ){
 			printf("Attempting to Draw speed\n");
 		}
-		while( !drawFreeze(freeze) ){
+		alt_powups = 1;
+		/*while( !drawFreeze(freeze) ){
 			printf("Attempting to Draw freeze\n");
-		}
+		}*/
 		while( !drawEdwards(edwards) );
 
 

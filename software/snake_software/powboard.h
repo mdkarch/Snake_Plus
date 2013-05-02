@@ -1,11 +1,8 @@
 #ifndef _POWBOARD_H_
 #define _POWBOARD_H_
-#define X_LEN 40
-#define Y_LEN 30
+#include "constants.h"
 int x[X_LEN];
 int y[Y_LEN];
-
-unsigned int n_seed = 5323;
 
 int PRNG(int n){
 	n_seed = (8253729 * n_seed + + 2396403);
@@ -62,7 +59,7 @@ void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
 	int j;
 	for(k = 0; k < X_LEN; k++){
 		for(j = 0; j < Y_LEN; j++){
-			if(i == 3){
+			if(i == 4){
 				i = 0;
 			}
 			//printf("%d type: %d at loc: %d,%d\n", count, i, x[k], y[j]);
@@ -75,4 +72,5 @@ void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
 	
 	//return board;
 }
+
 #endif

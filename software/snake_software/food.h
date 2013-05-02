@@ -5,7 +5,7 @@
 #include "constants.h"
 
 
-void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
+void initFood(){
 	printf("Initializing food\n");
 	int t = 0;
 	int i;
@@ -29,10 +29,10 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 		}
 	}
 
-	shuffle_food(food,MAX_POWERUP_SIZE);
+	shuffle_food(MAX_POWERUP_SIZE);
 }
 
-int checkFood(struct Snake snake[], struct Food food[], int dir, int player, struct SnakeInfo * info)
+int checkFood(struct Snake snake[], int dir, int player, struct SnakeInfo * info)
 {
 	//struct Snake *head = snake[0];
 	int j;
@@ -44,12 +44,12 @@ int checkFood(struct Snake snake[], struct Food food[], int dir, int player, str
 			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
 			if(xDiff <= col_offset && yDiff <= col_offset){
 				printf("Eating Food!\n");
-				removeFood(food,j);
+				removeFood(j);
 				addEnd(snake, dir, player, info);
 				if(food_index == MAX_POWERUP_SIZE){
 					food_index = 0;
 				}
-				while( !drawFood(food, food_index++) );
+				while( !drawFood(food_index++) );
 				break;		// Original sleep time/SLEEP_TIME
 
 			}
@@ -58,7 +58,7 @@ int checkFood(struct Snake snake[], struct Food food[], int dir, int player, str
 	return 0;
 }
 
-int drawFood(struct Food food[], int index){
+int drawFood(int index){
 	if((food[index].xCoord <= 2 || food[index].xCoord >= X_LEN-1)
 			|| (food[index].yCoord <= 2 || food[index].yCoord >= Y_LEN-1) ){
 		return 0;
@@ -83,19 +83,19 @@ int drawFood(struct Food food[], int index){
 	return 1;
 }
 
-void removeFood(struct Food food[], int index){
+void removeFood(int index){
 	printf("Removing food\n");
 	food[index].enable = 0;
 	removeTilePiece((short) food[index].xCoord, (short) food[index].yCoord);
 }
 
-void shuffle_food(struct Food arr[], int n){
+void shuffle_food(int n){
 	int i;
 	for(i = 0; i < n; i++){
 		int index = PRNG(n);
-		struct Food temp = arr[index];
-		arr[index] = arr[i];
-		arr[i] = temp;
+		struct Food temp = food[index];
+		food[index] = food[i];
+		food[i] = temp;
 	}
 }
 

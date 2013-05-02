@@ -2,7 +2,7 @@
 #define EDWARDS_H_
 #include "drop_brick.h"
 
-void initEdwards(struct Edwards edwards[], int board[X_LEN][Y_LEN]){
+void initEdwards(){
 	initBrickTile();
 	printf("Initializing edwards\n");
 	int t = 1;
@@ -27,11 +27,11 @@ void initEdwards(struct Edwards edwards[], int board[X_LEN][Y_LEN]){
 			}
 		}
 	}
-	shuffle_edwards(edwards, MAX_POWERUP_SIZE);
+	shuffle_edwards(MAX_POWERUP_SIZE);
 
 }
 
-int drawEdwards(struct Edwards edwards[]){
+int drawEdwards(){
 	if((edwards[edwards_index].xCoord <= 2 || edwards[edwards_index].xCoord >= X_LEN-1)
 			|| (edwards[edwards_index].yCoord <= 2 || edwards[edwards_index].yCoord >= Y_LEN-1) ){
 		edwards_index++;
@@ -61,7 +61,7 @@ int drawEdwards(struct Edwards edwards[]){
 	return 1;
 }
 
-void removeEdwards(struct Edwards edwards[], int index){
+void removeEdwards(int index){
 	printf("Removing edwards\n");
 	//edwards[index].enable = 0;
 	//removeTilePiece((short) edwards[index].xCoord, (short) edwards[index].yCoord);
@@ -70,17 +70,17 @@ void removeEdwards(struct Edwards edwards[], int index){
 	removeTilePiece((short) edwards[index].xCoord, (short) edwards[index].yCoord);
 }
 
-void shuffle_edwards(struct Edwards arr[], int n){
+void shuffle_edwards(int n){
 	int i;
 	for(i = 0; i < n; i++){
 		int index = PRNG(n);
-		struct Edwards temp = arr[index];
-		arr[index] = arr[i];
-		arr[i] = temp;
+		struct Edwards temp = edwards[index];
+		edwards[index] = edwards[i];
+		edwards[i] = temp;
 	}
 }
 
-int checkEdwards(struct Snake snake[], struct Edwards edwards[], int player, struct SnakeInfo * info)
+int checkEdwards(struct Snake snake[],int player, struct SnakeInfo * info)
 {
 	int j;
 	for(j = 0; j < MAX_POWERUP_SIZE; j++){
@@ -91,7 +91,7 @@ int checkEdwards(struct Snake snake[], struct Edwards edwards[], int player, str
 			if(xDiff <= col_offset && yDiff <= col_offset){
 				printf("Eating Edwards!\n");
 				printf("x:%d, y:%d", edwards[j].xCoord, edwards[j].yCoord);
-				removeEdwards(edwards,j);
+				removeEdwards(j);
 				info->has_edwards = 1;
 				if(edwards_index == MAX_POWERUP_SIZE){
 					edwards_index = 0;
@@ -104,7 +104,7 @@ int checkEdwards(struct Snake snake[], struct Edwards edwards[], int player, str
 	return 0;
 }
 
-void apply_edwards(struct Snake snake[], struct  Edwards edwards[], int player, struct SnakeInfo * info){
+void apply_edwards(struct Snake snake[], int player, struct SnakeInfo * info){
 
 	if( !info->has_edwards ){
 		printf("PLAYER%d DOESNT HAVE EDWARDS\n", player);

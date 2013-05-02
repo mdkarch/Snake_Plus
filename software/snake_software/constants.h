@@ -15,7 +15,9 @@
 
 #define X_LEN		40
 #define Y_LEN		30
-#define MAX_POWERUP_SIZE	400
+#define MAX_POWERUP_SIZE	600
+
+unsigned int n_seed = 5323;
 
 int SNAKE_SIZE = 1200;
 
@@ -29,6 +31,21 @@ int FREEZE_TIME 			= 50;
 
 int PLAYER1_SLEEP_CYCLES; 			// Original sleep time/SLEEP_TIME
 int PLAYER2_SLEEP_CYCLES; 			// Original sleep time/SLEEP_TIME
+
+/* index to know which sprite to draw from power up structs */
+int food_index = 1;
+int speed_index = 1;
+int freeze_index = 1;
+int edwards_index = 1;
+int alt_powups = 0;
+/* keeps track of current power ups spwan locations */
+int board[X_LEN][Y_LEN];
+/* keeps track of where a brick was placed */
+short brick_tiles[X_LEN][Y_LEN];
+int freeze_pow_count  = 0;
+int freeze_drawn = 0;
+int speed_pow_count  = 0;
+int speed_drawn = 0;
 
 struct Snake{
 	int xCoord;
@@ -66,5 +83,18 @@ struct Freeze{
 	int yCoord;
 	int enable;
 };
+
+struct Edwards{
+	int xCoord;
+	int yCoord;
+	int enable;
+	int type;
+};
+
+
+struct Food food[MAX_POWERUP_SIZE];
+struct Speed speed[MAX_POWERUP_SIZE];
+struct Freeze freeze[MAX_POWERUP_SIZE];
+struct Edwards edwards[MAX_POWERUP_SIZE];
 
 #endif /* #ifndef _CONSTANTS_H_ */

@@ -4,7 +4,7 @@
 #include "powboard.h"
 #include "constants.h"
 
-void initSpeed(struct Speed speed[], int board[X_LEN][Y_LEN]){
+void initSpeed(){
 	printf("Initializing speed\n");
 	int i;
 	int j;
@@ -20,11 +20,11 @@ void initSpeed(struct Speed speed[], int board[X_LEN][Y_LEN]){
 		}
 	}
 
-	shuffle_speed(speed,MAX_POWERUP_SIZE);
+	shuffle_speed(MAX_POWERUP_SIZE);
 }
 
 
-int drawSpeed(struct Speed speed[], int index){
+int drawSpeed(int index){
 	if((speed[index].xCoord <= 2 || speed[index].xCoord >= X_LEN-1)
 			|| (speed[index].yCoord <= 2 || speed[index].yCoord >= Y_LEN-1)){
 		return 0;
@@ -42,23 +42,25 @@ int drawSpeed(struct Speed speed[], int index){
 	}
 
 	speed[index].enable = 1;
+	speed_drawn = 1;
 	addTilePiece(SPEED_CODE, (short) speed[index].xCoord, (short) speed[index].yCoord);
 	return 1;
 }
 
-void removeSpeed(struct Speed speed[], int index){
+void removeSpeed( int index){
 	printf("Removing speed\n");
 	speed[index].enable = 0;
+	speed_drawn = 0;
 	removeTilePiece((short) speed[index].xCoord, (short) speed[index].yCoord);
 }
 
-void shuffle_speed(struct Speed arr[], int n){
+void shuffle_speed(int n){
 	int i;
 	for(i = 0; i < n; i++){
 		int index = PRNG(n);
-		struct Speed temp = arr[index];
-		arr[index] = arr[i];
-		arr[i] = temp;
+		struct Speed temp = speed[index];
+		speed[index] = speed[i];
+		speed[i] = temp;
 	}
 }
 #endif

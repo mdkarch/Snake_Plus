@@ -61,11 +61,22 @@ int traverseList(struct Snake snake[])
 
 		if(xDiff <= col_offset && yDiff <= col_offset){
 			printf("Collision!");
-			return 0;
+			return 1;
 		}
 		count++;
 	}
-	return 1;
+	return 0;
+}
+
+int brickCol(struct Snake snake[]){
+	short x = snake[0].xCoord/16;
+	short y = snake[0].yCoord/16;
+	printf("brick enable: %d", brick_tiles[x][y]);
+	if(brick_tiles[x][y]){
+		printf("brick col");
+		return 1;
+	}
+	return 0;
 }
 
 int snakeCol(struct Snake snake1[], struct Snake snake2[]){
@@ -81,11 +92,11 @@ int snakeCol(struct Snake snake1[], struct Snake snake2[]){
 			int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
 			if(xDiff < offset && yDiff < offset){
 				printf("Collision!");
-				return 0;
+				return 1;
 			}
 		}
 	}
-	return 1;
+	return 0;
 }
 
 void addEnd(struct Snake snake[], int dir, int player, struct SnakeInfo * info)

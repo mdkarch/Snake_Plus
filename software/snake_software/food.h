@@ -35,7 +35,13 @@ void initFood(struct Food food[], int board[X_LEN][Y_LEN]){
 
 int drawFood(struct Food food[], int index){
 	if((food[index].xCoord <= 2 || food[index].xCoord >= X_LEN-1)
-			|| (food[index].yCoord <= 2 || food[index].yCoord >= Y_LEN-1)){
+			|| (food[index].yCoord <= 2 || food[index].yCoord >= Y_LEN-1) ){
+		return 0;
+	}
+	short f_xCoord = food[index].xCoord;
+	short f_yCoord = food[index].yCoord;
+
+	if(brick_tiles[f_xCoord][f_yCoord]){
 		return 0;
 	}
 

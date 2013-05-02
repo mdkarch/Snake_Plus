@@ -21,7 +21,8 @@ IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4, 0);
 #define READ_PLAYER_CONTROLLER(player) \
 IORD_32DIRECT(NES_CONTROLLER_BASE, player * 4);
 
-
+#define PLAY_SOUND(sound_id) \
+IORD_32DIRECT(DE2_AUDIO_CONTROLLER_0_BASE, sound_id * 4);
 
 
 /* Player/Tile/Address codes */
@@ -194,9 +195,9 @@ int get_button_from_pressed(int pressed){
 	int a 		= pressed 	& A_CODE;
 	int b	 	= pressed 	& B_CODE;
 	if( a )
-		return 1;
+		return A_CODE;
 	if( b )
-		return 2;
+		return B_CODE;
 	return -1;
 }
 

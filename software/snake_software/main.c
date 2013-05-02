@@ -8,15 +8,14 @@
 #include "snake_io.h"
 #include "powboard.h"
 #include "brick.h"
+#include "drop_brick.h"
+#include "edwards.h"
 #include "constants.h"
 
 /* start at location (0,0) */
-int board[X_LEN][Y_LEN];
-int food_index = 1;
-int speed_index = 1;
-
-
-
+//int board[X_LEN][Y_LEN];
+//int food_index = 1;
+//int speed_index = 1;
 
 /* should update snake when new direction is known*/
 /* go left */
@@ -124,8 +123,6 @@ int checkSpeed(struct Snake snake[], struct Speed speed[], int player, struct Sn
 	return 0;
 }
 
-
-
 // track snake movement
 int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		struct Food food[], int pressed, int player, struct SnakeInfo * info,
@@ -206,7 +203,16 @@ int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 	checkSpeed(snake, speed,  player, info);
 	checkFreeze(snake, freeze,  player, info);
 	recalc_freeze_times(snake, freeze, player,info);
-	return traverseList(snake);
+	checkEdwards(snake, edwards,  player, info);
+	//PLAY_SOUND(1);
+	int check_brick_col = brickCol(snake);
+	int check_self_col = traverseList(snake);
+	if(check_brick_col || check_self_col){
+		return 1;
+	}else{
+		return 0;
+	}
+	//return traverseList(snake);
 	//printf("x: %d y: %d\n", xCoor, yCoor);
 }
 
@@ -260,8 +266,11 @@ void writeToHW(struct Snake snake[], int dir, int old_dir, int player,
 void check_powerup_buttons(int pressed,struct Snake snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
 
 	int button = get_button_from_pressed(pressed);
-	if( button == 1 ){
+	if( button == A_CODE ){
 		apply_freeze(snake, freeze, player, info);
+	}
+	if( button == B_CODE ){
+		apply_edwards(snake, edwards, player, info);
 	}
 
 }
@@ -316,12 +325,17 @@ int main(){
 		player2_dir[up_dir] = 0;
 		player2_dir[down_dir] = 0;
 
-		struct Food food[MAX_POWERUP_SIZE];
+		//struct Food food[MAX_POWERUP_SIZE];
 		initFood(food, board);
-		struct Speed speed[MAX_POWERUP_SIZE];
+		//struct Speed speed[MAX_POWERUP_SIZE];
 		initSpeed(speed, board);
-		struct Freeze freeze[MAX_POWERUP_SIZE];
+		//struct Freeze freeze[MAX_POWERUP_SIZE];
 		initFreeze(freeze, board);
+		//struct Edwards edwards[MAX_POWERUP_SIZE];
+		initEdwards(edwards, board);
+		while( !drawFood(food, food_index++) ){
+			printf("Attempting to Draw food\n");
+		}
 		while( !drawFood(food, food_index++) ){
 			printf("Attempting to Draw food\n");
 		}
@@ -331,6 +345,7 @@ int main(){
 		while( !drawFreeze(freeze) ){
 			printf("Attempting to Draw freeze\n");
 		}
+		while( !drawEdwards(edwards) );
 
 
 
@@ -351,8 +366,8 @@ int main(){
 		int old_potential2;
 		int game = 1;
 		int collision = 1;
-		int p1_move_collision = 1;
-		int p2_move_collision = 1;
+		int p1_move_collision = 0;
+		int p2_move_collision = 0;
 
 
 
@@ -404,8 +419,10 @@ int main(){
 			}
 
 
-			if (!(collision && p1_move_collision && p2_move_collision))
+			if (collision || p1_move_collision || p2_move_collision){
+				printf("breaking");
 				break;
+			}
 
 
 			//printf("Random: %d", PRNG(40));

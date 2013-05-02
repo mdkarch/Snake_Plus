@@ -6,10 +6,6 @@
 #include "constants.h"
 
 
-int freeze_index = 1;
-
-
-
 void initFreeze(struct Freeze freeze[], int board[X_LEN][Y_LEN]){
 	printf("Initializing freeze\n");
 	int i;
@@ -98,6 +94,12 @@ int drawFreeze(struct Freeze freeze[]){
 		return 0;
 	}
 
+	short t_xCoord = freeze[freeze_index].xCoord;
+	short t_yCoord = freeze[freeze_index].yCoord;
+
+	if(brick_tiles[t_xCoord][t_yCoord]){
+		return 0;
+	}
 	freeze[freeze_index].enable = 1;
 	printf("Freeze ENABLED at x: %d y: %d\n",freeze[freeze_index].xCoord, freeze[freeze_index].yCoord);
 	addTilePiece(FREEZE_CODE, (short) freeze[freeze_index].xCoord, (short) freeze[freeze_index].yCoord);

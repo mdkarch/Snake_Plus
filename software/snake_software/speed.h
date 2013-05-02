@@ -23,10 +23,6 @@ void initSpeed(struct Speed speed[], int board[X_LEN][Y_LEN]){
 	shuffle_speed(speed,MAX_POWERUP_SIZE);
 }
 
-void startSpeed(struct Speed speed[]){
-	speed[15].enable = 1;
-	addTilePiece(FREEZE_CODE, (short) speed[15].xCoord, (short) speed[15].yCoord);
-}
 
 int drawSpeed(struct Speed speed[], int index){
 	if((speed[index].xCoord <= 2 || speed[index].xCoord >= X_LEN-1)
@@ -34,6 +30,12 @@ int drawSpeed(struct Speed speed[], int index){
 		return 0;
 	}
 
+	short t_xCoord = speed[index].xCoord;
+	short t_yCoord = speed[index].yCoord;
+
+	if(brick_tiles[t_xCoord][t_yCoord]){
+		return 0;
+	}
 	speed[index].enable = 1;
 	addTilePiece(SPEED_CODE, (short) speed[index].xCoord, (short) speed[index].yCoord);
 	return 1;

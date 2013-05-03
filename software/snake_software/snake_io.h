@@ -6,8 +6,8 @@
 #define WRITE_SPRITE(select,data) \
 IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, select * 4, data)
 
-//#define READ_SNAKE1_HEAD() \
-//IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 0 * 4)
+#define READ_SNAKE() \
+IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 0 * 4)
 //
 //#define READ_SNAKE1_TAIL() \
 //IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 1 * 4)
@@ -23,6 +23,7 @@ IORD_32DIRECT(NES_CONTROLLER_BASE, player * 4);
 
 #define PLAY_SOUND(sound_id) \
 IORD_32DIRECT(DE2_AUDIO_CONTROLLER_0_BASE, sound_id * 4);
+
 
 
 /* Player/Tile/Address codes */
@@ -102,7 +103,7 @@ void inline addSnakePiece(int player, char sprite, short snake_x, short snake_y)
 	char unused = 0;
 	char add_remove = ADD_CODE;
 	player = player - 1; // For controller, it expects 0 or 1
-	int code = (unused << 27) | (player << 26) | (add_remove << 25) | (sprite << 20) |  ((snake_x & 0x03FF) << 10) | (snake_y & 0x03FF);
+	int code = (unused << 27) | (player << 26) | (add_remove << 25) | (sprite << 20) | (unused << 11) | ((snake_x & 0x03F) << 5) | (snake_y & 0x01F);
 	WRITE_SPRITE(SNAKE_ADDR,code);
 }
 
@@ -111,7 +112,7 @@ void inline removeSnakePiece(int player, short tile_x, short tile_y){
 	char add_remove = REMOVE_CODE;
 	char sprite = 0; // Dont care
 	player = player - 1; // For controller, it expects 0 or 1
-	int code = (unused << 27) | (player << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
+	int code = (unused << 27) | (player << 26) | (add_remove << 25) | (sprite << 20) | (unused << 11) | ((tile_x & 0x03F) << 5) | (tile_y & 0x01F);
 	WRITE_SPRITE(SNAKE_ADDR,code);
 }
 
@@ -125,7 +126,7 @@ void inline addTilePiece(char sprite, short tile_x, short tile_y){
 	char unused = 0;
 	char segment = 0; // Dont care
 	char add_remove = ADD_CODE;
-	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
+	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) | (unused << 11) | ((tile_x & 0x03F) << 5) | (tile_y & 0x01F);;
 	WRITE_SPRITE(TILES_ADDR,code);
 }
 
@@ -134,7 +135,7 @@ void inline removeTilePiece(short tile_x, short tile_y){
 	char segment = 0; // Dont care
 	char add_remove = REMOVE_CODE;
 	char sprite = 0; // Dont care
-	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) |  ((tile_x & 0x03FF) << 10) | (tile_y & 0x03FF);
+	int code = (unused << 28) | (segment << 26) | (add_remove << 25) | (sprite << 20) | (unused << 11) | ((tile_x & 0x03F) << 5) | (tile_y & 0x01F);
 	WRITE_SPRITE(TILES_ADDR,code);
 }
 
@@ -207,6 +208,14 @@ int check_paused(int pressed){
 }
 
 void reset_hardware(){
+	int x = 0;
+	int y = 0;
+	for(x = 0; x < 40; x++){
+		for(y = 0; y < 30; y++){
+			addSnakePiece(0, 0, x, y);
+			addTilePiece(0, x, y);
+		}
+	}
 	SOFT_RESET();
 }
 

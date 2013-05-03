@@ -10,8 +10,9 @@ use work.definitions.all;
 --			-- 0011 = RESET
 --		
 --		--WRITEDATA
---			--9-0: Y (LSB)
---			--19-10: X
+--			--4-0: Y (LSB) -- must be ONLY 5 bits
+--			--10-5: X		-- must be at least 6 bits
+			--11-19: unused
 --			--24-20: SPRITE SELECT
 --			--25: 1=ADD, 0=REMOVE
 --			--26: 0=PLAYER1, 1= PLAYER2
@@ -65,20 +66,24 @@ architecture rtl of snake_plus_vga is
 	signal soft_reset			: std_logic				:= '0';
 
   -- Main memory elements
-  signal tiles 				: tiles_ram;
-  signal snake 				: tiles_ram;
+  -- To/From manage_tiles, add_remove_snake
+	signal tiles_write_data				: std_logic_vector(7 downto 0);
+	signal snake_write_data				: std_logic_vector(7 downto 0);
+	signal tiles_write_address			: std_logic_vector(10 downto 0);
+	signal snake_write_address			: std_logic_vector(10 downto 0);
+	signal tiles_write_enable			: std_logic		:= '0';
+	signal snake_write_enable			: std_logic		:= '0';
+	
+	-- To/From vga_raster
+	signal tiles_read_address			: std_logic_vector(10 downto 0);
+	signal snake_read_address			: std_logic_vector(10 downto 0);
+	signal tiles_read_data				: std_logic_vector(7 downto 0);
+	signal snake_read_data				: std_logic_vector(7 downto 0);
   
   --Tile signals 
 	signal tiles_enabled		: std_logic				:= '0';
 	signal snake_enabled		: std_logic				:= '0';
   
-  -- Snake signals
---  signal snake1_head_index : integer;
---  signal snake1_tail_index : integer;
---  signal snake1_length		: integer;
---  signal snake2_head_index : integer;
---  signal snake2_tail_index : integer;
---  signal snake2_length		: integer;
   
   -- For VGA
   signal clk25 				: std_logic 			:= '0';
@@ -88,12 +93,19 @@ architecture rtl of snake_plus_vga is
   constant W_SNAKE_SELECT	: std_logic_vector	:= "0001"; -- Write only
   constant W_TILES_SELECT	: std_logic_vector	:= "0010"; -- Write only
   constant W_SOFT_RESET		: std_logic_vector	:= "0011"; -- Write only
---		-- Read -- 	
---  constant R_SNAKE1_HEAD	: std_logic_vector	:= "0000"; -- Read only
---  constant R_SNAKE1_TAIL	: std_logic_vector	:= "0001"; -- Read only
---  constant R_SNAKE1_LENGTH	: std_logic_vector	:= "0011"; -- Read only
---  constant R_SNAKE2_HEAD	: std_logic_vector	:= "0100"; -- Read only
---  constant R_SNAKE2_TAIL	: std_logic_vector	:= "0101"; -- Read only
+
+
+component tiles_ram is
+	port (
+		aclr			: IN STD_LOGIC	 := '0';
+		clock			: IN STD_LOGIC  := '1';
+		data			: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+		rdaddress	: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
+		wraddress	: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
+		wren			: IN STD_LOGIC  := '0';
+		q				: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+	);
+end component;
 --
 begin
   
@@ -118,36 +130,6 @@ begin
 		snake_enabled <= '0';
 		tiles_enabled 	<= '0';
 		
---		if sw(3 downto 0) = "0000" then
---			leds(9 downto 0) <= snake1(1)(9 downto 0);
---		elsif sw(3 downto 0) = "0001" then
---			leds(9 downto 0) <= snake1(2)(9 downto 0);
---		elsif sw(3 downto 0) = "0010" then
---			leds(9 downto 0) <= snake1(3)(9 downto 0);
---		elsif sw(3 downto 0) = "1000" then
---			leds(9 downto 0) <= snake1(1)(19 downto 10);
---		elsif sw(3 downto 0) = "1001" then
---			leds(9 downto 0) <= snake1(2)(19 downto 10);
---		elsif sw(3 downto 0) = "1010" then
---			leds(9 downto 0) <= snake1(3)(19 downto 10);
---		end if;
---		
---		if sw(5 downto 4) = "01" then
---			leds(10) <= snake1(1)(25);
---		elsif sw(5 downto 4) = "10" then
---			leds(10) <= snake1(2)(25);
---		elsif sw(5 downto 4) = "11" then
---			leds(10) <= snake1(3)(25);
---		end if;
---		
---		if sw(7 downto 6) = "01" then
---			leds(15 downto 11) <= snake1(1)(24 downto 20);
---		elsif sw(7 downto 6) = "10" then
---			leds(15 downto 11) <= snake1(2)(24 downto 20);
---		elsif sw(7 downto 6) = "11" then
---			leds(15 downto 11) <= snake1(3)(24 downto 20);
---		end if;
---		
 		
       if reset = '1' or soft_reset = '1' then
 			readdata <= (others => '0');
@@ -190,7 +172,7 @@ begin
 --						readdata <= std_logic_vector( to_unsigned(snake2_length, readdata'length) );
 --					end if;
 					
-					readdata <= (others => '0');
+					readdata <= "000000000000000000000" & tiles_read_address;
 					
 				end if; -- end write/read
 				
@@ -199,6 +181,28 @@ begin
       end if; --end rising edge
   end process;
 
+  
+  
+  
+  	snake_store : tiles_ram port map (
+		aclr			=> (reset or soft_reset),
+		clock			=> clk,
+		data			=> snake_write_data,
+		rdaddress	=> snake_read_address,	
+		wraddress	=> snake_write_address,
+		wren			=> snake_write_enable,
+		q				=> snake_read_data
+	);
+	
+	tiles_store : tiles_ram port map (
+		aclr			=> (reset or soft_reset),
+		clock			=> clk,
+		data			=> tiles_write_data,
+		rdaddress	=> tiles_read_address,	
+		wraddress	=> tiles_write_address,
+		wren			=> tiles_write_enable,
+		q				=> tiles_read_data
+	);
   
  
 --VGA stuff
@@ -215,8 +219,11 @@ V1: entity work.de2_vga_raster port map (
     VGA_G => VGA_G,
     VGA_B => VGA_B,
 	 
-	 TILES_IN => tiles,
-	 SNAKE_IN => snake
+	 tiles_address => tiles_read_address,
+	 tiles_data		=> tiles_read_data,
+	 snake_address => snake_read_address,
+	 snake_data		=> snake_read_data
+	 
   );
 
   
@@ -227,7 +234,9 @@ DD1: entity work.manage_tiles port map(
 		reset					=> (reset or soft_reset),
 		enabled 				=> tiles_enabled,
 		data_in 				=> writedata,
-		tiles 				=> tiles
+		data_out				=> tiles_write_data,
+		address_out			=> tiles_write_address,
+		enable_out			=> tiles_write_enable
 );
   
 AD1: entity work.add_remove_snake_part port map (
@@ -236,7 +245,9 @@ AD1: entity work.add_remove_snake_part port map (
 		reset					=> (reset or soft_reset),
 		enabled 				=> snake_enabled,
 		data_in 				=> writedata,
-		snake 				=> snake
+		data_out				=> snake_write_data,
+		address_out			=> snake_write_address,
+		enable_out			=> snake_write_enable
 );
 
 
@@ -266,7 +277,9 @@ entity manage_tiles is
 		reset 				: in std_logic;
 		enabled				: in std_logic;
 		data_in				: in std_logic_vector(31 downto 0);
-		tiles					: out tiles_ram
+		data_out				: out std_logic_vector(7 downto 0);
+		address_out			: out std_logic_vector(10 downto 0);
+		enable_out			: out std_logic
 	);
 
 
@@ -274,37 +287,46 @@ end manage_tiles;
 
 architecture mt of manage_tiles is
 
-signal y_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
-signal x_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
+signal y_val			: std_logic_vector(4 downto 0); 	-- 5 bits --
+signal x_val			: std_logic_vector(5 downto 0); 	-- 6 bits --
 signal sprite_select	: std_logic_vector(4 downto 0); 	-- 5 bits ---
 signal add_remove		: std_logic;							-- 1 bit  ---
+
+signal y_32				: std_logic_vector(10 downto 0);
+signal y_8				: std_logic_vector(10 downto 0);
+signal x_11				: std_logic_vector(10 downto 0);
 
 begin
 
 
-	y_val 			<= 	data_in(9 downto 0);
-	x_val 			<= 	data_in(19 downto 10);
+	y_val 			<= 	data_in(4 downto 0);
+	x_val 			<= 	data_in(10 downto 5);
 	add_remove 		<= 	data_in(25);
 	sprite_select 	<= 	data_in(24 downto 20);
+	
+	y_32 				<= 	"0" 		& data_in(4 downto 0) & "00000";
+	y_8 				<= 	"000" 	& data_in(4 downto 0) & "000";
+	x_11 				<= 	"00000" 	& data_in(10 downto 5);
 
 	process (clk)
 	begin
 	if rising_edge(clk) then
 	
+		enable_out <= '0';
+	
 		-- Reset --
 		if reset = '1' then
-			tiles <= (others=>(others=>(others=>'0')));
+			data_out <= (others => '0');
+			address_out <= (others => '0');
+			enable_out <= '0';
 			
 		-- Enabled --
 		elsif enabled = '1' then
-															--1=active	-Unused	-Check definitions file
-			tiles( to_integer( unsigned( x_val ) ), 
-					 to_integer( unsigned( y_val ) ) ) <= add_remove & "00" & sprite_select;
+				data_out <= add_remove & "00" & sprite_select;
+				address_out <= std_logic_vector( unsigned(y_32) + unsigned(y_8) + unsigned(x_11) );
+				enable_out <= '1';
 		end if; -- reset/ enabled
 		
-		--tiles( 30, 1 ) 	<= '1' & "00" & RABBIT_CODE;
-		--tiles( 10, 1 ) 	<= '1' & "00" & MOUSE_CODE;
-		--tiles( 15, 20 ) 	<= '1' & "00" & WALL_CODE;
 
 		
 	end if; -- rising edge
@@ -334,41 +356,55 @@ entity add_remove_snake_part is
 		reset 				: in std_logic;
 		enabled				: in std_logic;
 		data_in				: in std_logic_vector(31 downto 0);
-		snake 				: buffer tiles_ram
+		data_out				: out std_logic_vector(7 downto 0);
+		address_out			: out std_logic_vector(10 downto 0);
+		enable_out			: out std_logic
 	);
 
 end add_remove_snake_part;
 
 architecture arsp of add_remove_snake_part is
 
-signal y_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
-signal x_val			: std_logic_vector(9 downto 0); 	-- 10 bits --
+signal y_val			: std_logic_vector(4 downto 0); 	-- 5 bits --
+signal x_val			: std_logic_vector(5 downto 0); 	-- 6 bits --
 signal sprite_select	: std_logic_vector(4 downto 0); 	-- 5 bits ---
 signal add_remove		: std_logic;							-- 1 bit  ---
 signal player_select : std_logic;							-- 1 bit  ---
 
+signal y_32				: std_logic_vector(10 downto 0);
+signal y_8				: std_logic_vector(10 downto 0);
+signal x_11				: std_logic_vector(10 downto 0);
+
 begin
 
 
-	y_val 			<= 	data_in(9 downto 0);
-	x_val 			<= 	data_in(19 downto 10);
+	y_val 			<= 	data_in(4 downto 0);
+	x_val 			<= 	data_in(10 downto 5);
 	sprite_select 	<= 	data_in(24 downto 20);
 	add_remove 		<= 	data_in(25);
 	player_select 	<= 	data_in(26);
-
+	
+	y_32 				<= 	"0" 		& data_in(4 downto 0) & "00000";
+	y_8 				<= 	"000" 	& data_in(4 downto 0) & "000";
+	x_11 				<= 	"00000" 	& data_in(10 downto 5);
+	
 	process (clk)
 	begin
 	if rising_edge(clk) then
 	
+		enable_out <= '0';
+	
 		-- Reset --
 		if reset = '1' then
-			snake <= (others=>(others=>(others=>'0')));
+			data_out <= (others => '0');
+			address_out <= (others => '0');
+			enable_out <= '0';
 			
 		-- Enabled --
 		elsif enabled = '1' then
-																--1=active	-Unused		0=player1 	-Check definitions file
-			snake( to_integer( unsigned( x_val ) ), 
-					 to_integer( unsigned( y_val ) ) ) <= add_remove & "0" & player_select & sprite_select;
+				data_out <= add_remove & "0" & player_select & sprite_select;
+				address_out <= std_logic_vector( unsigned(y_32) + unsigned(y_8) + unsigned(x_11) );
+				enable_out <= '1';
 		end if; -- reset/ enabled
 
 		

@@ -322,10 +322,10 @@ begin
 			elsif HCount >= HSYNC + HBACK_PORCH + HACTIVE then
 				inner_tile_h_pos <= 0;
 				tiles_h_pos <= 1900; -- random > 1200
-			elsif HCount = HSYNC + HBACK_PORCH - 2 then
+			elsif HCount = HSYNC + HBACK_PORCH - 1 then
 				tiles_h_pos <= 0;
-			elsif 	HCount > HSYNC + HBACK_PORCH - 1 and 
-						HCount < HSYNC + HBACK_PORCH + HACTIVE - 1 then
+			elsif 	HCount > HSYNC + HBACK_PORCH  and 
+						HCount < HSYNC + HBACK_PORCH + HACTIVE  then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
 				if inner_tile_h_pos >= 15 then -- 0-15 should be used
 					inner_tile_h_pos <= 0;

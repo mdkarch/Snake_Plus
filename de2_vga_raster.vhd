@@ -27,6 +27,8 @@ entity de2_vga_raster is
 	 tiles_data				: in std_logic_vector(7 downto 0);
 	 snake_address			: out std_logic_vector(10 downto 0);
 	 snake_data				: in std_logic_vector(7 downto 0);
+	 
+	 controller_enable_splash_screen : in std_logic;
 
     VGA_CLK,                         				-- Clock
     VGA_HS,                          				-- H_SYNC
@@ -1137,9 +1139,11 @@ begin
 			else
 				splash_snake_address_enable <= '0';
 			
-				if Hcount >= (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H) and Hcount < (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H + SPLASH_SNAKE_SIZE) and
-					Vcount >= (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V) and Vcount < (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V + SPLASH_SNAKE_SIZE) then
-					splash_snake_address_enable <= '1';	
+				if controller_enable_splash_screen = '1' then
+					if Hcount >= (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H) and Hcount < (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H + SPLASH_SNAKE_SIZE) and
+						Vcount >= (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V) and Vcount < (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V + SPLASH_SNAKE_SIZE) then
+						splash_snake_address_enable <= '1';	
+					end if;
 				end if;
 				
 			end if;	-- end if;
@@ -1156,7 +1160,7 @@ begin
 			splash_snake_green 	<= '0';
 			splash_snake_yellow 	<= '0';
 			splash_snake_red	 	<= '0';
-		elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = SPLASH_SNAKE_CODE and splash_snake_address_enable = '1' then
+		elsif splash_snake_address_enable = '1' then
 			
 			splash_snake_black 	<= '0';
 			splash_snake_green 	<= '0';

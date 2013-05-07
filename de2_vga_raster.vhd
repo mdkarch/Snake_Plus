@@ -324,7 +324,7 @@ begin
 				tiles_h_pos <= 1900; -- random > 1200
 			elsif HCount = HSYNC + HBACK_PORCH - 1 then
 				tiles_h_pos <= 0;
-			elsif 	HCount > HSYNC + HBACK_PORCH  and 
+			elsif 	HCount >= HSYNC + HBACK_PORCH and 
 						HCount < HSYNC + HBACK_PORCH + HACTIVE  then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
 				if inner_tile_h_pos >= 15 then -- 0-15 should be used
@@ -1148,13 +1148,13 @@ begin
 		  VGA_G <= "1111111111";
 		  VGA_B <= "0000000000";
 		elsif brown = '1' or edwards_br = '1' then
-		  VGA_R <= "0100001001";
-		  VGA_G <= "0010000100";
-		  VGA_B <= "0000010011";
+		  VGA_R <= "1000010010";
+		  VGA_G <= "0100001000";
+		  VGA_B <= "0000100110";
 		elsif tan = '1' or edwards_t = '1' then
-		  VGA_R <= "0011111111";
-		  VGA_G <= "0011101111";
-		  VGA_B <= "0011010101";
+		  VGA_R <= "1111101000";
+		  VGA_G <= "1110011000";
+		  VGA_B <= "1000110000";
       elsif vga_hblank = '0' and vga_vblank ='0' then
         VGA_R <= "0000000000";
         VGA_G <= "0000000000";
@@ -2248,8 +2248,8 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	sprite_food_edwards_t(9) 			<=	"0011000000001100";
 	sprite_food_edwards_t(10) 			<=	"0001100110011000";
 	sprite_food_edwards_t(11) 			<=	"0001111111111000";
-	sprite_food_edwards_t(12) 	  		<=	"0001111001111000";
-	sprite_food_edwards_t(13) 	   	<=	"0001111001111000";
+	sprite_food_edwards_t(12) 	  		<=	"0001110001111000";
+	sprite_food_edwards_t(13) 	   	<=	"0001110001111000";
 	sprite_food_edwards_t(14) 	  		<=	"0000111111110000";
 	sprite_food_edwards_t(15)			<=	"0000011111100000";
 
@@ -2266,8 +2266,8 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	sprite_food_edwards_p(9) 			<=	"0000000000000000";
 	sprite_food_edwards_p(10) 			<=	"0000000000000000";
 	sprite_food_edwards_p(11) 			<=	"0000000000000000";
-	sprite_food_edwards_p(12) 	  		<=	"0000000110000000";
-	sprite_food_edwards_p(13) 	   	<=	"0000000110000000";
+	sprite_food_edwards_p(12) 	  		<=	"0000001110000000";
+	sprite_food_edwards_p(13) 	   	<=	"0000001110000000";
 	sprite_food_edwards_p(14) 	  		<=	"0000000000000000";
 	sprite_food_edwards_p(15)			<=	"0000000000000000";
 
@@ -2328,22 +2328,22 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	sprite_powup_growth_y(15)			<=	"0000000000000100";
 
 	-- sprite lightning coloring
-	sprite_powup_speed(0) 			<=	"0000000011111111";
-	sprite_powup_speed(1) 			<=	"0000000111111110";
-	sprite_powup_speed(2) 			<=	"0000001111111100";
-	sprite_powup_speed(3) 			<=	"0000011111111000";
-	sprite_powup_speed(4) 			<=	"0000111111110000";
-	sprite_powup_speed(5) 			<=	"0001111111100000";
-	sprite_powup_speed(6) 			<=	"0011111111111110";
-	sprite_powup_speed(7) 			<=	"0011111111111100";
-	sprite_powup_speed(8) 			<=	"0011111111111000";
-	sprite_powup_speed(9) 			<=	"0000011111110000";
-	sprite_powup_speed(10) 			<=	"0000011111100000";
-	sprite_powup_speed(11) 			<=	"0000111111000000";
-	sprite_powup_speed(12) 	  		<=	"0000111111000000";
-	sprite_powup_speed(13) 	   	<=	"0000111110000000";
-	sprite_powup_speed(14) 	  		<=	"0001111000000000";
-	sprite_powup_speed(15)			<=	"0001110000000000";
+	sprite_powup_speed(0) 			<=	"0000000011111110";
+	sprite_powup_speed(1) 			<=	"0000000111111100";
+	sprite_powup_speed(2) 			<=	"0000001111111000";
+	sprite_powup_speed(3) 			<=	"0000011111110000";
+	sprite_powup_speed(4) 			<=	"0000111111100000";
+	sprite_powup_speed(5) 			<=	"0001111111000000";
+	sprite_powup_speed(6) 			<=	"0011111111111100";
+	sprite_powup_speed(7) 			<=	"0111111111111000";
+	sprite_powup_speed(8) 			<=	"0000001111110000";
+	sprite_powup_speed(9) 			<=	"0000001111100000";
+	sprite_powup_speed(10) 			<=	"0000011111000000";
+	sprite_powup_speed(11) 			<=	"0000011110000000";
+	sprite_powup_speed(12) 	  		<=	"0000111100000000";
+	sprite_powup_speed(13) 	   	<=	"0000111000000000";
+	sprite_powup_speed(14) 	  		<=	"0001110000000000";
+	sprite_powup_speed(15)			<=	"0001100000000000";
 
 	-- sprite ice freeze coloring
 	sprite_powup_freeze(0) 			<=	"1100001000100011";

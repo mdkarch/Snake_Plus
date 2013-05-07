@@ -32,24 +32,24 @@ void initFood(){
 	shuffle_food(MAX_POWERUP_SIZE);
 }
 
-int checkFood(struct Snake snake[], int dir, int player, struct SnakeInfo * info)
+int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int player, struct SnakeInfo * info)
 {
 	//struct Snake *head = snake[0];
 	int j;
 	for(j = 0; j < MAX_POWERUP_SIZE; j++){
 		if(food[j].enable){
-			int xDiff = abs(snake[0].xCoord - food[j].xCoord*16);
-			int yDiff = abs(snake[0].yCoord - food[j].yCoord*16);
+			//int xDiff = abs(snake[0].xCoord - food[j].xCoord*16);
+			//int yDiff = abs(snake[0].yCoord - food[j].yCoord*16);
 			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
 			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
+			if(snake[0].xCoord == food[j].xCoord && snake[0].yCoord == food[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				printf("Eating Food!\n");
 				removeFood(j);
 				addEnd(snake, dir, player, info);
 				if(food_index == MAX_POWERUP_SIZE){
 					food_index = 0;
 				}
-				while( !drawFood(food_index++) );
+				while( !drawFood(snake, other_snake) );
 				break;		// Original sleep time/SLEEP_TIME
 
 			}
@@ -58,35 +58,56 @@ int checkFood(struct Snake snake[], int dir, int player, struct SnakeInfo * info
 	return 0;
 }
 
-int drawFood(int index){
-	if((food[index].xCoord <= 2 || food[index].xCoord >= X_LEN-1)
-			|| (food[index].yCoord <= 2 || food[index].yCoord >= Y_LEN-1) ){
+int drawFood(struct Snake snake[], struct Snake other_snake[]){
+	if((food[food_index].xCoord <= 2 || food[food_index].xCoord >= X_LEN-1)
+			|| (food[food_index].yCoord <= 2 || food[food_index].yCoord >= Y_LEN-1) ){
+		food_index++;
 		return 0;
 	}
-	short f_xCoord = food[index].xCoord;
-	short f_yCoord = food[index].yCoord;
-
+	short f_xCoord = food[food_index].xCoord;
+	short f_yCoord = food[food_index].yCoord;
+	int i;
+	for(i = 0; i < SNAKE_SIZE; i++){
+		if(!(snake[i].enable || other_snake[i].enable)){
+			break;
+		}
+		if(snake[i].enable){
+			if(snake[i].xCoord == f_xCoord && snake[i].yCoord == f_yCoord){
+				food_index++;
+				return 0;
+			}
+		}
+		if(other_snake[i].enable){
+			if(other_snake[i].xCoord == f_xCoord && other_snake[i].yCoord == f_yCoord){
+				food_index++;
+				return 0;
+			}
+		}
+	}
 	if(brick_tiles[f_xCoord][f_yCoord]){
+		food_index++;
 		return 0;
 	}
 
-	if(freeze[index].enable || speed[index].enable || edwards[index].enable){
+	if(freeze[food_index].enable || speed[food_index].enable || edwards[food_index].enable){
+		food_index++;
 		return 0;
 	}
 
-	food[index].enable = 1;
-	if(food[index].type){
-		addTilePiece(RABBIT_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+	food[food_index].enable = 1;
+	if(food[food_index].type){
+		addTilePiece(RABBIT_CODE,  food[food_index].xCoord,  food[food_index].yCoord);
 	}else{
-		addTilePiece(MOUSE_CODE, (short) food[index].xCoord, (short) food[index].yCoord);
+		addTilePiece(MOUSE_CODE,  food[food_index].xCoord,  food[food_index].yCoord);
 	}
+	food_index++;
 	return 1;
 }
 
 void removeFood(int index){
 	printf("Removing food\n");
 	food[index].enable = 0;
-	removeTilePiece((short) food[index].xCoord, (short) food[index].yCoord);
+	removeTilePiece( food[index].xCoord,  food[index].yCoord);
 }
 
 void shuffle_food(int n){

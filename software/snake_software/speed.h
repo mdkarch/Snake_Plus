@@ -23,27 +23,102 @@ void initSpeed(){
 	shuffle_speed(MAX_POWERUP_SIZE);
 }
 
+int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info){
+	int j;
+	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+		if(speed[j].enable){
+			//int xDiff = abs(snake[0].xCoord - speed[j].xCoord*16);
+			//int yDiff = abs(snake[0].yCoord - speed[j].yCoord*16);
+			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
+			if(snake[0].xCoord == speed[j].xCoord && snake[0].yCoord == speed[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
+				printf("Eating Speed!\n");
+				removeSpeed(j);
+				info->speed_enabled = 1;
+				info->speed_count = 0;
+				//addEnd(snake, dir, player, info);
+				if(player == PLAYER1){
+					PLAYER1_SLEEP_CYCLES 	= SPEED_SLEEP_CYCLE / SLEEP_TIME;
+				}else{
+					PLAYER2_SLEEP_CYCLES 	= SPEED_SLEEP_CYCLE / SLEEP_TIME;
+				}
+				if(speed_index == MAX_POWERUP_SIZE){
+					speed_index = 0;
+				}
+				//while( !drawSpeed(speed_index++) );
+				break;
+			}
+		}
+	}
+	if(speed_pow_count == 300 && !speed_drawn){
+		while( !drawSpeed(snake, other_snake) ){
+			printf("Attempting to Draw speed\n");
+		}
+		speed_drawn = 1;
+		speed_pow_count  = 0;
+	}
+	if(speed_pow_count == 300){
+		speed_pow_count  = 0;
+	}
+	speed_pow_count++;
+	printf("speed_count: %d\n", info->speed_count);
+	if(info->speed_enabled){
+		info->speed_count++;
+		if(info->speed_count >=  SPEED_TIME){
+			printf("reseting speed\n");
+			info->speed_enabled = 0;
+			info->speed_count = 0;
+			if(player == PLAYER1){
+				PLAYER1_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
+			}else{
+				PLAYER2_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
+			}
+		}
+	}
+	return 0;
+}
 
-int drawSpeed(int index){
-	if((speed[index].xCoord <= 2 || speed[index].xCoord >= X_LEN-1)
-			|| (speed[index].yCoord <= 2 || speed[index].yCoord >= Y_LEN-1)){
+int drawSpeed(struct Snake snake[], struct Snake other_snake[]){
+	if((speed[speed_index].xCoord <= 2 || speed[speed_index].xCoord >= X_LEN-1)
+			|| (speed[speed_index].yCoord <= 2 || speed[speed_index].yCoord >= Y_LEN-1)){
+		speed_index++;
 		return 0;
 	}
 
-	short t_xCoord = speed[index].xCoord;
-	short t_yCoord = speed[index].yCoord;
-
+	short t_xCoord = speed[speed_index].xCoord;
+	short t_yCoord = speed[speed_index].yCoord;
+	int i;
+	for(i = 0; i < SNAKE_SIZE; i++){
+		if(!(snake[i].enable || other_snake[i].enable)){
+			break;
+		}
+		if(snake[i].enable){
+			if(snake[i].xCoord == t_xCoord && snake[i].yCoord == t_yCoord){
+				speed_index++;
+				return 0;
+			}
+		}
+		if(other_snake[i].enable){
+			if(other_snake[i].xCoord == t_xCoord && other_snake[i].yCoord == t_yCoord){
+				speed_index++;
+				return 0;
+			}
+		}
+	}
 	if(brick_tiles[t_xCoord][t_yCoord]){
+		speed_index++;
 		return 0;
 	}
 
-	if(freeze[index].enable || food[index].enable || edwards[index].enable){
-			return 0;
+	if(freeze[speed_index].enable || food[speed_index].enable || edwards[speed_index].enable){
+		speed_index++;
+		return 0;
 	}
 
-	speed[index].enable = 1;
+	speed[speed_index].enable = 1;
 	speed_drawn = 1;
-	addTilePiece(SPEED_CODE, (short) speed[index].xCoord, (short) speed[index].yCoord);
+	addTilePiece(SPEED_CODE,  speed[speed_index].xCoord,  speed[speed_index].yCoord);
+	speed_index++;
 	return 1;
 }
 
@@ -51,7 +126,7 @@ void removeSpeed( int index){
 	printf("Removing speed\n");
 	speed[index].enable = 0;
 	speed_drawn = 0;
-	removeTilePiece((short) speed[index].xCoord, (short) speed[index].yCoord);
+	removeTilePiece( speed[index].xCoord,  speed[index].yCoord);
 }
 
 void shuffle_speed(int n){

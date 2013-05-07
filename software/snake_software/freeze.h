@@ -26,15 +26,15 @@ void initFreeze(){
 	shuffle_freeze(freeze,MAX_POWERUP_SIZE);
 }
 
-int checkFreeze(struct Snake snake[], int player, struct SnakeInfo * info){
+int checkFreeze(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info){
 
 	int j;
 	for(j = 0; j < MAX_POWERUP_SIZE; j++){
 		if(freeze[j].enable){
-			int xDiff = abs(snake[0].xCoord - freeze[j].xCoord*16);
-			int yDiff = abs(snake[0].yCoord - freeze[j].yCoord*16);
+			//int xDiff = abs(snake[0].xCoord - freeze[j].xCoord*16);
+			//int yDiff = abs(snake[0].yCoord - freeze[j].yCoord*16);
 			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
+			if(snake[0].xCoord == freeze[j].xCoord && snake[0].yCoord == freeze[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				printf("Eating Freeze!\n");
 				removeFreeze(freeze,j);
 				info->has_freeze = 1;
@@ -48,7 +48,7 @@ int checkFreeze(struct Snake snake[], int player, struct SnakeInfo * info){
 	}
 	//printf("count: %d drawn:%d", freeze_pow_count, freeze_drawn);
 	if(freeze_pow_count == 300 && !freeze_drawn){
-		while( !drawFreeze() ){
+		while( !drawFreeze(snake, other_snake) ){
 			printf("Attempting to Draw freeze\n");
 		}
 		freeze_drawn = 1;
@@ -98,33 +98,49 @@ int recalc_freeze_times(struct Snake snake[], int player, struct SnakeInfo * inf
 	return 1;
 }
 
-int drawFreeze(){
+int drawFreeze(struct Snake snake[], struct Snake other_snake[]){
+	freeze_index++;
 
 	if((freeze[freeze_index].xCoord <= 2 || freeze[freeze_index].xCoord >= X_LEN-1)
 			|| (freeze[freeze_index].yCoord <= 2 || freeze[freeze_index].yCoord >= Y_LEN-1)){
-		freeze_index++;
+		//freeze_index++;
 		return 0;
 	}
 
 	short t_xCoord = freeze[freeze_index].xCoord;
 	short t_yCoord = freeze[freeze_index].yCoord;
-
+	int i;
+	for(i = 0; i < SNAKE_SIZE; i++){
+		if(!(snake[i].enable || other_snake[i].enable)){
+			break;
+		}
+		if(snake[i].enable){
+			if(snake[i].xCoord == t_xCoord && snake[i].yCoord == t_yCoord){
+				return 0;
+			}
+		}
+		if(other_snake[i].enable){
+			if(other_snake[i].xCoord == t_xCoord && other_snake[i].yCoord == t_yCoord){
+				return 0;
+			}
+		}
+	}
 	if(brick_tiles[t_xCoord][t_yCoord]){
-		freeze_index++;
+		//freeze_index++;
 		return 0;
 	}
 
 	if(food[freeze_index].enable || speed[freeze_index].enable || edwards[freeze_index].enable){
-		freeze_index++;
+		//freeze_index++;
 		return 0;
 	}
 	freeze_drawn = 1;
 	freeze[freeze_index].enable = 1;
 	printf("Freeze ENABLED at x: %d y: %d\n",freeze[freeze_index].xCoord, freeze[freeze_index].yCoord);
-	addTilePiece(FREEZE_CODE, (short) freeze[freeze_index].xCoord, (short) freeze[freeze_index].yCoord);
+	addTilePiece(FREEZE_CODE,  freeze[freeze_index].xCoord,  freeze[freeze_index].yCoord);
 
 	printf("Freeze index: %d\n", freeze_index);
-	freeze_index++;
+	//freeze_index++;
 
 	return 1;
 }
@@ -133,7 +149,7 @@ void removeFreeze(struct Freeze freeze[], int index){
 	printf("Removing freeze\n");
 	freeze[index].enable = 0;
 	freeze_drawn = 0;
-	removeTilePiece((short) freeze[index].xCoord, (short) freeze[index].yCoord);
+	removeTilePiece( freeze[index].xCoord,  freeze[index].yCoord);
 }
 
 void shuffle_freeze(struct Freeze arr[], int n){

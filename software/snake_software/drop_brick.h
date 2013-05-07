@@ -27,8 +27,8 @@ void initBrickTile(){
 }
 
 void setBrickTile(struct Snake snake[], int index){
-	short x_tile = (short)snake[index].xCoord/16;
-	short y_tile = (short)snake[index].yCoord/16;
+	short x_tile = (short)snake[index].xCoord;///16;
+	short y_tile = (short)snake[index].yCoord;///16;
 	brick_tiles[x_tile][y_tile] = 1;
 	addTilePiece(WALL_CODE, x_tile, y_tile);
 }

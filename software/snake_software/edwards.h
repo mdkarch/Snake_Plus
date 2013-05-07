@@ -17,13 +17,12 @@ void initEdwards(){
 				edwards[count].xCoord = i;
 				edwards[count].yCoord = j;
 				count++;
-				//need to change types to indicate what edwards does
-				/*if(t == 0){
+				if(t == 0){
 					t = 1;
 				}
 				else {
 					t = 0;
-				}*/
+				}
 			}
 		}
 	}
@@ -31,7 +30,7 @@ void initEdwards(){
 
 }
 
-int drawEdwards(){
+int drawEdwards(struct Snake snake[], struct Snake other_snake[]){
 	if((edwards[edwards_index].xCoord <= 2 || edwards[edwards_index].xCoord >= X_LEN-1)
 			|| (edwards[edwards_index].yCoord <= 2 || edwards[edwards_index].yCoord >= Y_LEN-1) ){
 		edwards_index++;
@@ -39,7 +38,24 @@ int drawEdwards(){
 	}
 	short f_xCoord = edwards[edwards_index].xCoord;
 	short f_yCoord = edwards[edwards_index].yCoord;
-
+	int i;
+	for(i = 0; i < SNAKE_SIZE; i++){
+		if(!(snake[i].enable || other_snake[i].enable)){
+			break;
+		}
+		if(snake[i].enable){
+			if(snake[i].xCoord == f_xCoord && snake[i].yCoord == f_yCoord){
+				edwards_index++;
+				return 0;
+			}
+		}
+		if(other_snake[i].enable){
+			if(other_snake[i].xCoord == f_xCoord && other_snake[i].yCoord == f_yCoord){
+				edwards_index++;
+				return 0;
+			}
+		}
+	}
 	if(brick_tiles[f_xCoord][f_yCoord]){
 		edwards_index++;
 		return 0;
@@ -51,12 +67,12 @@ int drawEdwards(){
 	}
 
 	edwards[edwards_index].enable = 1;
-	if(edwards[edwards_index].type){
+	//if(edwards[edwards_index].type){
 		printf("added edwards at %d", edwards_index);
-		addTilePiece(EDWARDS_CODE, (short) edwards[edwards_index].xCoord, (short) edwards[edwards_index].yCoord);
-	}else{
-		//addTilePiece(MOUSE_CODE, (short) edwards[index].xCoord, (short) edwards[index].yCoord);
-	}
+		addTilePiece(EDWARDS_CODE,  edwards[edwards_index].xCoord,  edwards[edwards_index].yCoord);
+	//}else{
+	//	addTilePiece(MOUSE_CODE,  edwards[index].xCoord,  edwards[index].yCoord);
+	//}
 	edwards_index++;
 	return 1;
 }
@@ -64,10 +80,10 @@ int drawEdwards(){
 void removeEdwards(int index){
 	printf("Removing edwards\n");
 	//edwards[index].enable = 0;
-	//removeTilePiece((short) edwards[index].xCoord, (short) edwards[index].yCoord);
+	//removeTilePiece( edwards[index].xCoord,  edwards[index].yCoord);
 	edwards[index].enable = 0;
 	printf("removing at %d x:%d, y:%d", index, edwards[index].xCoord, edwards[index].yCoord);
-	removeTilePiece((short) edwards[index].xCoord, (short) edwards[index].yCoord);
+	removeTilePiece( edwards[index].xCoord,  edwards[index].yCoord);
 }
 
 void shuffle_edwards(int n){
@@ -80,15 +96,15 @@ void shuffle_edwards(int n){
 	}
 }
 
-int checkEdwards(struct Snake snake[],int player, struct SnakeInfo * info)
+int checkEdwards(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info)
 {
 	int j;
 	for(j = 0; j < MAX_POWERUP_SIZE; j++){
 		if(edwards[j].enable){
-			int xDiff = abs(snake[0].xCoord - edwards[j].xCoord*16);
-			int yDiff = abs(snake[0].yCoord - edwards[j].yCoord*16);
+			//int xDiff = abs(snake[0].xCoord - edwards[j].xCoord*16);
+			//int yDiff = abs(snake[0].yCoord - edwards[j].yCoord*16);
 			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
+			if(snake[0].xCoord == edwards[j].xCoord && snake[0].yCoord == edwards[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				printf("Eating Edwards!\n");
 				printf("x:%d, y:%d", edwards[j].xCoord, edwards[j].yCoord);
 				removeEdwards(j);
@@ -96,7 +112,9 @@ int checkEdwards(struct Snake snake[],int player, struct SnakeInfo * info)
 				if(edwards_index == MAX_POWERUP_SIZE){
 					edwards_index = 0;
 				}
-				while( !drawEdwards(edwards) );
+				while( !drawEdwards(snake, other_snake) ){
+					printf("drawing edwards\n");
+				}
 				break;
 			}
 		}
@@ -104,7 +122,7 @@ int checkEdwards(struct Snake snake[],int player, struct SnakeInfo * info)
 	return 0;
 }
 
-void apply_edwards(struct Snake snake[], int player, struct SnakeInfo * info){
+void apply_edwards(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info){
 
 	if( !info->has_edwards ){
 		printf("PLAYER%d DOESNT HAVE EDWARDS\n", player);
@@ -112,7 +130,28 @@ void apply_edwards(struct Snake snake[], int player, struct SnakeInfo * info){
 	}
 
 	printf("PLAYER%d used his edwards\n",player);
-	setBrickTile(snake, info->tail);
+	/*
+	 * do this because edwards_index is one ahead
+	 * since it is incremented in the draw()
+	 */
+	int remove_at = 0;
+	if(edwards_index == 0){
+		remove_at = 399;
+	}else{
+		remove_at = edwards_index - 1;
+	}
+
+	if(edwards[remove_at].type == 0){
+		setBrickTile(snake, info->tail);
+	}else{
+		if(PLAYER1 == 1 && PLAYER2 == 2){
+			PLAYER1 = 2;
+			PLAYER2 = 1;
+		}else{
+			PLAYER1 = 1;
+			PLAYER2 = 2;
+		}
+	}
 	info->has_edwards = 0;
 }
 

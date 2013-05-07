@@ -49,61 +49,6 @@ void moveDown(int dir_array []){
 	dir_array[down_dir]  	= 1;
 }
 
-int checkSpeed(struct Snake snake[], int player, struct SnakeInfo * info){
-	int j;
-	for(j = 0; j < MAX_POWERUP_SIZE; j++){
-		if(speed[j].enable){
-			int xDiff = abs(snake[0].xCoord - speed[j].xCoord*16);
-			int yDiff = abs(snake[0].yCoord - speed[j].yCoord*16);
-			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
-			if(xDiff <= col_offset && yDiff <= col_offset){
-				printf("Eating Speed!\n");
-				removeSpeed(j);
-				info->speed_enabled = 1;
-				info->speed_count = 0;
-				//addEnd(snake, dir, player, info);
-				if(player == PLAYER1){
-					PLAYER1_SLEEP_CYCLES 	= SPEED_SLEEP_CYCLE / SLEEP_TIME;
-				}else{
-					PLAYER2_SLEEP_CYCLES 	= SPEED_SLEEP_CYCLE / SLEEP_TIME;
-				}
-				if(speed_index == MAX_POWERUP_SIZE){
-					speed_index = 0;
-				}
-				//while( !drawSpeed(speed_index++) );
-				break;
-			}
-		}
-	}
-	if(speed_pow_count == 300 && !speed_drawn){
-		while( !drawSpeed(speed_index++) ){
-			printf("Attempting to Draw freeze\n");
-		}
-		speed_drawn = 1;
-		speed_pow_count  = 0;
-	}
-	if(speed_pow_count == 300){
-		speed_pow_count  = 0;
-	}
-	speed_pow_count++;
-
-	if(info->speed_enabled){
-		info->speed_count++;
-		if(info->speed_count >=  SPEED_TIME){
-			info->speed_enabled = 0;
-			info->speed_count = 0;
-			if(player == PLAYER1){
-				PLAYER1_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
-			}else{
-				PLAYER2_SLEEP_CYCLES 	= DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
-			}
-
-		}
-	}
-	return 0;
-}
-
 // track snake movement
 int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		int pressed, int player, struct SnakeInfo * info){
@@ -145,48 +90,53 @@ int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		break;
 	}
 	if(dir_array[right_dir]){
-		xCoor+=16;
-		if(xCoor > RIGHT_BOUND - 2*col_offset){
+		xCoor+= 1;//16;
+		if(xCoor > RIGHT_BOUND - 2/**col_offset*/){
 			printf("Collision with right boundary!\n");
 			return 0;
 		}
 		updateSnake(snake, xCoor, yCoor, right_dir, old_dir, player, info);
-		checkFood(snake, right_dir, player, info);
+		dir_arg = right_dir;
+		//checkFood(snake, right_dir, player, info);
 	}else if(dir_array[left_dir]){
-		xCoor-=16;
-		if(xCoor < (LEFT_BOUND+16)){
+		xCoor-=1;//16;
+		if(xCoor < (LEFT_BOUND+1)){//16
 			printf("Collision with left boundary!\n");
 			return 0;
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, left_dir, old_dir, player, info);
-		checkFood(snake, left_dir, player, info);
+		dir_arg = left_dir;
+		//checkFood(snake, left_dir, player, info);
 	}else if(dir_array[up_dir]){
-		yCoor-=16;
-		if(yCoor < (TOP_BOUND + 16)){
+		yCoor-=1;//16;
+		if(yCoor < (TOP_BOUND + 1)){//16
 			printf("Collision with top boundary!\n");
 			return 0;
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, up_dir, old_dir,player, info);
-		checkFood(snake, up_dir, player, info);
+		dir_arg = up_dir;
+		//checkFood(snake, up_dir, player, info);
 	}else if(dir_array[down_dir]){
-		yCoor+=16;
-		if(yCoor > BOT_BOUND - 2*col_offset){
+		yCoor+=1;//16;
+		if(yCoor > BOT_BOUND - 2/**col_offset*/){
 			printf("Collision with bottom boundary!\n");
 			return 0;
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, down_dir, old_dir,player, info);
-		checkFood(snake, down_dir, player, info);
+		dir_arg = down_dir;
+		//checkFood(snake, down_dir, player, info);
 	}
+	/*checkFood(snake, down_dir, player, info);
 	checkSpeed(snake, player, info);
 	checkFreeze(snake, player, info);
 	recalc_freeze_times(snake, player,info);
-	checkEdwards(snake, player, info);
+	checkEdwards(snake, player, info);*/
 	//PLAY_SOUND(1);
-	int check_brick_col = brickCol(snake);
-	int check_self_col = traverseList(snake);
+	int check_brick_col = brickCol(snake, player);
+	int check_self_col = traverseList(snake, player);
 	if(check_brick_col || check_self_col){
 		return 1;
 	}else{
@@ -239,56 +189,114 @@ void writeToHW(struct Snake snake[], int dir, int old_dir, int player,
 		}
 	}
 
-	addSnakePiece(player, sprite, (short)snake[0].xCoord/16, snake[0].yCoord/16);
-	addSnakePiece(player, sprite_second, (short)snake[1].xCoord/16, snake[1].yCoord/16);
-	addSnakePiece(player, tail_sprite, (short)snake[info->tail].xCoord/16,  (short)snake[info->tail].yCoord/16);
+	/* originallly divided x and ys by 16 */
+	addSnakePiece(player, sprite,  snake[0].xCoord, snake[0].yCoord);
+	addSnakePiece(player, sprite_second, snake[1].xCoord, snake[1].yCoord);
+	addSnakePiece(player, tail_sprite, snake[info->tail].xCoord,  snake[info->tail].yCoord);
 }
 
-void check_powerup_buttons(int pressed,struct Snake snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
+void check_powerup_col(struct Snake snake[], struct Snake other_snake[], int dir_arg, int player, struct SnakeInfo * info){
+	checkFood(snake, other_snake, dir_arg, player, info);
+	checkSpeed(snake, other_snake, player, info);
+	checkFreeze(snake,other_snake, player, info);
+	recalc_freeze_times(snake, player,info);
+	checkEdwards(snake, other_snake, player, info);
+}
+
+
+void check_powerup_buttons(int pressed,struct Snake snake[], struct Snake other_snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
 
 	int button = get_button_from_pressed(pressed);
 	if( button == A_CODE ){
 		apply_freeze(snake, player, info);
 	}
 	if( button == B_CODE ){
-		apply_edwards(snake, player, info);
+		apply_edwards(snake, other_snake, player, info);
 	}
 
+}
+void wait_for_continue(){
+	while(1) {
+		printf("HIT ANY BUTTON TO RETURN TO MAIN MENU!\n");
+		int pressed_player1 		= getPlayer1Controller();
+		int pressed_player2 		= getPlayer2Controller();
+		if (pressed_player1 != 0 || pressed_player2 != 0)
+			break;
+		seed++;
+	}
+}
+
+void draw_winner(int winner_id){
+	short i;
+	for(i = 15; i < 25; i ++){
+		removeSnakePiece(PLAYER1, i, 10);
+		removeSnakePiece(PLAYER2, i, 10);
+		removeTilePiece(i, 10);
+	}
+	short y = 10;
+	if(winner_id == 1){
+		addTilePiece(P_CODE, 16, y);
+		addTilePiece(ONE_CODE, 17, y);
+		addTilePiece(W_CODE, 19, y);
+		addTilePiece(I_CODE, 20, y);
+		addTilePiece(N_CODE, 21, y);
+		addTilePiece(S_CODE, 22, y);
+		//addTilePiece(char sprite, short tile_x, y);
+		addTilePiece(EXC_CODE, 23,y);
+	}else if(winner_id == 2){
+		addTilePiece(P_CODE, 16, y);
+		addTilePiece(TWO_CODE, 17, y);
+		addTilePiece(W_CODE, 19, y);
+		addTilePiece(I_CODE, 20, y);
+		addTilePiece(N_CODE, 21, y);
+		addTilePiece(S_CODE, 22, y);
+		//addTilePiece(char sprite, short tile_x, y);
+		addTilePiece(EXC_CODE, 23,y);
+	}else if(winner_id == 3){
+
+	}
+}
+
+void draw_splash_screen(){
+	short x = 10;
+	short y = 7;
+	short i;
+	short j;
+	for(i = x; i < 19 + x; i++){
+		for(j= y; j < 18 + y; j++){
+			addTilePiece(S_CODE, i, j);
+		}
+	}
 }
 
 int main(){
 
 	printf("Press start to begin the game\n");
 
-	unsigned int seed = 0;
-
 	while(1) {
 
 		/* Reset display */
 		reset_hardware();
-		initPowBoard(board, seed);
 		initBorder();
+		draw_splash_screen();
 
+		printf("Press any button to start!\n");
+		wait_for_continue();
+
+		/* init border */
+		initPowBoard(board, seed);
 		/* Reset snakes and display them */
 		struct Snake snake_player1[SNAKE_SIZE];
 		struct SnakeInfo info1;
-		initSnake(snake_player1, 256, 256, PLAYER1, &info1);
+		initSnake(snake_player1, 256/16, 256/16, PLAYER1, &info1);
 		struct Snake snake_player2[SNAKE_SIZE];
 		struct SnakeInfo info2;
-		initSnake(snake_player2, 256, 320, PLAYER2, &info2);
+		initSnake(snake_player2, 256/16, 320/16, PLAYER2, &info2);
 
 		PLAYER1_SLEEP_CYCLES = DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
 		PLAYER2_SLEEP_CYCLES = DEFAULT_SLEEP_CYCLE / SLEEP_TIME;
 
-		printf("Press start!\n");
-		while(1) {
 
-			int pressed_player1 		= getPlayer1Controller();
-			int pressed_player2 		= getPlayer2Controller();
-			if (pressed_player1 == 16 || pressed_player2 != 0)
-				break;
-			seed++;
-		}
 		printf("Game is starting");
 
 
@@ -309,24 +317,24 @@ int main(){
 		initSpeed();
 		initFreeze();
 		initEdwards();
-		while( !drawFood(food_index++) ){
+		while( !drawFood(snake_player1, snake_player2) ){
 			printf("Attempting to Draw food\n");
 		}
-		while( !drawFood(food_index++) ){
+		while( !drawFood(snake_player1, snake_player2) ){
 			printf("Attempting to Draw food\n");
 		}
-		while( !drawFood(food_index++) ){
+		while( !drawFood(snake_player1, snake_player2) ){
 			printf("Attempting to Draw food\n");
 		}
-		while( !drawSpeed(speed_index++) ){
+		while( !drawSpeed(snake_player1, snake_player2) ){
 			printf("Attempting to Draw speed\n");
 		}
 		speed_drawn = 1;
-		while( !drawFreeze() ){
+		while( !drawFreeze(snake_player1, snake_player2) ){
 			printf("Attempting to Draw freeze\n");
 		}
 		freeze_drawn = 1;
-		while( !drawEdwards() ){
+		while( !drawEdwards(snake_player1, snake_player2) ){
 			printf("Attempting to Draw edwards\n");
 		}
 
@@ -347,11 +355,9 @@ int main(){
 		int old_potential1;
 		int old_potential2;
 		int game = 1;
-		int collision = 1;
+		int collision = 0;
 		int p1_move_collision = 0;
 		int p2_move_collision = 0;
-
-
 
 		while(1) {
 			collision = snakeCol(snake_player1, snake_player2);
@@ -369,8 +375,9 @@ int main(){
 			/* Move player 1 */
 			if(count_player1 >= PLAYER1_SLEEP_CYCLES && !paused ){
 				p1_move_collision = movement(code, snake_player1, player1_dir, pressed_player1, PLAYER1, &info1);
+				check_powerup_col(snake_player1, snake_player2, player1_dir, PLAYER1, &info1);
 				//movement(code, snake_player2, player2_dir, food, pressed_player1, PLAYER2);
-				check_powerup_buttons(pressed_player1, snake_player1, freeze, PLAYER1, &info1);
+				check_powerup_buttons(pressed_player1, snake_player1, snake_player2, freeze, PLAYER1, &info1);
 				count_player1 = 0;
 				pressed_player1 = 0;
 				printf("Moving player1");
@@ -379,7 +386,8 @@ int main(){
 			/* Move player 2 */
 			if(count_player2 >= PLAYER2_SLEEP_CYCLES && !paused){
 				p2_move_collision = movement(code, snake_player2, player2_dir, pressed_player2, PLAYER2, &info2);
-				check_powerup_buttons(pressed_player2, snake_player2, freeze, PLAYER2, &info2);
+				check_powerup_col(snake_player2, snake_player1, player2_dir, PLAYER2, &info2);
+				check_powerup_buttons(pressed_player2, snake_player2, snake_player1,freeze, PLAYER2, &info2);
 				count_player2 = 0;
 				pressed_player2 = 0;
 			}
@@ -401,7 +409,12 @@ int main(){
 
 
 			if (collision || p1_move_collision || p2_move_collision){
+				/*
+				 * if else stuff here to display correct game ending sprite based on who won
+				 */
 				printf("breaking");
+				draw_winner(game_winner);
+				wait_for_continue();
 				break;
 			}
 

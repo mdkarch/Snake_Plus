@@ -21,5 +21,8 @@ software/snake_software/obj/defualt/*
 *.elf
 software/snake_software/snake_software.map
 software/snake_software/snake_software.objdump
-software/snake_software_bsp/libhal_bsp.a
-software/snake_software_bsp/HAL/*
+software/snake_software_bsp/*
+
+software/snake_software/.force_relink
+software/snake_software/obj/
+

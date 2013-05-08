@@ -96,6 +96,7 @@ architecture rtl of snake_plus_vga is
   constant W_TILES_SELECT					: std_logic_vector	:= "0010"; -- Write only
   constant W_SOFT_RESET						: std_logic_vector	:= "0011"; -- Write only
   constant W_ENABLE_SPLASH_SCREEN		: std_logic_vector	:= "0100"; -- Write only
+  constant W_DISABLE_SPLASH_SCREEN		: std_logic_vector	:= "0101"; -- Write only
 
 
 component tiles_ram is
@@ -160,6 +161,10 @@ begin
 					
 					if address = W_ENABLE_SPLASH_SCREEN then
 						enable_splash_screen <= '1';
+					end if;
+					
+					if address = W_DISABLE_SPLASH_SCREEN then
+						enable_splash_screen <= '0';
 					end if;
 				
 				-- Read --

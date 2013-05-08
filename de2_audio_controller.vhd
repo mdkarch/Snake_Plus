@@ -44,6 +44,9 @@ component de2_wm8731_audio is
 		 
 		start_sound 	: in std_logic;								--		Start sound playback
 		select_sound	: in std_logic_vector(3 downto 0);		--		Select a sound
+		
+		change_divider_enable : in std_logic;						-- 	Enable divider change
+		divider_in		: in std_logic_vector(31 downto 0);			--		Value to change divider to
 		 
 		 -- Audio interface signals
 		AUD_ADCLRCK  	: out std_logic;								--    Audio CODEC ADC LR Clock
@@ -68,6 +71,7 @@ end component;
 
 signal audio_clock : unsigned(1 downto 0) := "00";
 signal start		 : std_logic := '0';
+signal change_en	 : std_logic := '0';
 
 
 begin
@@ -84,14 +88,21 @@ begin
 		if rising_edge(clk) then
 			if reset_n = '0' then
 				start <= '0';
+				change_en <= '0';
 			elsif chipselect = '1' then
 				if read = '1' then
 					start <= '1';
-				else 
+					change_en <= '0';
+				elsif write = '1' then
+					change_en <= '1';
 					start <= '0';
+				else
+					start <= '0';
+					change_en <= '0';
 				end if;
 			else
 				start <= '0';
+				change_en <= '0';
 			end if;
 		end if;
 	end process;
@@ -110,7 +121,8 @@ begin
 		reset_n			=> reset_n,
 		start_sound		=> start,
 		select_sound	=> address,
---		select_sound	=> X"0",
+		change_divider_enable => change_en,
+		divider_in		=> writedata,
 		  
 		  -- 	Audio interface signals
 		AUD_ADCLRCK		=> AUD_ADCLRCK,

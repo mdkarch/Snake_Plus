@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.sounds.all;
+--use work.sounds.all;
 
 entity de2_wm8731_audio is
 	port (
@@ -11,6 +11,9 @@ entity de2_wm8731_audio is
 		 
 		start_sound	: in std_logic;								--		Start sound playback
 		select_sound: in std_logic_vector(3 downto 0);		--		Select a sound
+		
+		change_divider_enable : in std_logic;					-- 	Enable divider change
+		divider_in		: in std_logic_vector(31 downto 0);		--		Value to change divider to
 
 			-- 	Audio interface signals
 		AUD_ADCLRCK	: out std_logic;								--    Audio CODEC ADC LR Clock
@@ -23,7 +26,34 @@ entity de2_wm8731_audio is
 	);
 end  de2_wm8731_audio;
 
-architecture rtl of de2_wm8731_audio is     
+architecture rtl of de2_wm8731_audio is   
+
+COMPONENT move_sound_rom IS
+	PORT
+	(
+		address		: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
+		clock			: IN STD_LOGIC  := '1';
+		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+	);
+END COMPONENT;  
+
+COMPONENT powerup_sound_rom IS
+	PORT
+	(
+		address		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		clock			: IN STD_LOGIC  := '1';
+		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+	);
+END COMPONENT; 
+
+COMPONENT gameover_sound_rom IS
+	PORT
+	(
+		address		: IN STD_LOGIC_VECTOR (12 DOWNTO 0);
+		clock			: IN STD_LOGIC  := '1';
+		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+	);
+END COMPONENT; 
 
 signal lrck : std_logic;
 signal bclk : std_logic;
@@ -39,17 +69,26 @@ signal lrck_lat 	: std_logic;
 
 
 signal sound_on 	: std_logic := '0';
-signal sound_end1 	: std_logic := '1';
-signal sound_end2 	: std_logic := '1';
 signal sound	 	: std_logic_vector(3 downto 0) := X"0";
+signal sound_end0 : std_logic := '0';
+signal sound_end1 : std_logic := '0';
+signal sound_end2 : std_logic := '0';
 
-signal sound1_out	: unsigned(15 downto 0);
-signal sound2_out	: unsigned(15 downto 0);
 
-signal counter1 	: unsigned(15 downto 0);
-signal counter2	: unsigned(11 downto 0);
+signal sound0_out	: std_logic_vector(15 downto 0);
+signal sound1_out	: std_logic_vector(15 downto 0);
+signal sound2_out	: std_logic_vector(15 downto 0);
+
+signal counter0 	: unsigned(10 downto 0);
+signal counter1	: unsigned(11 downto 0);
+signal counter2	: unsigned(12 downto 0);
  
-signal shift_out	: unsigned(15 downto 0);
+signal shift_out	: std_logic_vector(15 downto 0);
+
+--constant divider : integer := 561;
+--signal divider : unsigned(31 downto 0) := X"00000823";
+signal divider : unsigned(31 downto 0);
+
 
 begin
 	  
@@ -59,14 +98,28 @@ begin
 	-- Left justify mode set by I2C controller
 
 	leds(13) <= sound_on;
-	--leds(13 downto 0) <= std_logic_vector(counter)(13 downto 0);
+	leds(3 downto 0) <= sound;
+	--leds(10 downto 0) <= std_logic_vector(counter1);
+	--leds(11 downto 0) <= std_logic_vector(divider)(12 downto 0);
+
+	
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if reset_n = '0' then
+				divider <= X"00000214";
+			elsif change_divider_enable = '1' then
+				divider <= unsigned(divider_in);
+			end if;
+		end if;
+	end process;
 	 
 	process (clk)
 	begin
 		if rising_edge(clk) then
 			if reset_n = '0' then 
 				lrck_divider <= (others => '0');
-			elsif lrck_divider = X"213"  then        -- "214" minus 1
+			elsif lrck_divider = divider  then
 				lrck_divider <= X"000";
 			else 
 				lrck_divider <= lrck_divider + 1;
@@ -87,7 +140,7 @@ begin
 		end if;
 	end process;
 
-	set_lrck <= '1' when lrck_divider = X"213" else '0';
+	set_lrck <= '1' when lrck_divider = divider else '0';
 	 
 	process (clk)
 	begin
@@ -126,8 +179,10 @@ begin
 			elsif set_lrck = '1' then
 				if sound_on = '1' then
 					if sound = X"0" then 
-						shift_out <= sound1_out;
+						shift_out <= sound0_out;
 					elsif sound = X"1" then 
+						shift_out <= sound1_out;
+					elsif sound = X"2" then 
 						shift_out <= sound2_out;
 					end if;
 				end if;
@@ -136,9 +191,6 @@ begin
 			end if;
 		end if;   
 	end process;
-
-	sound1_out <= sound1(to_integer(counter1));
-	sound2_out <= sound2(to_integer(counter2));
 	  
 	-- Audio outputs
 
@@ -157,39 +209,66 @@ begin
 				sound <= X"0";
 			elsif start_sound = '1' then
 				sound_on <= '1';
-				leds(15) <= '1';
+				leds(15 downto 14) <= "10";
 				sound <= select_sound;
-			elsif sound_end1 = '1' or sound_end2 = '1' then
+			elsif (sound_end0 or sound_end1 or sound_end2) = '1' then
 				sound_on <= '0';
-				leds(14) <= '1';
+				leds(15 downto 14) <= "01";
+			end if;
+		end if;
+	end process;
+	
+	leds(9) <= lrck_lat and not lrck;
+	
+	-- Counter for sound0
+	process(clk)      
+	begin
+		if rising_edge(clk) then
+			if reset_n = '0' then 
+				counter0 <= (others => '0');
+				sound_end0 <= '0';
+				leds(12 downto 10) <= "000";
+			elsif lrck_lat = '1' and lrck = '0'  then 	
+				if sound_on = '1' and sound = X"0" then				
+					if (counter0 < X"5DA") then 
+						leds(11 downto 10) <= "10";
+						counter0 <= counter0 + 1;
+					else
+						leds(11 downto 10) <= "01";
+						counter0 <= (others => '0');
+						sound_end0 <= '1';
+					end if;	
+				end if;
+			elsif sound_end0 = '1' then
+				leds(12) <= '0';
+				sound_end0 <= '0';
 			end if;
 		end if;
 	end process;
 
-	 
+	-- Counter for sound1
 	process(clk)      
 	begin
 		if rising_edge(clk) then
 			if reset_n = '0' then 
 				counter1 <= (others => '0');
 				sound_end1 <= '0';
-				leds(12) <= '0';
 			elsif lrck_lat = '1' and lrck = '0'  then 	
-				if sound_on = '1' and sound <= X"0"then				
-					if (counter1 < X"100B") then 
+				if sound_on = '1' and sound = X"1" then
+					if (counter1 < X"B27") then 
 						counter1 <= counter1 + 1;
 					else
-						leds(12) <= '1';
 						counter1 <= (others => '0');
 						sound_end1 <= '1';
-					end if;	
+					end if;
 				end if;
 			elsif sound_end1 = '1' then
 				sound_end1 <= '0';
 			end if;
 		end if;
 	end process;
-
+	
+	-- Counter for sound2
 	process(clk)      
 	begin
 		if rising_edge(clk) then
@@ -197,8 +276,8 @@ begin
 				counter2 <= (others => '0');
 				sound_end2 <= '0';
 			elsif lrck_lat = '1' and lrck = '0'  then 	
-				if sound_on = '1' and sound <= X"1" then				
-					if (counter2 < X"556") then 
+				if sound_on = '1' and sound = X"2" then				
+					if (counter2 < X"104C") then 
 						counter2 <= counter2 + 1;
 					else
 						counter2 <= (others => '0');
@@ -209,7 +288,7 @@ begin
 				sound_end2 <= '0';
 			end if;
 		end if;
-	end process;
+	end process;	
 	
 	process(clk)
 	begin
@@ -217,5 +296,24 @@ begin
 			lrck_lat <= lrck;
 		end if;
 	end process;
+	
+	s0: move_sound_rom port map (
+		address		=> std_logic_vector(counter0),
+		clock			=> clk,
+		q				=> sound0_out
+	);
+	
+	s1: powerup_sound_rom port map (
+		address		=> std_logic_vector(counter1),
+		clock			=> clk,
+		q				=> sound1_out
+	);
+	
+	s2: gameover_sound_rom port map (
+		address		=> std_logic_vector(counter2),
+		clock			=> clk,
+		q				=> sound2_out
+	);
+	
 
 end architecture;

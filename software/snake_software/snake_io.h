@@ -18,17 +18,27 @@ IORD_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 0 * 4)
 #define SOFT_RESET() \
 IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 3 * 4, 0);
 
+#define ENABLE_SPLASH_SCREEN() \
+IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 4 * 4, 0);
+
+#define DISABLE_SPLASH_SCREEN() \
+IOWR_32DIRECT(DE2_VGA_CONTROLLER_0_BASE, 5 * 4, 0);
+
 #define READ_PLAYER_CONTROLLER(player) \
 IORD_32DIRECT(NES_CONTROLLER_BASE, player * 4);
 
 #define PLAY_SOUND(sound_id) \
 IORD_32DIRECT(DE2_AUDIO_CONTROLLER_0_BASE, sound_id * 4);
 
+#define CHANGE_DIVIDER(divider) \
+IOWR_32DIRECT(DE2_AUDIO_CONTROLLER_0_BASE, 0, divider);
+
 
 
 /* Player/Tile/Address codes */
 const char SNAKE_ADDR 	= 1;
 const char TILES_ADDR 	= 2;
+
 
 char PLAYER1 	= 1;
 char PLAYER2 	= 2;
@@ -205,6 +215,16 @@ int get_button_from_pressed(int pressed){
 int check_paused(int pressed){
 
 	return pressed & SELECT_CODE;
+}
+
+void enable_splash_screen(){
+
+	ENABLE_SPLASH_SCREEN();
+}
+
+void disable_splash_screen(){
+
+	DISABLE_SPLASH_SCREEN();
 }
 
 void reset_hardware(){

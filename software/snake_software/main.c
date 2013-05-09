@@ -203,7 +203,6 @@ void check_powerup_col(struct Snake snake[], struct Snake other_snake[], int dir
 	checkEdwards(snake, other_snake, player, info);
 }
 
-
 void check_powerup_buttons(int pressed,struct Snake snake[], struct Snake other_snake[], struct Freeze freeze[], int player, struct SnakeInfo * info){
 
 	int button = get_button_from_pressed(pressed);
@@ -215,6 +214,7 @@ void check_powerup_buttons(int pressed,struct Snake snake[], struct Snake other_
 	}
 
 }
+
 void wait_for_continue(){
 	while(1) {
 		printf("HIT ANY BUTTON TO RETURN TO MAIN MENU!\n");
@@ -225,6 +225,7 @@ void wait_for_continue(){
 		seed++;
 	}
 }
+
 void draw_P1_wins(){
 	short y = 10;
 	addTilePiece(P_CODE, 16, y);
@@ -246,6 +247,7 @@ void draw_P2_wins(){
 	addTilePiece(S_CODE, 22, y);
 	addTilePiece(EXC_CODE, 23,y);
 }
+
 void draw_tie(){
 	/*short y = 10;
 	addTilePiece(D_CODE, 17, y);
@@ -254,6 +256,7 @@ void draw_tie(){
 	addTilePiece(W_CODE, 21, y);
 	addTilePiece(EXC_CODE, 22, y);*/
 }
+
 void draw_winner(int winner_id){
 	short i;
 	short y = 10;
@@ -346,6 +349,20 @@ void reset_software(){
 	initPowBoard(board, seed);
 }
 
+void fancy_splash(){
+	int i;
+	int j;
+	for(i = 1; i < X_LEN - 1; i++){
+		for(j = 1; j < Y_LEN - 1; j++){
+			addTilePiece(S_CODE,i,j);
+		}
+		usleep(2*30000);
+		for(j = 1; j < Y_LEN - 1; j++){
+			removeTilePiece(i,j);
+		}
+	}
+}
+
 int main(){
 
 	printf("Press start to begin the game\n");
@@ -356,7 +373,7 @@ int main(){
 		reset_hardware();
 		reset_software();
 		//initBorder();
-
+		fancy_splash();
 		//enable_splash_screen();
 		printf("Press any button to start!\n");
 		wait_for_continue();
@@ -466,9 +483,6 @@ int main(){
 
 
 			if (collision || p1_move_collision || p2_move_collision){
-				/*
-				 * if else stuff here to display correct game ending sprite based on who won
-				 */
 				printf("breaking");
 				draw_winner(game_winner);
 				wait_for_continue();

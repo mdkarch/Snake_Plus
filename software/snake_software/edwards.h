@@ -20,7 +20,7 @@ void initEdwards(){
 				edwards[count].type = t;
 				edwards[count].xCoord = i;
 				edwards[count].yCoord = j;
-				if(bc_count == 15){
+				if(bc_count == 30){
 					t = 2;
 					bc_count = 0;
 				}else if(bss_count == 2){
@@ -134,7 +134,7 @@ int checkEdwards(struct Snake snake[], struct Snake other_snake[], int player, s
 			}
 		}
 	}
-	if(/*edwards_pow_count == 600 &&*/ !edwards_drawn){
+	if(edwards_pow_count == 600 && !edwards_drawn){
 		int i;
 		for(i = 0 ; i < 100; i++){
 			if(drawEdwards(snake, other_snake)){

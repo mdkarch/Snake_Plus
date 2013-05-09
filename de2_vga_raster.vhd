@@ -1,12 +1,4 @@
 -------------------------------------------------------------------------------
---
--- Simple VGA raster display
---
--- Stephen A. Edwards
--- sedwards@cs.columbia.edu
-
-
-
 
 -- PROTOCOL:
 			--9-0: Y (LSB)
@@ -35,6 +27,8 @@ entity de2_vga_raster is
 	 tiles_data				: in std_logic_vector(7 downto 0);
 	 snake_address			: out std_logic_vector(10 downto 0);
 	 snake_data				: in std_logic_vector(7 downto 0);
+	 
+	 controller_enable_splash_screen : in std_logic;
 
     VGA_CLK,                         				-- Clock
     VGA_HS,                          				-- H_SYNC
@@ -49,6 +43,17 @@ entity de2_vga_raster is
 end de2_vga_raster;
 
 architecture rtl of de2_vga_raster is
+
+
+	COMPONENT splash_snake_rom IS
+		PORT
+	(
+		address		: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+		clock			: IN STD_LOGIC  := '1';
+		q				: OUT STD_LOGIC_VECTOR (2 DOWNTO 0)
+	);
+	END COMPONENT;
+
   
   -- Video parameters
   
@@ -63,6 +68,10 @@ architecture rtl of de2_vga_raster is
   constant VBACK_PORCH  : integer := 33;
   constant VACTIVE      : integer := 480;
   constant VFRONT_PORCH : integer := 10;
+  
+  constant SPLASH_SNAKE_START_H : integer := 170;
+  constant SPLASH_SNAKE_START_V : integer := 90;
+  constant SPLASH_SNAKE_SIZE  : integer := 256;
 
   -- Signals for the video controller
   signal Hcount : unsigned(9 downto 0);  -- Horizontal position (0-800)
@@ -72,12 +81,19 @@ architecture rtl of de2_vga_raster is
   signal vga_hblank, vga_hsync,
     vga_vblank, vga_vsync : std_logic;  -- Sync. signals
 
-	signal snake1_segment			: integer;
 	
 	signal inner_tile_h_pos			: integer;
 	signal inner_tile_v_pos			: integer;
 	signal tiles_h_pos				: integer;
 	signal tiles_v_pos				: integer;
+	signal splash_sprite_h_pos		: integer;
+	signal splash_sprite_v_pos		: integer;
+	
+	signal splash_snake_address			: std_logic_vector(15 downto 0);
+	signal splash_snake_address_enable	: std_logic;
+	signal splash_snake_data				: std_logic_vector(2 downto 0);
+	signal splash_sprite_h_pos_16			: std_logic_vector(15 downto 0);
+	signal splash_sprite_v_pos_16			: std_logic_vector(15 downto 0);
 	
 	signal y_32				: std_logic_vector(10 downto 0);
 	signal y_8				: std_logic_vector(10 downto 0);
@@ -104,6 +120,8 @@ architecture rtl of de2_vga_raster is
 	signal wall																			: std_logic;
 	signal P, one, two, W, I, N, S, exclam										: std_logic;
 	signal pause, play																: std_logic;
+	signal splash_snake_black, splash_snake_yellow, 
+				splash_snake_green, splash_snake_red							: std_logic;
 	
 		-- sprites
 	type array_type_16x16 is array (0 to 15) of unsigned (0 to 15);
@@ -213,7 +231,17 @@ architecture rtl of de2_vga_raster is
 	signal sprite_play			: array_type_16x16;
 	
 	
+	
 begin
+
+
+	SSE: entity work.splash_snake_rom PORT MAP
+	(
+			address		=> splash_snake_address,
+			clock			=> clk,
+			q				=> splash_snake_data
+		);
+
   
     -- Horizontal and vertical counters
   
@@ -319,13 +347,13 @@ begin
 			if reset = '1' then
 				inner_tile_h_pos <= 0;
 				tiles_h_pos <= 0;
-			elsif HCount >= HSYNC + HBACK_PORCH + HACTIVE then
+			elsif HCount >= HSYNC + HBACK_PORCH + HACTIVE - 1 then
 				inner_tile_h_pos <= 0;
 				tiles_h_pos <= 1900; -- random > 1200
 			elsif HCount = HSYNC + HBACK_PORCH - 1 then
 				tiles_h_pos <= 0;
-			elsif 	HCount >= HSYNC + HBACK_PORCH and 
-						HCount < HSYNC + HBACK_PORCH + HACTIVE  then
+			elsif 	HCount > HSYNC + HBACK_PORCH and 
+						HCount < HSYNC + HBACK_PORCH + HACTIVE - 1 then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
 				if inner_tile_h_pos >= 15 then -- 0-15 should be used
 					inner_tile_h_pos <= 0;
@@ -1089,6 +1117,74 @@ begin
 		end if;		
   end process PauseButtonSpriteGen;
   
+  
+  
+  
+  ---------------------------------------------------------------------------
+  ------ SPLASH SCREEN STUFF -------------------------------------------------
+  ----------------------------------------------------------------------------
+  
+	-- Get the point on the screen to fetch from memory
+  splash_sprite_h_pos		<= to_integer(Hcount) - (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H);
+  splash_sprite_v_pos		<= to_integer(Vcount) - (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V);
+  splash_sprite_h_pos_16 	<= std_logic_vector(to_unsigned(splash_sprite_v_pos,8)) & "00000000";
+  splash_sprite_v_pos_16 	<= "00000000" & std_logic_vector(to_unsigned(splash_sprite_h_pos,8));
+  splash_snake_address 		<=  std_logic_vector( unsigned(splash_sprite_h_pos_16) + unsigned(splash_sprite_h_pos_16) ) ;
+  
+  SplashScreenEnableGen : process (clk)
+  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				splash_snake_address_enable <= '0';
+			else
+				splash_snake_address_enable <= '0';
+			
+				if controller_enable_splash_screen = '1' then
+					if Hcount >= (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H) and Hcount < (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H + SPLASH_SNAKE_SIZE) and
+						Vcount >= (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V) and Vcount < (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V + SPLASH_SNAKE_SIZE) then
+						splash_snake_address_enable <= '1';	
+					end if;
+				end if;
+				
+			end if;	-- end if;
+		end if;	-- end rising edge
+	end process SplashScreenEnableGen;
+  
+  
+  -- splash screen Snake generation
+  SplashScreenSnakeGen : process (clk)
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			splash_snake_black 	<= '0';
+			splash_snake_green 	<= '0';
+			splash_snake_yellow 	<= '0';
+			splash_snake_red	 	<= '0';
+		elsif splash_snake_address_enable = '1' then
+			
+			splash_snake_black 	<= '0';
+			splash_snake_green 	<= '0';
+			splash_snake_yellow 	<= '0';
+			splash_snake_red 		<= '0';
+			
+			if splash_snake_data = "001" then
+				splash_snake_black <= '1';
+			elsif splash_snake_data = "010" then
+				splash_snake_green <= '1';
+			elsif splash_snake_data = "011" then
+				splash_snake_yellow <= '1';
+			elsif splash_snake_data = "100" then
+				splash_snake_red <= '1';
+			end if;
+		else
+			splash_snake_black 	<= '0';
+			splash_snake_green 	<= '0';
+			splash_snake_yellow 	<= '0';
+			splash_snake_red	 	<= '0';
+		end if; 
+	end if;		
+  end process SplashScreenSnakeGen;
+  
 	
   -- Registered video signals going to the video DAC
   VideoOut: process (clk, reset)
@@ -1111,17 +1207,17 @@ begin
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0010100000";
 		  VGA_B <= "0000000000";
-		elsif (player_select = '1' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1'or snake_tail_orange = '1')) then
+		elsif (player_select = '1' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1'or snake_tail_orange = '1')) or
+				splash_snake_green = '1' then
 			VGA_R <= "0000000000";
 			VGA_G <= "1111111111";
 			VGA_B <= "0000000000";
-		elsif red = '1' or wall = '1' 
-								or growth_r = '1' then
+		elsif red = '1' or wall = '1' or growth_r = '1' or splash_snake_red = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";
 		elsif black = '1' or snake_head_black = '1' or snake_tail_black = '1' or snake_body_black ='1' 
-								or snake_turn_black = '1' or mouse_l = '1' or edwards_bl = '1' then
+								or snake_turn_black = '1' or mouse_l = '1' or edwards_bl = '1' or splash_snake_black = '1' then
 		  VGA_R <= "0000000000";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";
@@ -1143,7 +1239,7 @@ begin
 		  VGA_R <= "1100000000";
 		  VGA_G <= "1100000000";
 		  VGA_B <= "1100000000";
-		elsif yellow = '1' or speed = '1' or snake_tail_yellow = '1' then
+		elsif yellow = '1' or speed = '1' or snake_tail_yellow = '1' or splash_snake_yellow = '1' then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "1111111111";
 		  VGA_B <= "0000000000";
@@ -2561,7 +2657,10 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	sprite_play(13) 	   	<=	"0001111000000000";
 	sprite_play(14) 	  		<=	"0001110000000000";
 	sprite_play(15)			<=	"0001100000000000";
-	  
+	
+	
+	
+	
   
   end rtl;
   
@@ -2575,392 +2674,6 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
   
   
   
-  
-  
-  
-  
-  
---  	-- sprite snake head coloring
---  sprite_snake_head_g(0) 			<=	"0000111100000000";
---  sprite_snake_head_g(1) 			<=	"0001111111000000";
---  sprite_snake_head_g(2) 			<=	"0011111111110000";
---  sprite_snake_head_g(3) 			<=	"0111111111111000";
---  sprite_snake_head_g(4) 			<=	"0111111111111100";
---  sprite_snake_head_g(5) 			<=	"1111100011111100";
---  sprite_snake_head_g(6) 			<=	"1111100011111110";
---  sprite_snake_head_g(7) 			<=	"1111100011111100";
---  sprite_snake_head_g(8) 			<=	"1111111111100000";
---  sprite_snake_head_g(9) 			<=	"1111111111100000";
---  sprite_snake_head_g(10) 			<=	"1111111111111100";
---  sprite_snake_head_g(11) 			<=	"0111111111111110";
---  sprite_snake_head_g(12) 	   	<=	"0111111111111000";
---  sprite_snake_head_g(13) 	   	<=	"0011111111110000";
---  sprite_snake_head_g(14) 	   	<=	"0001111111000000";
---  sprite_snake_head_g(15) 	   	<=	"0000111100000000";
---  
---  -- sprite snake head tongue coloring
---  sprite_snake_head_r(0) 			<=	"0000000000000000";
---  sprite_snake_head_r(1) 			<=	"0000000000000000";
---  sprite_snake_head_r(2) 			<=	"0000000000000000";
---  sprite_snake_head_r(3) 			<=	"0000000000000000";
---  sprite_snake_head_r(4) 	  		<=	"0000000000000000";
---  sprite_snake_head_r(5) 			<=	"0000000000000000";
---  sprite_snake_head_r(6) 			<=	"0000000000000000";
---  sprite_snake_head_r(7) 			<=	"0000000000000011";
---  sprite_snake_head_r(8) 			<=	"0000000000011110";
---  sprite_snake_head_r(9) 			<=	"0000000000011110";
---  sprite_snake_head_r(10) 			<=	"0000000000000011";
---  sprite_snake_head_r(11) 			<=	"0000000000000000";
---  sprite_snake_head_r(12) 	   	<=	"0000000000000000";
---  sprite_snake_head_r(13) 	   	<=	"0000000000000000";
---  sprite_snake_head_r(14) 	   	<=	"0000000000000000";
---  sprite_snake_head_r(15) 	  	 	<= "0000000000000000";
---  
---  -- sprite snake head eye white coloring
---  sprite_snake_head_w(0) 			<=	"0000000000000000";
---  sprite_snake_head_w(1) 			<=	"0000000000000000";
---  sprite_snake_head_w(2) 			<=	"0000000000000000";
---  sprite_snake_head_w(3) 			<=	"0000000000000000";
---  sprite_snake_head_w(4) 			<= "0000000000000000";
---  sprite_snake_head_w(5) 			<=	"0000011100000000";
---  sprite_snake_head_w(6) 			<=	"0000010000000000";
---  sprite_snake_head_w(7) 			<=	"0000010000000000";
---  sprite_snake_head_w(8) 			<=	"0000000000000000";
---  sprite_snake_head_w(9) 			<=	"0000000000000000";
---  sprite_snake_head_w(10) 			<=	"0000000000000000";
---  sprite_snake_head_w(11) 			<=	"0000000000000000";
---  sprite_snake_head_w(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w(15) 	  	 	<=	"0000000000000000";
---  
---    -- sprite snake head eye black coloring
---  sprite_snake_head_b(0) 			<=	"0000000000000000";
---  sprite_snake_head_b(1) 			<=	"0000000000000000";
---  sprite_snake_head_b(2) 			<=	"0000000000000000";
---  sprite_snake_head_b(3) 			<=	"0000000000000000";
---  sprite_snake_head_b(4) 			<=	"0000000000000000";
---  sprite_snake_head_b(5) 			<=	"0000000000000000";
---  sprite_snake_head_b(6) 			<=	"0000001100000000";
---  sprite_snake_head_b(7) 			<=	"0000001100000000";
---  sprite_snake_head_b(8) 			<=	"0000000000000000";
---  sprite_snake_head_b(9) 			<=	"0000000000000000";
---  sprite_snake_head_b(10) 			<=	"0000000000000000";
---  sprite_snake_head_b(11) 			<=	"0000000000000000";
---  sprite_snake_head_b(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b(15) 	  	 	<=	"0000000000000000";
---  
---  	-- sprite snake head left facing coloring
---  sprite_snake_head_g_left(0) 			<=	"0000000011110000";
---  sprite_snake_head_g_left(1) 			<=	"0000001111111000";
---  sprite_snake_head_g_left(2)				<= "0000111111111100";
---  sprite_snake_head_g_left(3) 			<=	"0001111111111110";
---  sprite_snake_head_g_left(4) 			<=	"0011111111111110";
---  sprite_snake_head_g_left(5) 			<=	"0011111100011111";
---  sprite_snake_head_g_left(6) 			<=	"0111111100011111";
---  sprite_snake_head_g_left(7) 			<=	"0011111100011111";
---  sprite_snake_head_g_left(8) 			<=	"0000011111111111";
---  sprite_snake_head_g_left(9) 			<=	"0000011111111111";
---  sprite_snake_head_g_left(10) 			<=	"0011111111111111";
---  sprite_snake_head_g_left(11) 			<=	"0111111111111110";
---  sprite_snake_head_g_left(12) 	   	<=	"0001111111111110";
---  sprite_snake_head_g_left(13) 	   	<=	"0000111111111100";
---  sprite_snake_head_g_left(14) 	   	<=	"0000001111111000";
---  sprite_snake_head_g_left(15) 	   	<=	"0000000011110000";
---  
---  -- sprite snake head left facing tongue coloring
---  sprite_snake_head_r_left(0) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(1) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(2) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(3) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(4) 	  		<=	"0000000000000000";
---  sprite_snake_head_r_left(5) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(6) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(7) 			<=	"1100000000000000";
---  sprite_snake_head_r_left(8) 			<=	"0111100000000000";
---  sprite_snake_head_r_left(9) 			<=	"0111100000000000";
---  sprite_snake_head_r_left(10) 			<=	"1100000000000000";
---  sprite_snake_head_r_left(11) 			<=	"0000000000000000";
---  sprite_snake_head_r_left(12) 	   	<=	"0000000000000000";
---  sprite_snake_head_r_left(13) 	   	<=	"0000000000000000";
---  sprite_snake_head_r_left(14) 	   	<=	"0000000000000000";
---  sprite_snake_head_r_left(15) 	  	 	<= "0000000000000000";
---  
---  -- sprite snake head left facing eye white coloring
---  sprite_snake_head_w_left(0) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(1) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(2) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(3) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(4) 			<= "0000000000000000";
---  sprite_snake_head_w_left(5) 			<=	"0000000011100000";
---  sprite_snake_head_w_left(6) 			<=	"0000000000100000";
---  sprite_snake_head_w_left(7) 			<=	"0000000000100000";
---  sprite_snake_head_w_left(8) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(9) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(10) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(11) 			<=	"0000000000000000";
---  sprite_snake_head_w_left(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_left(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_left(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_left(15) 	  	 	<=	"0000000000000000";
---  
---    -- sprite snake head left facing eye black coloring
---  sprite_snake_head_b_left(0) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(1) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(2) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(3) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(4) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(5) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(6) 			<=	"0000000011000000";
---  sprite_snake_head_b_left(7) 			<=	"0000000011000000";
---  sprite_snake_head_b_left(8) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(9) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(10) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(11) 			<=	"0000000000000000";
---  sprite_snake_head_b_left(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_left(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_left(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_left(15) 	  	 	<=	"0000000000000000";
---  
---    	-- sprite snake head upwards facing coloring
---  sprite_snake_head_g_up(0) 			<=	"0000000000000000";
---  sprite_snake_head_g_up(1) 			<=	"0000001000010000";
---  sprite_snake_head_g_up(2) 			<=	"0000111100110000";
---  sprite_snake_head_g_up(3) 			<=	"0001111100111000";
---  sprite_snake_head_g_up(4) 			<=	"0011111100111100";
---  sprite_snake_head_g_up(5) 			<=	"0011111111111100";
---  sprite_snake_head_g_up(6) 			<=	"0111111111111110";
---  sprite_snake_head_g_up(7) 			<=	"0111111111111110";
---  sprite_snake_head_g_up(8) 			<=	"1111100011111111";
---  sprite_snake_head_g_up(9) 			<=	"1111100011111111";
---  sprite_snake_head_g_up(10) 			<=	"1111100011111111";
---  sprite_snake_head_g_up(11) 			<=	"1111111111111111";
---  sprite_snake_head_g_up(12) 	   	<=	"0111111111111110";
---  sprite_snake_head_g_up(13) 	   	<=	"0011111111111100";
---  sprite_snake_head_g_up(14) 	   	<=	"0001111111111000";
---  sprite_snake_head_g_up(15) 	   	<=	"0000011111100000";
---  
---  -- sprite snake head upwards facing tongue coloring
---  sprite_snake_head_r_up(0) 			<=	"0000000100100000";
---  sprite_snake_head_r_up(1) 			<=	"0000000111100000";
---  sprite_snake_head_r_up(2) 			<=	"0000000011000000";
---  sprite_snake_head_r_up(3) 			<=	"0000000011000000";
---  sprite_snake_head_r_up(4) 	  		<=	"0000000011000000";
---  sprite_snake_head_r_up(5) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(6) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(7) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(8) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(9) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(10) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(11) 			<=	"0000000000000000";
---  sprite_snake_head_r_up(12) 	   	<=	"0000000000000000";
---  sprite_snake_head_r_up(13) 	   	<=	"0000000000000000";
---  sprite_snake_head_r_up(14) 	   	<=	"0000000000000000";
---  sprite_snake_head_r_up(15) 	  	 	<= "0000000000000000";
---  
---  -- sprite snake head upwards facing eye white coloring
---  sprite_snake_head_w_up(0) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(1) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(2) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(3) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(4) 			<= "0000000000000000";
---  sprite_snake_head_w_up(5) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(6) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(7) 			<=	"0000010000000000";
---  sprite_snake_head_w_up(8) 			<=	"0000010000000000";
---  sprite_snake_head_w_up(9) 			<=	"0000011100000000";
---  sprite_snake_head_w_up(10) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(11) 			<=	"0000000000000000";
---  sprite_snake_head_w_up(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_up(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_up(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_up(15) 	  	 	<=	"0000000000000000";
---  
---    -- sprite snake head upwards facing eye black coloring
---  sprite_snake_head_b_up(0) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(1) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(2) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(3) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(4) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(5) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(6) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(7) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(8) 			<=	"0000001100000000";
---  sprite_snake_head_b_up(9) 			<=	"0000001100000000";
---  sprite_snake_head_b_up(10) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(11) 			<=	"0000000000000000";
---  sprite_snake_head_b_up(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_up(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_up(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_up(15) 	  	 	<=	"0000000000000000";
---  
---      	-- sprite snake head downwards facing coloring
---  sprite_snake_head_g_down(0) 			<=	"0000011111100000";
---  sprite_snake_head_g_down(1) 			<=	"0001111111111000";
---  sprite_snake_head_g_down(2) 			<=	"0011111111111100";
---  sprite_snake_head_g_down(3) 			<=	"0111111111111110";
---  sprite_snake_head_g_down(4) 			<=	"1111111111111111";
---  sprite_snake_head_g_down(5) 			<=	"1111100011111111";
---  sprite_snake_head_g_down(6) 			<=	"1111100011111111";
---  sprite_snake_head_g_down(7) 			<=	"1111100011111111";
---  sprite_snake_head_g_down(8) 			<=	"0111111111111110";
---  sprite_snake_head_g_down(9) 			<=	"0111111111111110";
---  sprite_snake_head_g_down(10) 			<=	"0011111111111100";
---  sprite_snake_head_g_down(11) 			<=	"0011111100111100";
---  sprite_snake_head_g_down(12) 	   	<=	"0001111100111000";
---  sprite_snake_head_g_down(13) 	   	<=	"0000111100110000";
---  sprite_snake_head_g_down(14) 	   	<=	"0000001000010000";
---  sprite_snake_head_g_down(15) 	   	<=	"0000000000000000";
---  
---  -- sprite snake head downwards facing tongue coloring
---  sprite_snake_head_r_down(0) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(1) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(2) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(3) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(4) 	  		<=	"0000000000000000";
---  sprite_snake_head_r_down(5) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(6) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(7) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(8) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(9) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(10) 			<=	"0000000000000000";
---  sprite_snake_head_r_down(11) 			<=	"0000001100000000";
---  sprite_snake_head_r_down(12) 	   	<=	"0000001100000000";
---  sprite_snake_head_r_down(13) 	   	<=	"0000001100000000";
---  sprite_snake_head_r_down(14) 	   	<=	"0000011110000000";
---  sprite_snake_head_r_down(15) 	  	 	<= "0000010010000000";
---  
---  -- sprite snake head downwards facing eye white coloring
---  sprite_snake_head_w_down(0) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(1) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(2) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(3) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(4) 			<= "0000000000000000";
---  sprite_snake_head_w_down(5) 			<=	"0000011100000000";
---  sprite_snake_head_w_down(6) 			<=	"0000000100000000";
---  sprite_snake_head_w_down(7) 			<=	"0000000100000000";
---  sprite_snake_head_w_down(8) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(9) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(10) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(11) 			<=	"0000000000000000";
---  sprite_snake_head_w_down(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_down(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_down(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_w_down(15) 	  	 	<=	"0000000000000000";
---  
---    -- sprite snake head downwards facing eye black coloring
---  sprite_snake_head_b_down(0) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(1) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(2) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(3) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(4) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(5) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(6) 			<=	"0000011000000000";
---  sprite_snake_head_b_down(7) 			<=	"0000011000000000";
---  sprite_snake_head_b_down(8) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(9) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(10) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(11) 			<=	"0000000000000000";
---  sprite_snake_head_b_down(12) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_down(13) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_down(14) 	  	 	<=	"0000000000000000";
---  sprite_snake_head_b_down(15) 	  	 	<=	"0000000000000000";
-
-
---  -- sprite snake tail coloring
---  sprite_snake_tail(0) 			<=	"0000000000110000";
---  sprite_snake_tail(1) 			<=	"0000000011111000";
---  sprite_snake_tail(2) 			<=	"0000001111111100";
---  sprite_snake_tail(3) 			<=	"0000111111111100";
---  sprite_snake_tail(4) 			<=	"0001111111111110";
---  sprite_snake_tail(5) 			<=	"0011111111111110";
---  sprite_snake_tail(6) 			<=	"0111111111111111";
---  sprite_snake_tail(7) 			<=	"1111111111111111";
---  sprite_snake_tail(8) 			<=	"1111111111111111";
---  sprite_snake_tail(9) 			<=	"0111111111111111";
---  sprite_snake_tail(10) 		<=	"0011111111111110";
---  sprite_snake_tail(11) 		<=	"0001111111111110";
---  sprite_snake_tail(12) 	   <=	"0000111111111100";
---  sprite_snake_tail(13) 	   <=	"0000001111111100";
---  sprite_snake_tail(14) 	   <=	"0000000011111000";
---  sprite_snake_tail(15) 	   <=	"0000000000110000";
---  
---   -- sprite snake tail left facing coloring
---  sprite_snake_tail_left(0) 			<=	"0000110000000000";
---  sprite_snake_tail_left(1) 			<=	"0001111100000000";
---  sprite_snake_tail_left(2) 			<=	"0011111111000000";
---  sprite_snake_tail_left(3) 			<=	"0011111111110000";
---  sprite_snake_tail_left(4) 			<=	"0111111111111000";
---  sprite_snake_tail_left(5) 			<=	"0111111111111100";
---  sprite_snake_tail_left(6) 			<=	"1111111111111110";
---  sprite_snake_tail_left(7) 			<=	"1111111111111111";
---  sprite_snake_tail_left(8) 			<=	"1111111111111111";
---  sprite_snake_tail_left(9) 			<=	"1111111111111110";
---  sprite_snake_tail_left(10) 			<=	"0111111111111100";
---  sprite_snake_tail_left(11) 			<=	"0111111111111000";
---  sprite_snake_tail_left(12) 	 	  	<=	"0011111111110000";
---  sprite_snake_tail_left(13) 	  	 	<=	"0011111111000000";
---  sprite_snake_tail_left(14) 	 	  	<=	"0001111100000000";
---  sprite_snake_tail_left(15) 	  	 	<=	"0000110000000000";
---  
---    -- sprite snake tail upwards facing coloring
---  sprite_snake_tail_up(0) 			<=	"0000001111000000";
---  sprite_snake_tail_up(1) 			<=	"0000111111110000";
---  sprite_snake_tail_up(2) 			<=	"0011111111111100";
---  sprite_snake_tail_up(3) 			<=	"0111111111111110";
---  sprite_snake_tail_up(4) 			<=	"1111111111111111";
---  sprite_snake_tail_up(5) 			<=	"1111111111111111";
---  sprite_snake_tail_up(6) 			<=	"0111111111111110";
---  sprite_snake_tail_up(7) 			<=	"0111111111111110";
---  sprite_snake_tail_up(8) 			<=	"0011111111111100";
---  sprite_snake_tail_up(9) 			<=	"0011111111111100";
---  sprite_snake_tail_up(10) 		<=	"0001111111111000";
---  sprite_snake_tail_up(11) 		<=	"0001111111111000";
---  sprite_snake_tail_up(12) 	   <=	"0000111111110000";
---  sprite_snake_tail_up(13) 	   <=	"0000011111100000";
---  sprite_snake_tail_up(14) 	   <=	"0000001111000000";
---  sprite_snake_tail_up(15) 	   <=	"0000000110000000";
---  
---    -- sprite snake tail downwards facing coloring
---  sprite_snake_tail_down(0) 			<=	"0000000110000000";
---  sprite_snake_tail_down(1) 			<=	"0000001111000000";
---  sprite_snake_tail_down(2) 			<=	"0000011111100000";
---  sprite_snake_tail_down(3) 			<=	"0000111111110000";
---  sprite_snake_tail_down(4) 			<=	"0001111111111000";
---  sprite_snake_tail_down(5) 			<=	"0001111111111000";
---  sprite_snake_tail_down(6) 			<=	"0011111111111100";
---  sprite_snake_tail_down(7) 			<=	"0011111111111100";
---  sprite_snake_tail_down(8) 			<=	"0111111111111110";
---  sprite_snake_tail_down(9) 			<=	"0111111111111110";
---  sprite_snake_tail_down(10) 			<=	"1111111111111111";
---  sprite_snake_tail_down(11) 			<=	"1111111111111111";
---  sprite_snake_tail_down(12) 	   	<=	"0111111111111110";
---  sprite_snake_tail_down(13) 	   	<=	"0011111111111100";
---  sprite_snake_tail_down(14) 	   	<=	"0000111111110000";
---  sprite_snake_tail_down(15) 	   	<=	"0000001111000000";
-
-
---  
---    -- sprite snake body coloring
---  sprite_snake_body(0) 			<=	"0000111111110000";
---  sprite_snake_body(1) 			<=	"0001111111111000";
---  sprite_snake_body(2) 			<=	"0011111111111100";
---  sprite_snake_body(3) 			<=	"0011111111111100";
---  sprite_snake_body(4) 			<=	"0111111111111110";
---  sprite_snake_body(5) 			<=	"1111111111111111";
---  sprite_snake_body(6) 			<=	"1111111111111111";
---  sprite_snake_body(7) 			<=	"1111111111111111";
---  sprite_snake_body(8) 			<=	"1111111111111111";
---  sprite_snake_body(9) 			<=	"1111111111111111";
---  sprite_snake_body(10) 		<=	"1111111111111111";
---  sprite_snake_body(11) 		<=	"0111111111111110";
---  sprite_snake_body(12) 	   <=	"0011111111111100";
---  sprite_snake_body(13) 	   <=	"0011111111111100";
---  sprite_snake_body(14) 	   <=	"0001111111111000";
---  sprite_snake_body(15) 	   <=	"0000111111110000";
---  
   
   
   

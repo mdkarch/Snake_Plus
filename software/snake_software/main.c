@@ -257,17 +257,7 @@ void draw_winner(int winner_id){
 	}
 }
 
-void draw_splash_screen(){
-	short x = 10;
-	short y = 7;
-	short i;
-	short j;
-	for(i = x; i < 19 + x; i++){
-		for(j= y; j < 18 + y; j++){
-			addTilePiece(S_CODE, i, j);
-		}
-	}
-}
+
 
 int main(){
 
@@ -278,10 +268,13 @@ int main(){
 		/* Reset display */
 		reset_hardware();
 		initBorder();
-		draw_splash_screen();
+
+		enable_splash_screen();
 
 		printf("Press any button to start!\n");
 		wait_for_continue();
+
+		disable_splash_screen();
 
 		/* init border */
 		initPowBoard(board, seed);

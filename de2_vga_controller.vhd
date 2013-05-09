@@ -8,6 +8,7 @@ use work.definitions.all;
 --			-- 0001 = SNAKE1
 --			-- 0010 = TILES
 --			-- 0011 = RESET
+			-- 0100 = SPLASH SCREEN
 --		
 --		--WRITEDATA
 --			--4-0: Y (LSB) -- must be ONLY 5 bits
@@ -79,6 +80,7 @@ architecture rtl of snake_plus_vga is
 	signal snake_read_address			: std_logic_vector(10 downto 0);
 	signal tiles_read_data				: std_logic_vector(7 downto 0);
 	signal snake_read_data				: std_logic_vector(7 downto 0);
+	signal enable_splash_screen		: std_logic := '0';
   
   --Tile signals 
 	signal tiles_enabled		: std_logic				:= '0';
@@ -90,9 +92,11 @@ architecture rtl of snake_plus_vga is
   
 	--- Constants ---
 		-- Write -- 
-  constant W_SNAKE_SELECT	: std_logic_vector	:= "0001"; -- Write only
-  constant W_TILES_SELECT	: std_logic_vector	:= "0010"; -- Write only
-  constant W_SOFT_RESET		: std_logic_vector	:= "0011"; -- Write only
+  constant W_SNAKE_SELECT					: std_logic_vector	:= "0001"; -- Write only
+  constant W_TILES_SELECT					: std_logic_vector	:= "0010"; -- Write only
+  constant W_SOFT_RESET						: std_logic_vector	:= "0011"; -- Write only
+  constant W_ENABLE_SPLASH_SCREEN		: std_logic_vector	:= "0100"; -- Write only
+  constant W_DISABLE_SPLASH_SCREEN		: std_logic_vector	:= "0101"; -- Write only
 
 
 component tiles_ram is
@@ -153,6 +157,14 @@ begin
 					
 					if address = W_SOFT_RESET then
 						soft_reset <= '1';
+					end if;
+					
+					if address = W_ENABLE_SPLASH_SCREEN then
+						enable_splash_screen <= '1';
+					end if;
+					
+					if address = W_DISABLE_SPLASH_SCREEN then
+						enable_splash_screen <= '0';
 					end if;
 				
 				-- Read --
@@ -222,7 +234,8 @@ V1: entity work.de2_vga_raster port map (
 	 tiles_address => tiles_read_address,
 	 tiles_data		=> tiles_read_data,
 	 snake_address => snake_read_address,
-	 snake_data		=> snake_read_data
+	 snake_data		=> snake_read_data,
+	 controller_enable_splash_screen => enable_splash_screen
 	 
   );
 

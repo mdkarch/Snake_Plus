@@ -53,6 +53,15 @@ architecture rtl of de2_vga_raster is
 		q				: OUT STD_LOGIC_VECTOR (2 DOWNTO 0)
 	);
 	END COMPONENT;
+	
+	COMPONENT splash_title_rom IS
+		PORT
+	(
+		address		: IN STD_LOGIC_VECTOR (13 DOWNTO 0);
+		clock			: IN STD_LOGIC  := '1';
+		q				: OUT STD_LOGIC_VECTOR (0 DOWNTO 0)
+	);
+	END COMPONENT;
 
   
   -- Video parameters
@@ -69,9 +78,14 @@ architecture rtl of de2_vga_raster is
   constant VACTIVE      : integer := 480;
   constant VFRONT_PORCH : integer := 10;
   
-  constant SPLASH_SNAKE_START_H : integer := 170;
-  constant SPLASH_SNAKE_START_V : integer := 90;
+  constant SPLASH_SNAKE_START_H : integer := 180;
+  constant SPLASH_SNAKE_START_V : integer := 120;
   constant SPLASH_SNAKE_SIZE  : integer := 256;
+  
+  constant SPLASH_TITLE_START_H : integer := 180;
+  constant SPLASH_TITLE_START_V : integer := 50;
+  constant SPLASH_TITLE_WIDTH   : integer := 256;
+  constant SPLASH_TITLE_HEIGHT   : integer := 64;
 
   -- Signals for the video controller
   signal Hcount : unsigned(9 downto 0);  -- Horizontal position (0-800)
@@ -86,14 +100,17 @@ architecture rtl of de2_vga_raster is
 	signal inner_tile_v_pos			: integer;
 	signal tiles_h_pos				: integer;
 	signal tiles_v_pos				: integer;
-	signal splash_sprite_h_pos		: integer;
-	signal splash_sprite_v_pos		: integer;
+	signal splash_sprite_h_pos		: unsigned(9 downto 0);
+	signal splash_sprite_v_pos		: unsigned(9 downto 0);
 	
 	signal splash_snake_address			: std_logic_vector(15 downto 0);
 	signal splash_snake_address_enable	: std_logic;
 	signal splash_snake_data				: std_logic_vector(2 downto 0);
 	signal splash_sprite_h_pos_16			: std_logic_vector(15 downto 0);
 	signal splash_sprite_v_pos_16			: std_logic_vector(15 downto 0);
+	
+	signal splash_title_address_enable		: std_logic;
+	signal splash_title_data				: std_logic_vector(0 downto 0);
 	
 	signal y_32				: std_logic_vector(10 downto 0);
 	signal y_8				: std_logic_vector(10 downto 0);
@@ -122,6 +139,7 @@ architecture rtl of de2_vga_raster is
 	signal pause, play																: std_logic;
 	signal splash_snake_black, splash_snake_yellow, 
 				splash_snake_green, splash_snake_red							: std_logic;
+	signal splash_title_green														: std_logic;
 	
 		-- sprites
 	type array_type_16x16 is array (0 to 15) of unsigned (0 to 15);
@@ -241,6 +259,13 @@ begin
 			clock			=> clk,
 			q				=> splash_snake_data
 		);
+		
+	STE: entity work.splash_title_rom PORT MAP
+	(
+			address		=> splash_snake_address(13 downto 0),
+			clock			=> clk,
+			q				=> splash_title_data
+		);
 
   
     -- Horizontal and vertical counters
@@ -347,10 +372,10 @@ begin
 			if reset = '1' then
 				inner_tile_h_pos <= 0;
 				tiles_h_pos <= 0;
-			elsif HCount >= HSYNC + HBACK_PORCH + HACTIVE - 1 then
+			elsif HCount >= HSYNC + HBACK_PORCH + HACTIVE then
 				inner_tile_h_pos <= 0;
-				tiles_h_pos <= 1900; -- random > 1200
-			elsif HCount = HSYNC + HBACK_PORCH - 1 then
+				tiles_h_pos <= 50; -- random > 1200
+			elsif HCount = HSYNC + HBACK_PORCH then
 				tiles_h_pos <= 0;
 			elsif 	HCount > HSYNC + HBACK_PORCH and 
 						HCount < HSYNC + HBACK_PORCH + HACTIVE - 1 then
@@ -372,13 +397,13 @@ begin
 			if reset = '1' then
 				inner_tile_v_pos <= 0;
 				tiles_v_pos <= 0;
-			elsif VCount > VSYNC + VBACK_PORCH + VACTIVE - 1 then
+			elsif VCount >= VSYNC + VBACK_PORCH + VACTIVE - 1 then
 				inner_tile_v_pos <= 0;
-				tiles_v_pos <= 1900; -- random > 1200
+				tiles_v_pos <= 50; -- random > 1200
 			elsif VCount = VSYNC + VBACK_PORCH - 1 then
 				tiles_v_pos <= 0;
-			elsif 	VCount >= VSYNC + VBACK_PORCH - 1 and 
-						VCount <= VSYNC + VBACK_PORCH + VACTIVE - 1 and
+			elsif 	VCount > VSYNC + VBACK_PORCH - 1 and 
+						VCount < VSYNC + VBACK_PORCH + VACTIVE - 1 and
 						EndOfLine = '1' then
 				inner_tile_v_pos <= inner_tile_v_pos + 1;
 				if inner_tile_v_pos >= 15 then -- 0-15 should be used
@@ -1125,31 +1150,39 @@ begin
   ----------------------------------------------------------------------------
   
 	-- Get the point on the screen to fetch from memory
-  splash_sprite_h_pos		<= to_integer(Hcount) - (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H);
-  splash_sprite_v_pos		<= to_integer(Vcount) - (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V);
-  splash_sprite_h_pos_16 	<= std_logic_vector(to_unsigned(splash_sprite_v_pos,8)) & "00000000";
-  splash_sprite_v_pos_16 	<= "00000000" & std_logic_vector(to_unsigned(splash_sprite_h_pos,8));
-  splash_snake_address 		<=  std_logic_vector( unsigned(splash_sprite_h_pos_16) + unsigned(splash_sprite_h_pos_16) ) ;
+  splash_sprite_h_pos		<= (Hcount) - (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H);
+  splash_sprite_v_pos		<= (Vcount) - (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V);
+  splash_sprite_h_pos_16 	<= "00000000" & std_logic_vector(splash_sprite_h_pos(7 downto 0)); 
+  splash_sprite_v_pos_16 	<= std_logic_vector(splash_sprite_v_pos(7 downto 0)) & "00000000";
+  splash_snake_address 		<= std_logic_vector( unsigned(splash_sprite_v_pos_16) + unsigned(splash_sprite_h_pos_16) ) ;
   
   SplashScreenEnableGen : process (clk)
   begin
 		if rising_edge(clk) then	
 			if reset = '1' then
 				splash_snake_address_enable <= '0';
+				splash_title_address_enable <= '0';
 			else
 				splash_snake_address_enable <= '0';
-			
-				if controller_enable_splash_screen = '1' then
+				splash_title_address_enable <= '0';
+				
+				if controller_enable_splash_screen = '1' or (sprite_select(7) = '1' and sprite_select(4 downto 0) = SPLASH_SNAKE_CODE) then
+					
 					if Hcount >= (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H) and Hcount < (HSYNC + HBACK_PORCH + SPLASH_SNAKE_START_H + SPLASH_SNAKE_SIZE) and
 						Vcount >= (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V) and Vcount < (VSYNC + VBACK_PORCH - 1 + SPLASH_SNAKE_START_V + SPLASH_SNAKE_SIZE) then
 						splash_snake_address_enable <= '1';	
 					end if;
+					
+					if Hcount >= (HSYNC + HBACK_PORCH + SPLASH_TITLE_START_H) and Hcount < (HSYNC + HBACK_PORCH + SPLASH_TITLE_START_H + SPLASH_TITLE_WIDTH) and
+						Vcount >= (VSYNC + VBACK_PORCH - 1 + SPLASH_TITLE_START_V) and Vcount < (VSYNC + VBACK_PORCH - 1 + SPLASH_TITLE_START_V + SPLASH_TITLE_HEIGHT) then
+						splash_title_address_enable <= '1';	
+					end if;
+					
 				end if;
 				
 			end if;	-- end if;
 		end if;	-- end rising edge
 	end process SplashScreenEnableGen;
-  
   
   -- splash screen Snake generation
   SplashScreenSnakeGen : process (clk)
@@ -1185,6 +1218,25 @@ begin
 	end if;		
   end process SplashScreenSnakeGen;
   
+    -- splash screen Title generation
+  SplashScreenTitleGen : process (clk)
+  begin
+	if rising_edge(clk) then	
+		if reset = '1' then
+			splash_title_green 	<= '0';
+		elsif splash_title_address_enable = '1'  then
+			
+			splash_title_green <= '0';
+			
+			if splash_title_data = "1" then
+				splash_title_green <= '1';
+			end if;
+		else
+			splash_title_green <= '0';
+		end if; 
+	end if;		
+  end process SplashScreenTitleGen;
+  
 	
   -- Registered video signals going to the video DAC
   VideoOut: process (clk, reset)
@@ -1203,7 +1255,8 @@ begin
 		--This got changed to orange, was green, now its orange
 		elsif green = '1' or ed_b_eye = '1' or
 				(player_select = '0' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1' or snake_tail_orange = '1'))
-				then
+				or splash_title_green = '1'
+				 then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0010100000";
 		  VGA_B <= "0000000000";
@@ -1212,7 +1265,11 @@ begin
 			VGA_R <= "0000000000";
 			VGA_G <= "1111111111";
 			VGA_B <= "0000000000";
-		elsif red = '1' or wall = '1' or growth_r = '1' or splash_snake_red = '1' then
+		elsif splash_snake_red = '1' then
+			VGA_R <= "0100100000";
+			VGA_G <= "0100101100";
+			VGA_B <= "0100100000";
+		elsif red = '1' or wall = '1' or growth_r = '1'  then
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0000000000";
 		  VGA_B <= "0000000000";

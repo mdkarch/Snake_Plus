@@ -80,6 +80,7 @@ const char S_CODE 					= 14;
 const char EXC_CODE					= 15;
 const char PLAY_CODE 				= 16;
 const char PAUSE_CODE				= 17;
+const char SPLASH_SNAKE_CODE		= 18;
 
 /* Segment codes */
 const char SEG_HEAD					= 0;
@@ -231,11 +232,14 @@ void reset_hardware(){
 	int x = 0;
 	int y = 0;
 	for(x = 0; x < 40; x++){
-		for(y = 0; y < 30; y++){
+		for(y = 0; y < 50; y++){
 			addSnakePiece(0, 0, x, y);
 			addTilePiece(0, x, y);
 		}
 	}
+	int zero = 0;
+	int code = (zero << 28) | ((50 & 0x03F) << 5) | (50 & 0x01F);;
+	WRITE_SPRITE(TILES_ADDR,code);
 	SOFT_RESET();
 }
 

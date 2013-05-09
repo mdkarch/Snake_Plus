@@ -184,7 +184,7 @@ begin
 --						readdata <= std_logic_vector( to_unsigned(snake2_length, readdata'length) );
 --					end if;
 					
-					readdata <= "000000000000000000000" & tiles_read_address;
+					readdata <= x"0000000" & "000" & enable_splash_screen;
 					
 				end if; -- end write/read
 				

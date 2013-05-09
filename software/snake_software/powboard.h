@@ -38,7 +38,6 @@ void shuffle2d(int board[X_LEN][Y_LEN]){
 			count++;
 		}
 	}
-
 }
 
 void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
@@ -52,7 +51,7 @@ void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
 		y[i] = i;				
 	}
 	shuffle(y, Y_LEN);
-	
+
 	int count = 0;
 	i = 0;
 	int k;
@@ -69,8 +68,6 @@ void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
 		}
 	}
 	shuffle2d(board);
-	
-	//return board;
 }
 
 #endif

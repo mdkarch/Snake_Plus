@@ -5,10 +5,12 @@
 void initEdwards(){
 	initBrickTile();
 	printf("Initializing edwards\n");
-	int t = 1;
+	int t = 0;
 	int i;
 	int j;
 	int count = 0;
+	int prob_count = 0;/* brick has 66% chance of appearing and
+						switch snakes has 33% chance of appearing */
 	for(i = 0; i < X_LEN; i++){
 		for(j = 0; j < Y_LEN; j++){
 			if(board[i][j] == 3){
@@ -16,13 +18,16 @@ void initEdwards(){
 				edwards[count].type = t;
 				edwards[count].xCoord = i;
 				edwards[count].yCoord = j;
-				count++;
-				if(t == 0){
+
+				if(prob_count == 2){
 					t = 1;
+					prob_count = 0;
 				}
 				else {
 					t = 0;
+					prob_count++;
 				}
+				count++;
 			}
 		}
 	}
@@ -68,8 +73,8 @@ int drawEdwards(struct Snake snake[], struct Snake other_snake[]){
 
 	edwards[edwards_index].enable = 1;
 	//if(edwards[edwards_index].type){
-		printf("added edwards at %d", edwards_index);
-		addTilePiece(EDWARDS_CODE,  edwards[edwards_index].xCoord,  edwards[edwards_index].yCoord);
+	printf("added edwards at %d", edwards_index);
+	addTilePiece(EDWARDS_CODE,  edwards[edwards_index].xCoord,  edwards[edwards_index].yCoord);
 	//}else{
 	//	addTilePiece(MOUSE_CODE,  edwards[index].xCoord,  edwards[index].yCoord);
 	//}
@@ -136,7 +141,7 @@ void apply_edwards(struct Snake snake[], struct Snake other_snake[], int player,
 	 */
 	int remove_at = 0;
 	if(edwards_index == 0){
-		remove_at = 399;
+		remove_at = MAX_POWERUP_SIZE-1;
 	}else{
 		remove_at = edwards_index - 1;
 	}

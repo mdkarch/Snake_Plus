@@ -34,6 +34,10 @@ void initFood(){
 
 int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int player, struct SnakeInfo * info)
 {
+	/* if food count == 0 it will try to draw food in the next available location */
+	if(food_count == 0){
+		drawFood(snake, other_snake);
+	}
 	//struct Snake *head = snake[0];
 	int j;
 	for(j = 0; j < MAX_POWERUP_SIZE; j++){
@@ -46,10 +50,19 @@ int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int pla
 				printf("Eating Food!\n");
 				removeFood(j);
 				addEnd(snake, dir, player, info);
-				if(food_index == MAX_POWERUP_SIZE){
+				/*food_index == MAX_POWERUP_SIZE){
 					food_index = 0;
+				}*/
+				//while( !drawFood(snake, other_snake) );
+				/* iterate 100 times looking for the next
+				 * free element, if not found
+				 */
+				int i;
+				for(i = 0 ; i < 100; i++){
+					if(drawFood(snake, other_snake)){
+						break;
+					}
 				}
-				while( !drawFood(snake, other_snake) );
 				break;		// Original sleep time/SLEEP_TIME
 
 			}
@@ -59,6 +72,9 @@ int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int pla
 }
 
 int drawFood(struct Snake snake[], struct Snake other_snake[]){
+	if(food_index == MAX_POWERUP_SIZE){
+		food_index = 0;
+	}
 	if((food[food_index].xCoord <= 2 || food[food_index].xCoord >= X_LEN-1)
 			|| (food[food_index].yCoord <= 2 || food[food_index].yCoord >= Y_LEN-1) ){
 		food_index++;
@@ -101,6 +117,7 @@ int drawFood(struct Snake snake[], struct Snake other_snake[]){
 		addTilePiece(MOUSE_CODE,  food[food_index].xCoord,  food[food_index].yCoord);
 	}
 	food_index++;
+	food_count++;
 	return 1;
 }
 
@@ -108,6 +125,7 @@ void removeFood(int index){
 	printf("Removing food\n");
 	food[index].enable = 0;
 	removeTilePiece( food[index].xCoord,  food[index].yCoord);
+	food_count--;
 }
 
 void shuffle_food(int n){

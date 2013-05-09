@@ -52,7 +52,6 @@ int abs(int n)
 int traverseList(struct Snake snake[], int player)
 {
 	int count = 1;
-	/* collision offset - distance between two pieces to be considered a collision */
 	while(snake[count].enable)
 	{
 		//int xDiff = abs(snake[0].xCoord - snake[count].xCoord);

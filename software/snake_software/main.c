@@ -225,35 +225,53 @@ void wait_for_continue(){
 		seed++;
 	}
 }
+void draw_P1_wins(){
+	short y = 10;
+	addTilePiece(P_CODE, 16, y);
+	addTilePiece(ONE_CODE, 17, y);
+	addTilePiece(W_CODE, 19, y);
+	addTilePiece(I_CODE, 20, y);
+	addTilePiece(N_CODE, 21, y);
+	addTilePiece(S_CODE, 22, y);
+	addTilePiece(EXC_CODE, 23,y);
+}
 
+void draw_P2_wins(){
+	short y = 10;
+	addTilePiece(P_CODE, 16, y);
+	addTilePiece(TWO_CODE, 17, y);
+	addTilePiece(W_CODE, 19, y);
+	addTilePiece(I_CODE, 20, y);
+	addTilePiece(N_CODE, 21, y);
+	addTilePiece(S_CODE, 22, y);
+	addTilePiece(EXC_CODE, 23,y);
+}
+void draw_tie(){
+	/*short y = 10;
+	addTilePiece(D_CODE, 17, y);
+	addTilePiece(R_CODE, 19, y);
+	addTilePiece(A_CODE, 20, y);
+	addTilePiece(W_CODE, 21, y);
+	addTilePiece(EXC_CODE, 22, y);*/
+}
 void draw_winner(int winner_id){
 	short i;
-	for(i = 15; i < 25; i ++){
-		removeSnakePiece(PLAYER1, i, 10);
-		removeSnakePiece(PLAYER2, i, 10);
-		removeTilePiece(i, 10);
-	}
 	short y = 10;
-	if(winner_id == 1){
-		addTilePiece(P_CODE, 16, y);
-		addTilePiece(ONE_CODE, 17, y);
-		addTilePiece(W_CODE, 19, y);
-		addTilePiece(I_CODE, 20, y);
-		addTilePiece(N_CODE, 21, y);
-		addTilePiece(S_CODE, 22, y);
-		//addTilePiece(char sprite, short tile_x, y);
-		addTilePiece(EXC_CODE, 23,y);
-	}else if(winner_id == 2){
-		addTilePiece(P_CODE, 16, y);
-		addTilePiece(TWO_CODE, 17, y);
-		addTilePiece(W_CODE, 19, y);
-		addTilePiece(I_CODE, 20, y);
-		addTilePiece(N_CODE, 21, y);
-		addTilePiece(S_CODE, 22, y);
-		//addTilePiece(char sprite, short tile_x, y);
-		addTilePiece(EXC_CODE, 23,y);
+	for(i = 15; i < 25; i ++){
+		removeSnakePiece(PLAYER1, i, y);
+		removeSnakePiece(PLAYER2, i, y);
+		removeTilePiece(i, y);
+	}
+	if(winner_id == 1 && PLAYER1 == 1){
+		draw_P1_wins();
+	}else if(winner_id == 1 && PLAYER1 == 2){
+		draw_P2_wins();
+	}else if(winner_id == 2 && PLAYER2 == 2){
+		draw_P2_wins();
+	}else if(winner_id == 2 && PLAYER2 == 1){
+		draw_P1_wins();
 	}else if(winner_id == 3){
-
+		draw_tie();
 	}
 }
 
@@ -287,6 +305,47 @@ void drawStartPowUps(struct Snake snake_player1[], struct Snake snake_player2[])
 	}
 }
 
+void reset_software(){
+	/* index to know which sprite to draw from power up structs */
+	food_index 				= 0;
+	speed_index 			= 0;
+	freeze_index 			= 0;
+	edwards_index 			= 0;
+
+	freeze_pow_count  		= 0;
+	freeze_drawn 			= 0;
+	speed_pow_count  		= 0;
+	speed_drawn 			= 0;
+	edwards_pow_count  		= 0;
+	edwards_drawn 			= 0;
+	dir_arg 				= 0;
+	switch_snakes			= 0;
+	food_count = 0;
+
+	LEFT_BOUND				= 0;
+	RIGHT_BOUND				= 40;
+	BOT_BOUND				= 30;
+	TOP_BOUND				= 0;
+	/* used with edwards power up */
+	NEW_BOT 				= 29;
+	NEW_TOP 				= 0;
+	NEW_LEFT 				= 0;
+	NEW_RIGHT 				= 39;
+	/*
+	 * 0 -> nobody yet
+	 * 1 -> snake1
+	 * 2 -> snake2
+	 * 3 -> draw
+	 */
+	game_winner				= 0;
+	PLAYER1 				= 1;
+	PLAYER2 				= 2;
+	/* reinit border */
+	initBorder();
+	/* reinit power up board */
+	initPowBoard(board, seed);
+}
+
 int main(){
 
 	printf("Press start to begin the game\n");
@@ -295,18 +354,20 @@ int main(){
 
 		/* Reset display */
 		reset_hardware();
-		initBorder();
+		reset_software();
+		//initBorder();
 
-		enable_splash_screen();
-
+		//enable_splash_screen();
 		printf("Press any button to start!\n");
 		wait_for_continue();
 
-		disable_splash_screen();
+		//disable_splash_screen();
 
 		/* init border */
-		initPowBoard(board, seed);
+		//initPowBoard(board, seed);
 		/* Reset snakes and display them */
+		//PLAYER1 = 1;
+		//PLAYER2 = 2;
 		struct Snake snake_player1[SNAKE_SIZE];
 		struct SnakeInfo info1;
 		initSnake(snake_player1, 256/16, 256/16, PLAYER1, &info1);
@@ -334,31 +395,6 @@ int main(){
 		player2_dir[up_dir] = 0;
 		player2_dir[down_dir] = 0;
 
-//		initFood();
-//		initSpeed();
-//		initFreeze();
-//		initEdwards();
-//		while( !drawFood(snake_player1, snake_player2) ){
-//			printf("Attempting to Draw food\n");
-//		}
-//		while( !drawFood(snake_player1, snake_player2) ){
-//			printf("Attempting to Draw food\n");
-//		}
-//		while( !drawFood(snake_player1, snake_player2) ){
-//			printf("Attempting to Draw food\n");
-//		}
-//		while( !drawSpeed(snake_player1, snake_player2) ){
-//			printf("Attempting to Draw speed\n");
-//		}
-//		speed_drawn = 1;
-//		while( !drawFreeze(snake_player1, snake_player2) ){
-//			printf("Attempting to Draw freeze\n");
-//		}
-//		freeze_drawn = 1;
-//		while( !drawEdwards(snake_player1, snake_player2) ){
-//			printf("Attempting to Draw edwards\n");
-//		}
-
 		initPowUps();
 		drawStartPowUps(snake_player1, snake_player2);
 
@@ -380,7 +416,6 @@ int main(){
 		int collision = 0;
 		int p1_move_collision = 0;
 		int p2_move_collision = 0;
-
 		while(1) {
 			collision = snakeCol(snake_player1, snake_player2);
 			/*Check if paused button pushed*/

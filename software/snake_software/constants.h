@@ -7,28 +7,25 @@
 #define right_dir	1
 #define up_dir		2
 #define down_dir	3
-#define LEFT_BOUND	0
-#define RIGHT_BOUND	40//640
-#define BOT_BOUND	30//480
-#define TOP_BOUND	0
+//#define LEFT_BOUND	0
+//#define RIGHT_BOUND	40//640
+//#define BOT_BOUND	30//480
+//#define TOP_BOUND	0
 
 #define X_LEN		40
 #define Y_LEN		30
 #define MAX_POWERUP_SIZE	300
 
+#define SNAKE_SIZE 				1200
+#define SLEEP_TIME 				10 	// milliseconds
+#define DEFAULT_SLEEP_CYCLE		60
+#define SPEED_SLEEP_CYCLE		30
+#define FREEZE_SLEEP_CYCLE		150
+#define SPEED_TIME 				50
+#define FREEZE_TIME 			50
 
 unsigned int n_seed = 5323;
 unsigned int seed = 0;
-
-int SNAKE_SIZE = 1200;
-
-
-int SLEEP_TIME 				= 10; 	// milliseconds
-int DEFAULT_SLEEP_CYCLE		= 60;
-int SPEED_SLEEP_CYCLE		= 30;
-int FREEZE_SLEEP_CYCLE		= 150;
-int SPEED_TIME 				= 50;
-int FREEZE_TIME 			= 50;
 
 int PLAYER1_SLEEP_CYCLES; 			// Original sleep time/SLEEP_TIME
 int PLAYER2_SLEEP_CYCLES; 			// Original sleep time/SLEEP_TIME
@@ -49,11 +46,21 @@ int freeze_pow_count  		= 0;
 int freeze_drawn 			= 0;
 int speed_pow_count  		= 0;
 int speed_drawn 			= 0;
+int edwards_pow_count  		= 0;
+int edwards_drawn 			= 0;
 int dir_arg 				= 0;
 int switch_snakes			= 0;
 int food_count = 0;
 
-
+int LEFT_BOUND	=0;
+int RIGHT_BOUND	=40;
+int BOT_BOUND	=30;
+int TOP_BOUND	=0;
+/* used with edwards power up */
+int NEW_BOT = 29;
+int NEW_TOP = 0;
+int NEW_LEFT = 0;
+int NEW_RIGHT = 39;
 /*
  * 0 -> nobody yet
  * 1 -> snake1

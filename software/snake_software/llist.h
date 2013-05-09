@@ -24,7 +24,10 @@ void initSnake(struct Snake snake[], int xCoord, int yCoord, int player, struct 
 	for(i = info->tail + 1; i < SNAKE_SIZE; i++){
 		snake[i].enable = 0;
 	}
-
+	info->has_edwards = 0;
+	info->has_freeze = 0;
+	info->freeze_enabled = 0;
+	info->speed_enabled = 0;
 	/* originally had x and ys divided by 16 */
 	addSnakePiece(player, SNAKE_HEAD_RIGHT, snake[0].xCoord, 	snake[0].yCoord);
 	addSnakePiece(player, SNAKE_BODY_RIGHT, snake[1].xCoord, snake[1].yCoord);

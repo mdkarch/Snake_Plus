@@ -5,7 +5,7 @@ int x[X_LEN];
 int y[Y_LEN];
 
 int PRNG(int n){
-	n_seed = (8253729 * n_seed + + 2396403);
+	n_seed = (8253729 * n_seed + 2396403);
 	return n_seed % n;
 }
 
@@ -43,12 +43,12 @@ void shuffle2d(int board[X_LEN][Y_LEN]){
 void initPowBoard(int board[X_LEN][Y_LEN], unsigned int seed){
 	int i;
 	n_seed = seed;
-	for (i = 0; i < X_LEN; i++){
-		x[i] = i;		
+	for (i = 0; i < X_LEN*4; i++){
+		x[i] = i;
 	}
 	shuffle(x, X_LEN);
-	for (i = 0; i < Y_LEN; i++){
-		y[i] = i;				
+	for (i = 0; i < Y_LEN*4; i++){
+		y[i] = i;
 	}
 	shuffle(y, Y_LEN);
 

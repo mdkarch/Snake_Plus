@@ -38,9 +38,9 @@ int checkFreeze(struct Snake snake[], struct Snake other_snake[], int player, st
 				printf("Eating Freeze!\n");
 				removeFreeze(freeze,j);
 				info->has_freeze = 1;
-				if(freeze_index == MAX_POWERUP_SIZE){
-					freeze_index = 0;
-				}
+				//				if(freeze_index == MAX_POWERUP_SIZE){
+				//					freeze_index = 0;
+				//				}
 				//while( !drawFreeze(freeze) );
 				break;
 			}
@@ -48,10 +48,13 @@ int checkFreeze(struct Snake snake[], struct Snake other_snake[], int player, st
 	}
 	//printf("count: %d drawn:%d", freeze_pow_count, freeze_drawn);
 	if(freeze_pow_count == 300 && !freeze_drawn){
-		while( !drawFreeze(snake, other_snake) ){
-			printf("Attempting to Draw freeze\n");
+		int i;
+		for(i = 0 ; i < 100; i++){
+			if(drawFreeze(snake, other_snake)){
+				break;
+			}
 		}
-		freeze_drawn = 1;
+		//freeze_drawn = 1;
 		freeze_pow_count  = 0;
 	}
 	if(freeze_pow_count == 300){
@@ -99,11 +102,12 @@ int recalc_freeze_times(struct Snake snake[], int player, struct SnakeInfo * inf
 }
 
 int drawFreeze(struct Snake snake[], struct Snake other_snake[]){
-	freeze_index++;
-
+	if(freeze_index == MAX_POWERUP_SIZE){
+		freeze_index = 0;
+	}
 	if((freeze[freeze_index].xCoord <= 2 || freeze[freeze_index].xCoord >= X_LEN-1)
 			|| (freeze[freeze_index].yCoord <= 2 || freeze[freeze_index].yCoord >= Y_LEN-1)){
-		//freeze_index++;
+		freeze_index++;
 		return 0;
 	}
 
@@ -116,22 +120,24 @@ int drawFreeze(struct Snake snake[], struct Snake other_snake[]){
 		}
 		if(snake[i].enable){
 			if(snake[i].xCoord == t_xCoord && snake[i].yCoord == t_yCoord){
+				freeze_index++;
 				return 0;
 			}
 		}
 		if(other_snake[i].enable){
 			if(other_snake[i].xCoord == t_xCoord && other_snake[i].yCoord == t_yCoord){
+				freeze_index++;
 				return 0;
 			}
 		}
 	}
 	if(brick_tiles[t_xCoord][t_yCoord]){
-		//freeze_index++;
+		freeze_index++;
 		return 0;
 	}
 
 	if(food[freeze_index].enable || speed[freeze_index].enable || edwards[freeze_index].enable){
-		//freeze_index++;
+		freeze_index++;
 		return 0;
 	}
 	freeze_drawn = 1;
@@ -140,7 +146,7 @@ int drawFreeze(struct Snake snake[], struct Snake other_snake[]){
 	addTilePiece(FREEZE_CODE,  freeze[freeze_index].xCoord,  freeze[freeze_index].yCoord);
 
 	printf("Freeze index: %d\n", freeze_index);
-	//freeze_index++;
+	freeze_index++;
 
 	return 1;
 }

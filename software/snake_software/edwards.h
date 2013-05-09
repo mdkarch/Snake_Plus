@@ -1,6 +1,7 @@
 #ifndef EDWARDS_H_
 #define EDWARDS_H_
 #include "drop_brick.h"
+#include "brick.h"
 
 void initEdwards(){
 	initBrickTile();
@@ -9,8 +10,9 @@ void initEdwards(){
 	int i;
 	int j;
 	int count = 0;
-	int prob_count = 0;/* brick has 66% chance of appearing and
-						switch snakes has 33% chance of appearing */
+	/* counters below used to "simulate" probability */
+	int bss_count = 0;/* brick/switch snake counter */
+	int bc_count = 0; /* border change counter */
 	for(i = 0; i < X_LEN; i++){
 		for(j = 0; j < Y_LEN; j++){
 			if(board[i][j] == 3){
@@ -18,16 +20,19 @@ void initEdwards(){
 				edwards[count].type = t;
 				edwards[count].xCoord = i;
 				edwards[count].yCoord = j;
-
-				if(prob_count == 2){
+				if(bc_count == 15){
+					t = 2;
+					bc_count = 0;
+				}else if(bss_count == 2){
 					t = 1;
-					prob_count = 0;
+					bss_count = 0;
 				}
 				else {
 					t = 0;
-					prob_count++;
+					bss_count++;
 				}
 				count++;
+				bc_count++;
 			}
 		}
 	}
@@ -36,6 +41,9 @@ void initEdwards(){
 }
 
 int drawEdwards(struct Snake snake[], struct Snake other_snake[]){
+	if(edwards_index == MAX_POWERUP_SIZE){
+		edwards_index = 0;
+	}
 	if((edwards[edwards_index].xCoord <= 2 || edwards[edwards_index].xCoord >= X_LEN-1)
 			|| (edwards[edwards_index].yCoord <= 2 || edwards[edwards_index].yCoord >= Y_LEN-1) ){
 		edwards_index++;
@@ -79,6 +87,7 @@ int drawEdwards(struct Snake snake[], struct Snake other_snake[]){
 	//	addTilePiece(MOUSE_CODE,  edwards[index].xCoord,  edwards[index].yCoord);
 	//}
 	edwards_index++;
+	edwards_drawn = 1;
 	return 1;
 }
 
@@ -89,6 +98,7 @@ void removeEdwards(int index){
 	edwards[index].enable = 0;
 	printf("removing at %d x:%d, y:%d", index, edwards[index].xCoord, edwards[index].yCoord);
 	removeTilePiece( edwards[index].xCoord,  edwards[index].yCoord);
+	edwards_drawn = 0;
 }
 
 void shuffle_edwards(int n){
@@ -114,16 +124,30 @@ int checkEdwards(struct Snake snake[], struct Snake other_snake[], int player, s
 				printf("x:%d, y:%d", edwards[j].xCoord, edwards[j].yCoord);
 				removeEdwards(j);
 				info->has_edwards = 1;
-				if(edwards_index == MAX_POWERUP_SIZE){
-					edwards_index = 0;
-				}
-				while( !drawEdwards(snake, other_snake) ){
-					printf("drawing edwards\n");
-				}
+				//				if(edwards_index == MAX_POWERUP_SIZE){
+				//					edwards_index = 0;
+				//				}
+				//				while( !drawEdwards(snake, other_snake) ){
+				//					printf("drawing edwards\n");
+				//				}
 				break;
 			}
 		}
 	}
+	if(/*edwards_pow_count == 600 &&*/ !edwards_drawn){
+		int i;
+		for(i = 0 ; i < 100; i++){
+			if(drawEdwards(snake, other_snake)){
+				break;
+			}
+		}
+		//edwards_drawn = 1;
+		edwards_pow_count  = 0;
+	}
+	if(edwards_pow_count == 300){
+		edwards_pow_count  = 0;
+	}
+	edwards_pow_count++;
 	return 0;
 }
 
@@ -146,9 +170,10 @@ void apply_edwards(struct Snake snake[], struct Snake other_snake[], int player,
 		remove_at = edwards_index - 1;
 	}
 
+
 	if(edwards[remove_at].type == 0){
 		setBrickTile(snake, info->tail);
-	}else{
+	}else if(edwards[remove_at].type == 1){
 		if(PLAYER1 == 1 && PLAYER2 == 2){
 			PLAYER1 = 2;
 			PLAYER2 = 1;
@@ -156,6 +181,8 @@ void apply_edwards(struct Snake snake[], struct Snake other_snake[], int player,
 			PLAYER1 = 1;
 			PLAYER2 = 2;
 		}
+	}else{
+		updateBorder();
 	}
 	info->has_edwards = 0;
 }

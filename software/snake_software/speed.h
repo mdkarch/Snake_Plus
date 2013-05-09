@@ -42,19 +42,22 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 				}else{
 					PLAYER2_SLEEP_CYCLES 	= SPEED_SLEEP_CYCLE / SLEEP_TIME;
 				}
-				if(speed_index == MAX_POWERUP_SIZE){
-					speed_index = 0;
-				}
+				//				if(speed_index == MAX_POWERUP_SIZE){
+				//					speed_index = 0;
+				//				}
 				//while( !drawSpeed(speed_index++) );
 				break;
 			}
 		}
 	}
-	if(speed_pow_count == 300 && !speed_drawn){
-		while( !drawSpeed(snake, other_snake) ){
-			printf("Attempting to Draw speed\n");
+	if(speed_pow_count == 250 && !speed_drawn){
+		int i;
+		for(i = 0 ; i < 100; i++){
+			if(drawSpeed(snake, other_snake)){
+				break;
+			}
 		}
-		speed_drawn = 1;
+		//speed_drawn = 1;
 		speed_pow_count  = 0;
 	}
 	if(speed_pow_count == 300){
@@ -79,6 +82,9 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 }
 
 int drawSpeed(struct Snake snake[], struct Snake other_snake[]){
+	if(speed_index == MAX_POWERUP_SIZE){
+		speed_index = 0;
+	}
 	if((speed[speed_index].xCoord <= 2 || speed[speed_index].xCoord >= X_LEN-1)
 			|| (speed[speed_index].yCoord <= 2 || speed[speed_index].yCoord >= Y_LEN-1)){
 		speed_index++;

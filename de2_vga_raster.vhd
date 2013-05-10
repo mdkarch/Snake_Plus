@@ -378,12 +378,10 @@ begin
 			elsif HCount = HSYNC + HBACK_PORCH then
 				tiles_h_pos <= 0;
 			elsif 	HCount > HSYNC + HBACK_PORCH and 
-						HCount < HSYNC + HBACK_PORCH + HACTIVE - 1 then
+						HCount < HSYNC + HBACK_PORCH + HACTIVE  then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
 				if inner_tile_h_pos >= 15 then -- 0-15 should be used
 					inner_tile_h_pos <= 0;
-				end if;--end inner_tile_h_pos
-				if inner_tile_h_pos = 14 then -- 0-15 should be used
 					tiles_h_pos <= tiles_h_pos + 1;
 				end if;--end inner_tile_h_pos
 			end if; -- reset/endofline/hcount
@@ -403,7 +401,7 @@ begin
 			elsif VCount = VSYNC + VBACK_PORCH - 1 then
 				tiles_v_pos <= 0;
 			elsif 	VCount > VSYNC + VBACK_PORCH - 1 and 
-						VCount < VSYNC + VBACK_PORCH + VACTIVE - 1 and
+						VCount < VSYNC + VBACK_PORCH + VACTIVE and
 						EndOfLine = '1' then
 				inner_tile_v_pos <= inner_tile_v_pos + 1;
 				if inner_tile_v_pos >= 15 then -- 0-15 should be used

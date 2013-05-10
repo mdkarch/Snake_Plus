@@ -42,7 +42,6 @@ USE altera_mf.all;
 ENTITY tiles_ram IS
 	PORT
 	(
-		aclr		: IN STD_LOGIC  := '0';
 		clock		: IN STD_LOGIC  := '1';
 		data		: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
 		rdaddress		: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
@@ -68,7 +67,7 @@ ARCHITECTURE SYN OF tiles_ram IS
 		clock_enable_output_b		: STRING;
 		intended_device_family		: STRING;
 		lpm_type		: STRING;
-		numwords_a		: NATURAL;
+		numwords_a		: NATURAL; 
 		numwords_b		: NATURAL;
 		operation_mode		: STRING;
 		outdata_aclr_b		: STRING;
@@ -82,7 +81,6 @@ ARCHITECTURE SYN OF tiles_ram IS
 		width_byteena_a		: NATURAL
 	);
 	PORT (
-			aclr0	: IN STD_LOGIC ;
 			address_a	: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
 			clock0	: IN STD_LOGIC ;
 			data_a	: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -107,8 +105,8 @@ BEGIN
 		numwords_a => 1200,
 		numwords_b => 1200,
 		operation_mode => "DUAL_PORT",
-		outdata_aclr_b => "CLEAR0",
-		outdata_reg_b => "CLOCK0",
+		outdata_aclr_b => "NONE",
+		outdata_reg_b => "UNREGISTERED",
 		power_up_uninitialized => "FALSE",
 		read_during_write_mode_mixed_ports => "OLD_DATA",
 		widthad_a => 11,
@@ -118,7 +116,6 @@ BEGIN
 		width_byteena_a => 1
 	)
 	PORT MAP (
-		aclr0 => aclr,
 		address_a => wraddress,
 		clock0 => clock,
 		data_a => data,
@@ -168,8 +165,8 @@ END SYN;
 -- Retrieval info: PRIVATE: MEM_IN_BITS NUMERIC "0"
 -- Retrieval info: PRIVATE: MIFfilename STRING ""
 -- Retrieval info: PRIVATE: OPERATION_MODE NUMERIC "2"
--- Retrieval info: PRIVATE: OUTDATA_ACLR_B NUMERIC "1"
--- Retrieval info: PRIVATE: OUTDATA_REG_B NUMERIC "1"
+-- Retrieval info: PRIVATE: OUTDATA_ACLR_B NUMERIC "0"
+-- Retrieval info: PRIVATE: OUTDATA_REG_B NUMERIC "0"
 -- Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "0"
 -- Retrieval info: PRIVATE: READ_DURING_WRITE_MODE_MIXED_PORTS NUMERIC "1"
 -- Retrieval info: PRIVATE: READ_DURING_WRITE_MODE_PORT_A NUMERIC "3"
@@ -204,8 +201,8 @@ END SYN;
 -- Retrieval info: CONSTANT: NUMWORDS_A NUMERIC "1200"
 -- Retrieval info: CONSTANT: NUMWORDS_B NUMERIC "1200"
 -- Retrieval info: CONSTANT: OPERATION_MODE STRING "DUAL_PORT"
--- Retrieval info: CONSTANT: OUTDATA_ACLR_B STRING "CLEAR0"
--- Retrieval info: CONSTANT: OUTDATA_REG_B STRING "CLOCK0"
+-- Retrieval info: CONSTANT: OUTDATA_ACLR_B STRING "NONE"
+-- Retrieval info: CONSTANT: OUTDATA_REG_B STRING "UNREGISTERED"
 -- Retrieval info: CONSTANT: POWER_UP_UNINITIALIZED STRING "FALSE"
 -- Retrieval info: CONSTANT: READ_DURING_WRITE_MODE_MIXED_PORTS STRING "OLD_DATA"
 -- Retrieval info: CONSTANT: WIDTHAD_A NUMERIC "11"
@@ -213,14 +210,12 @@ END SYN;
 -- Retrieval info: CONSTANT: WIDTH_A NUMERIC "8"
 -- Retrieval info: CONSTANT: WIDTH_B NUMERIC "8"
 -- Retrieval info: CONSTANT: WIDTH_BYTEENA_A NUMERIC "1"
--- Retrieval info: USED_PORT: aclr 0 0 0 0 INPUT GND "aclr"
 -- Retrieval info: USED_PORT: clock 0 0 0 0 INPUT VCC "clock"
 -- Retrieval info: USED_PORT: data 0 0 8 0 INPUT NODEFVAL "data[7..0]"
 -- Retrieval info: USED_PORT: q 0 0 8 0 OUTPUT NODEFVAL "q[7..0]"
 -- Retrieval info: USED_PORT: rdaddress 0 0 11 0 INPUT NODEFVAL "rdaddress[10..0]"
 -- Retrieval info: USED_PORT: wraddress 0 0 11 0 INPUT NODEFVAL "wraddress[10..0]"
 -- Retrieval info: USED_PORT: wren 0 0 0 0 INPUT GND "wren"
--- Retrieval info: CONNECT: @aclr0 0 0 0 0 aclr 0 0 0 0
 -- Retrieval info: CONNECT: @address_a 0 0 11 0 wraddress 0 0 11 0
 -- Retrieval info: CONNECT: @address_b 0 0 11 0 rdaddress 0 0 11 0
 -- Retrieval info: CONNECT: @clock0 0 0 0 0 clock 0 0 0 0

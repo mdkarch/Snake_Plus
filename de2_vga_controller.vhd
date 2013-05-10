@@ -101,7 +101,6 @@ architecture rtl of snake_plus_vga is
 
 component tiles_ram is
 	port (
-		aclr			: IN STD_LOGIC	 := '0';
 		clock			: IN STD_LOGIC  := '1';
 		data			: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
 		rdaddress	: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
@@ -197,17 +196,15 @@ begin
   
   
   	snake_store : tiles_ram port map (
-		aclr			=> (reset or soft_reset),
 		clock			=> clk,
 		data			=> snake_write_data,
 		rdaddress	=> snake_read_address,	
-		wraddress	=> snake_write_address,
+		wraddress	=> snake_write_address, 
 		wren			=> snake_write_enable,
 		q				=> snake_read_data
 	);
 	
 	tiles_store : tiles_ram port map (
-		aclr			=> (reset or soft_reset),
 		clock			=> clk,
 		data			=> tiles_write_data,
 		rdaddress	=> tiles_read_address,	

@@ -13,7 +13,7 @@ void initSnake(struct Snake snake[], int xCoord, int yCoord, int player, struct 
 	snake[0].yCoord = yCoord;//8;
 	snake[0].enable = 1;
 	//printf("IN INIT xCoord: %d yCoord: %d\n", xCoord, yCoord);
-	//printf("IN INIT x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+	////printf("IN INIT x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
 	snake[1].xCoord = snake[0].xCoord - 1; //hardcoded to move right -16
 	snake[1].yCoord = snake[0].yCoord;//8;
 	snake[1].enable = 1;
@@ -36,7 +36,7 @@ void initSnake(struct Snake snake[], int xCoord, int yCoord, int player, struct 
 	//print snake - for testing
 	/*for(i = 0; i < SNAKE_SIZE; i++){
 		if(snake[i].enable == 1){
-			printf("snake part at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
+			//printf("snake part at x:%d, y%d\n", snake[i].xCoord, snake[i].yCoord);
 		}
 	}*/
 }
@@ -63,7 +63,7 @@ int traverseList(struct Snake snake[], int player)
 		//printf("diff xdiff:%d ydiff:%d\n", xDiff, yDiff);
 		//printf("traverse x:%d y:%d\n", snake[0].xCoord, snake[0].yCoord);
 		if(snake[0].xCoord == snake[count].xCoord && snake[0].yCoord == snake[count].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
-			printf("self Collision!");
+			//printf("self Collision!");
 			if(player == PLAYER1){
 				/* snake1 collided with itself so snake2 wins */
 				game_winner = 2;
@@ -71,7 +71,7 @@ int traverseList(struct Snake snake[], int player)
 				/* snake2 collided with itself so snake1 wins */
 				game_winner = 1;
 			}
-			//printf("traverse x:%d y:%d\n", snake[count].xCoord, snake[count].yCoord);
+			////printf("traverse x:%d y:%d\n", snake[count].xCoord, snake[count].yCoord);
 			return 1;
 		}
 		count++;
@@ -82,9 +82,9 @@ int traverseList(struct Snake snake[], int player)
 int brickCol(struct Snake snake[], int player){
 	short x = snake[0].xCoord;///16;
 	short y = snake[0].yCoord;///16;
-	printf("brick enable: %d", brick_tiles[x][y]);
+	//printf("brick enable: %d", brick_tiles[x][y]);
 	if(brick_tiles[x][y]){
-		printf("brick col");
+		//printf("brick col");
 		if(player == PLAYER1){
 			/* snake1 collided with itself so snake2 wins */
 			game_winner = 2;
@@ -109,7 +109,7 @@ int snakeCol(struct Snake snake1[], struct Snake snake2[]){
 			//int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
 			//int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
 			if(snake1[i].xCoord == snake2[j].xCoord && snake1[i].yCoord == snake2[j].yCoord){//if(xDiff < offset && yDiff < offset){
-				printf("2 snake Collision!");
+				//printf("2 snake Collision!");
 				if(i == 0 && j == 0){
 					/* head on collision, draw */
 					game_winner = 3;

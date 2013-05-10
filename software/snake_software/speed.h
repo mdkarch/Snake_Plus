@@ -5,7 +5,7 @@
 #include "constants.h"
 
 void initSpeed(){
-	printf("Initializing speed\n");
+	//printf("Initializing speed\n");
 	int i;
 	int j;
 	int count = 0;
@@ -32,7 +32,7 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
 			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
 			if(snake[0].xCoord == speed[j].xCoord && snake[0].yCoord == speed[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
-				printf("Eating Speed!\n");
+				//printf("Eating Speed!\n");
 				removeSpeed(j);
 				info->speed_enabled = 1;
 				info->speed_count = 0;
@@ -52,7 +52,7 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 	}
 	if(speed_pow_count == 250 && !speed_drawn){
 		int i;
-		for(i = 0 ; i < 100; i++){
+		for(i = 0 ; i < 50; i++){
 			if(drawSpeed(snake, other_snake)){
 				break;
 			}
@@ -64,11 +64,11 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 		speed_pow_count  = 0;
 	}
 	speed_pow_count++;
-	printf("speed_count: %d\n", info->speed_count);
+	//printf("speed_count: %d\n", info->speed_count);
 	if(info->speed_enabled){
 		info->speed_count++;
 		if(info->speed_count >=  SPEED_TIME){
-			printf("reseting speed\n");
+			//printf("reseting speed\n");
 			info->speed_enabled = 0;
 			info->speed_count = 0;
 			if(player == PLAYER1){
@@ -129,7 +129,7 @@ int drawSpeed(struct Snake snake[], struct Snake other_snake[]){
 }
 
 void removeSpeed( int index){
-	printf("Removing speed\n");
+	//printf("Removing speed\n");
 	speed[index].enable = 0;
 	speed_drawn = 0;
 	removeTilePiece( speed[index].xCoord,  speed[index].yCoord);

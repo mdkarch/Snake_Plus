@@ -6,7 +6,7 @@
 
 
 void initFood(){
-	printf("Initializing food\n");
+	//printf("Initializing food\n");
 	int t = 0;
 	int i;
 	int j;
@@ -44,10 +44,10 @@ int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int pla
 		if(food[j].enable){
 			//int xDiff = abs(snake[0].xCoord - food[j].xCoord*16);
 			//int yDiff = abs(snake[0].yCoord - food[j].yCoord*16);
-			//printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
-			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
+			//////printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
+			//////printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
 			if(snake[0].xCoord == food[j].xCoord && snake[0].yCoord == food[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
-				printf("Eating Food!\n");
+				////printf("Eating Food!\n");
 				removeFood(j);
 				addEnd(snake, dir, player, info);
 				/*food_index == MAX_POWERUP_SIZE){
@@ -57,8 +57,20 @@ int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int pla
 				/* iterate 100 times looking for the next
 				 * free element, if not found
 				 */
+				if(player == PLAYER1){
+					player1_food_eaten++;
+					if(player1_food_eaten == 5){
+						player1_food_eaten = 0;
+						PLAYER1_SLEEP_CYCLES -= 1;
+					}
+				}else{
+					if(player2_food_eaten == 5){
+						player2_food_eaten = 0;
+						PLAYER2_SLEEP_CYCLES -= 1;
+					}
+				}
 				int i;
-				for(i = 0 ; i < 100; i++){
+				for(i = 0 ; i < 50; i++){
 					if(drawFood(snake, other_snake)){
 						break;
 					}
@@ -122,7 +134,7 @@ int drawFood(struct Snake snake[], struct Snake other_snake[]){
 }
 
 void removeFood(int index){
-	printf("Removing food\n");
+	////printf("Removing food\n");
 	food[index].enable = 0;
 	removeTilePiece( food[index].xCoord,  food[index].yCoord);
 	food_count--;

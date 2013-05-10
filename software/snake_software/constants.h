@@ -17,12 +17,12 @@
 #define MAX_POWERUP_SIZE	300
 
 #define SNAKE_SIZE 				1200
-#define SLEEP_TIME 				10 	// milliseconds
-#define DEFAULT_SLEEP_CYCLE		60
-#define SPEED_SLEEP_CYCLE		30
-#define FREEZE_SLEEP_CYCLE		150
+#define SLEEP_TIME 				2 	// milliseconds
 #define SPEED_TIME 				50
 #define FREEZE_TIME 			50
+int DEFAULT_SLEEP_CYCLE	 = 	60;
+int SPEED_SLEEP_CYCLE	 =	30;
+int FREEZE_SLEEP_CYCLE	 =	150;
 
 unsigned int n_seed = 5323;
 unsigned int seed = 0;
@@ -51,6 +51,9 @@ int edwards_drawn 			= 0;
 int dir_arg 				= 0;
 int switch_snakes			= 0;
 int food_count = 0;
+int player1_food_eaten = 0;
+int player2_food_eaten = 0;
+
 
 int LEFT_BOUND	=0;
 int RIGHT_BOUND	=40;

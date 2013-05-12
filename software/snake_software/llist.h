@@ -98,30 +98,54 @@ int brickCol(struct Snake snake[], int player){
 }
 
 int snakeCol(struct Snake snake1[], struct Snake snake2[]){
+	//	int i;
+	//	int j;
+	//	for(i = 0; i < SNAKE_SIZE; i++){
+	//		if(!snake1[i].enable)
+	//			break;
+	//		for(j = 0; j < SNAKE_SIZE; j++){
+	//			if(!snake2[j].enable)
+	//				break;
+	//			//int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
+	//			//int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
+	//			if(snake1[i].xCoord == snake2[j].xCoord && snake1[i].yCoord == snake2[j].yCoord){//if(xDiff < offset && yDiff < offset){
+	//				//printf("2 snake Collision!");
+	//				if(i == 0 && j == 0){
+	//					/* head on collision, draw */
+	//					game_winner = 3;
+	//				}else if(i == 0 && j != 0){
+	//					/* snake1 head collided with snake2's body*/
+	//					game_winner = 2;
+	//				}else if(i != 0 && j == 0){
+	//					/* snake2 head collided with snake1's body*/
+	//					game_winner = 1;
+	//				}
+	//				return 1;
+	//			}
+	//		}
+	//	}
+	//	return 0;
+	if(snake1[0].xCoord == snake2[0].xCoord && snake1[0].yCoord == snake2[0].yCoord){
+		/* head collided draw*/
+		game_winner = 3;
+		return 1;
+	}
 	int i;
-	int j;
-	for(i = 0; i < SNAKE_SIZE; i++){
-		if(!snake1[i].enable)
+	for(i = 1; i < SNAKE_SIZE; i++){
+		if( !snake1[i].enable && !snake2[i].enable ){
 			break;
-		for(j = 0; j < SNAKE_SIZE; j++){
-			if(!snake2[j].enable)
-				break;
-			//int xDiff = abs(snake1[i].xCoord - snake2[j].xCoord);
-			//int yDiff = abs(snake1[i].yCoord - snake2[j].yCoord);
-			if(snake1[i].xCoord == snake2[j].xCoord && snake1[i].yCoord == snake2[j].yCoord){//if(xDiff < offset && yDiff < offset){
-				//printf("2 snake Collision!");
-				if(i == 0 && j == 0){
-					/* head on collision, draw */
-					game_winner = 3;
-				}else if(i == 0 && j != 0){
-					/* snake1 head collided with snake2's body*/
-					game_winner = 2;
-				}else if(i != 0 && j == 0){
-					/* snake2 head collided with snake1's body*/
-					game_winner = 1;
-				}
-				return 1;
-			}
+		}
+
+		if(snake2[i].enable && snake1[0].xCoord == snake2[i].xCoord && snake1[0].yCoord == snake2[i].yCoord){
+			/* snake1 collided with snake2 body */
+			game_winner = 2;
+			return 1;
+		}
+
+		if(snake1[i].enable && snake2[0].xCoord == snake1[i].xCoord && snake2[0].yCoord == snake1[i].yCoord){
+			/* snake2 collided with snake1 body */
+			game_winner = 1;
+			return 1;
 		}
 	}
 	return 0;

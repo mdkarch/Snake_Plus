@@ -31,7 +31,7 @@ architecture rtl of de2_wm8731_audio is
 COMPONENT move_sound_rom IS
 	PORT
 	(
-		address		: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
+		address		: IN STD_LOGIC_VECTOR (8 DOWNTO 0);
 		clock			: IN STD_LOGIC  := '1';
 		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
 	);
@@ -90,7 +90,7 @@ signal sound1_out	: std_logic_vector(15 downto 0);
 signal sound2_out	: std_logic_vector(15 downto 0);
 signal sound3_out	: std_logic_vector(15 downto 0);
 
-signal counter0 	: unsigned(10 downto 0);
+signal counter0 	: unsigned(8 downto 0);
 signal counter1	: unsigned(10 downto 0);
 signal counter2	: unsigned(11 downto 0);
 signal counter3	: unsigned(12 downto 0);

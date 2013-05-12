@@ -25,8 +25,8 @@ void initSpeed(){
 }
 
 int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info){
-	int j;
-	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+	int j = speed_index - 1;
+	//for(j = 0; j < MAX_POWERUP_SIZE; j++){
 		if(speed[j].enable){
 			//int xDiff = abs(snake[0].xCoord - speed[j].xCoord*16);
 			//int yDiff = abs(snake[0].yCoord - speed[j].yCoord*16);
@@ -48,10 +48,10 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 				//					speed_index = 0;
 				//				}
 				//while( !drawSpeed(speed_index++) );
-				break;
+				//break;
 			}
 		}
-	}
+	//}
 	if(speed_pow_count == 250 && !speed_drawn){
 		int i;
 		for(i = 0 ; i < 50; i++){

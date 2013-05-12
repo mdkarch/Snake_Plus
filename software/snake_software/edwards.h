@@ -114,8 +114,8 @@ void shuffle_edwards(int n){
 
 int checkEdwards(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info)
 {
-	int j;
-	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+	int j = edwards_index - 1;
+	//for(j = 0; j < MAX_POWERUP_SIZE; j++){
 		if(edwards[j].enable){
 			//int xDiff = abs(snake[0].xCoord - edwards[j].xCoord*16);
 			//int yDiff = abs(snake[0].yCoord - edwards[j].yCoord*16);
@@ -132,10 +132,10 @@ int checkEdwards(struct Snake snake[], struct Snake other_snake[], int player, s
 				//				while( !drawEdwards(snake, other_snake) ){
 				//					printf("drawing edwards\n");
 				//				}
-				break;
+				//break;
 			}
 		}
-	}
+	//}
 	if(edwards_pow_count == 300 && !edwards_drawn){
 		int i;
 		for(i = 0 ; i < 50; i++){

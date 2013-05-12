@@ -40,13 +40,22 @@ END COMPONENT;
 COMPONENT powerup_sound_rom IS
 	PORT
 	(
-		address		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		address		: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
 		clock			: IN STD_LOGIC  := '1';
 		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
 	);
 END COMPONENT; 
 
 COMPONENT gameover_sound_rom IS
+	PORT
+	(
+		address		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		clock			: IN STD_LOGIC  := '1';
+		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+	);
+END COMPONENT; 
+
+COMPONENT snakePlus_sound_rom IS
 	PORT
 	(
 		address		: IN STD_LOGIC_VECTOR (12 DOWNTO 0);
@@ -73,15 +82,18 @@ signal sound	 	: std_logic_vector(3 downto 0) := X"0";
 signal sound_end0 : std_logic := '0';
 signal sound_end1 : std_logic := '0';
 signal sound_end2 : std_logic := '0';
+signal sound_end3 : std_logic := '0';
 
 
 signal sound0_out	: std_logic_vector(15 downto 0);
 signal sound1_out	: std_logic_vector(15 downto 0);
 signal sound2_out	: std_logic_vector(15 downto 0);
+signal sound3_out	: std_logic_vector(15 downto 0);
 
 signal counter0 	: unsigned(10 downto 0);
-signal counter1	: unsigned(11 downto 0);
-signal counter2	: unsigned(12 downto 0);
+signal counter1	: unsigned(10 downto 0);
+signal counter2	: unsigned(11 downto 0);
+signal counter3	: unsigned(12 downto 0);
  
 signal shift_out	: std_logic_vector(15 downto 0);
 
@@ -184,6 +196,8 @@ begin
 						shift_out <= sound1_out;
 					elsif sound = X"2" then 
 						shift_out <= sound2_out;
+					elsif sound = X"3" then 
+						shift_out <= sound3_out;
 					end if;
 				end if;
 			elsif clr_bclk = '1' then 
@@ -211,7 +225,7 @@ begin
 				sound_on <= '1';
 				leds(15 downto 14) <= "10";
 				sound <= select_sound;
-			elsif (sound_end0 or sound_end1 or sound_end2) = '1' then
+			elsif (sound_end0 or sound_end1 or sound_end2 or sound_end3) = '1' then
 				sound_on <= '0';
 				leds(15 downto 14) <= "01";
 			end if;
@@ -290,6 +304,29 @@ begin
 		end if;
 	end process;	
 	
+	-- Counter for sound3
+	process(clk)      
+	begin
+		if rising_edge(clk) then
+			if reset_n = '0' then 
+				counter3 <= (others => '0');
+				sound_end3 <= '0';
+			elsif lrck_lat = '1' and lrck = '0'  then 	
+				if sound_on = '1' and sound = X"3" then				
+					if (counter3 < X"12BA") then 
+						counter3 <= counter3 + 1;
+					else
+						counter3 <= (others => '0');
+						sound_end3 <= '1';
+					end if;	
+				end if;
+			elsif sound_end3 = '1' then
+				sound_end3 <= '0';
+			end if;
+		end if;
+	end process;	
+
+	
 	process(clk)
 	begin
 		if rising_edge(clk) then
@@ -315,5 +352,10 @@ begin
 		q				=> sound2_out
 	);
 	
+	s3: snakePlus_sound_rom port map (
+		address		=> std_logic_vector(counter3),
+		clock			=> clk,
+		q				=> sound3_out
+	);
 
 end architecture;

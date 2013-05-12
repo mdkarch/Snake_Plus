@@ -3,6 +3,7 @@
 #include "snake_io.h"
 #include "powboard.h"
 #include "constants.h"
+#include "audio.h"
 
 void initSpeed(){
 	//printf("Initializing speed\n");
@@ -33,6 +34,7 @@ int checkSpeed(struct Snake snake[], struct Snake other_snake[], int player, str
 			//printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
 			if(snake[0].xCoord == speed[j].xCoord && snake[0].yCoord == speed[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				//printf("Eating Speed!\n");
+				play_powerup_sound();
 				removeSpeed(j);
 				info->speed_enabled = 1;
 				info->speed_count = 0;

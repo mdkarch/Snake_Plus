@@ -2,6 +2,7 @@
 #define EDWARDS_H_
 #include "drop_brick.h"
 #include "brick.h"
+#include "audio.h"
 
 void initEdwards(){
 	initBrickTile();
@@ -122,6 +123,7 @@ int checkEdwards(struct Snake snake[], struct Snake other_snake[], int player, s
 			if(snake[0].xCoord == edwards[j].xCoord && snake[0].yCoord == edwards[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				//printf("Eating Edwards!\n");
 				//printf("x:%d, y:%d", edwards[j].xCoord, edwards[j].yCoord);
+				play_powerup_sound();
 				removeEdwards(j);
 				info->has_edwards = 1;
 				//				if(edwards_index == MAX_POWERUP_SIZE){

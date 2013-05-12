@@ -4,6 +4,7 @@
 #include "snake_io.h"
 #include "powboard.h"
 #include "constants.h"
+#include "audio.h"
 
 
 
@@ -28,24 +29,25 @@ void initFreeze(){
 
 int checkFreeze(struct Snake snake[], struct Snake other_snake[], int player, struct SnakeInfo * info){
 
-	int j;
-	for(j = 0; j < MAX_POWERUP_SIZE; j++){
+	int j = freeze_index - 1;
+	//for(j = 0; j < MAX_POWERUP_SIZE; j++){
 		if(freeze[j].enable){
 			//int xDiff = abs(snake[0].xCoord - freeze[j].xCoord*16);
 			//int yDiff = abs(snake[0].yCoord - freeze[j].yCoord*16);
 			////printf("snake x: %d y: %d\n",snake[0].xCoord, snake[0].yCoord);
 			if(snake[0].xCoord == freeze[j].xCoord && snake[0].yCoord == freeze[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				//printf("Eating Freeze!\n");
+				play_powerup_sound();
 				removeFreeze(freeze,j);
 				info->has_freeze = 1;
 				//				if(freeze_index == MAX_POWERUP_SIZE){
 				//					freeze_index = 0;
 				//				}
 				//while( !drawFreeze(freeze) );
-				break;
+				//break;
 			}
 		}
-	}
+	//}
 	////printf("count: %d drawn:%d", freeze_pow_count, freeze_drawn);
 	if(freeze_pow_count == 400 && !freeze_drawn){
 		int i;

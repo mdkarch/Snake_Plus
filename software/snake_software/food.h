@@ -3,6 +3,7 @@
 #include "snake_io.h"
 #include "powboard.h"
 #include "constants.h"
+#include "audio.h"
 
 
 void initFood(){
@@ -48,6 +49,7 @@ int checkFood(struct Snake snake[], struct Snake other_snake[], int dir, int pla
 			//////printf("food x: %d y: %d\n",food[j].xCoord, food[j].yCoord);
 			if(snake[0].xCoord == food[j].xCoord && snake[0].yCoord == food[j].yCoord){//if(xDiff <= col_offset && yDiff <= col_offset){
 				////printf("Eating Food!\n");
+				play_powerup_sound();
 				removeFood(j);
 				addEnd(snake, dir, player, info);
 				/*food_index == MAX_POWERUP_SIZE){

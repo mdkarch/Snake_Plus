@@ -11,6 +11,7 @@
 #include "drop_brick.h"
 #include "edwards.h"
 #include "constants.h"
+#include "audio.h"
 
 /* should update snake when new direction is known*/
 /* go left */
@@ -353,26 +354,26 @@ void reset_software(){
 void fancy_splash(){
 	int i;
 	int j;
-	for(i = 1; i < X_LEN - 2; i++){
+	for(i = 10; i < X_LEN - 10; i++){
 		for(j = 1; j < Y_LEN - 1; j++){
 			addTilePiece(SPLASH_SNAKE_CODE,i,j);
 			addTilePiece(SPLASH_SNAKE_CODE,i+1,j);
 			addTilePiece(SPLASH_SNAKE_CODE,i+2,j);
 		}
-		usleep(2*30000);
+		usleep(2*25000);
 		for(j = 1; j < Y_LEN - 1; j++){
 			removeTilePiece(i,j);
 			removeTilePiece(i+1,j);
 			removeTilePiece(i+2,j);
 		}
 	}
-	for(i = X_LEN - 2; i > 1; i--){
+	for(i = X_LEN - 10; i > 10; i--){
 		for(j = Y_LEN - 1; j > 1; j--){
 			addTilePiece(SPLASH_SNAKE_CODE,i+2,j);
 			addTilePiece(SPLASH_SNAKE_CODE,i+1,j);
 			addTilePiece(SPLASH_SNAKE_CODE,i,j);
 		}
-		usleep(2*30000);
+		usleep(2*25000);
 		for(j = Y_LEN -1; j > 1; j--){
 			removeTilePiece(i+2,j);
 			removeTilePiece(i+1,j);
@@ -394,13 +395,15 @@ int main(){
 		if(set){
 			fancy_splash();
 			enable_splash_screen();
-			set = 0;
 		}
 		//printf("Press any button to start!\n");
-		wait_for_continue();
-		initBorder();
 
-		disable_splash_screen();
+		if(set){
+			wait_for_continue();
+			disable_splash_screen();
+
+		}
+
 
 		/* init border */
 		//initPowBoard(board, seed);
@@ -434,10 +437,14 @@ int main(){
 		player2_dir[up_dir] = 0;
 		player2_dir[down_dir] = 0;
 
+		initBorder();
 		initPowUps();
 		drawStartPowUps(snake_player1, snake_player2);
 
-
+		if(!set){
+			wait_for_continue();
+			set = 0;
+		}
 
 		int paused = 0;
 
@@ -455,10 +462,8 @@ int main(){
 		int collision = 0;
 		int p1_move_collision = 0;
 		int p2_move_collision = 0;
+		int moved = 0;
 		while(1) {
-			if(count_player1 >= PLAYER1_SLEEP_CYCLES || count_player2 >= PLAYER2_SLEEP_CYCLES){
-				collision = snakeCol(snake_player1, snake_player2);
-			}
 			/*Check if paused button pushed*/
 			if( (count_player1 >= PLAYER1_SLEEP_CYCLES && (check_paused(pressed_player1) != 0) ) ||
 					(count_player2 >= PLAYER2_SLEEP_CYCLES && (check_paused(pressed_player2) != 0) ) ){
@@ -478,6 +483,7 @@ int main(){
 				check_powerup_buttons(pressed_player1, snake_player1, snake_player2, freeze, PLAYER1, &info1);
 				count_player1 = 0;
 				pressed_player1 = 0;
+				moved = 1;
 				//printf("Moving player1");
 			}
 
@@ -488,6 +494,7 @@ int main(){
 				check_powerup_buttons(pressed_player2, snake_player2, snake_player1,freeze, PLAYER2, &info2);
 				count_player2 = 0;
 				pressed_player2 = 0;
+				moved = 1;
 			}
 
 			/* Get controls from player1 everytime and store control for later if pressed */
@@ -506,15 +513,22 @@ int main(){
 			}
 
 
+			if( moved ){
+				collision = snakeCol(snake_player1, snake_player2);
+				play_move_sound();
+			}
+
 			if (collision || p1_move_collision || p2_move_collision){
 				//printf("breaking");
+				play_gameover_sound();
 				draw_winner(game_winner);
-				wait_for_continue();
 				break;
 			}
 
+			play_sound();
 
 			//printf("Random: %d", PRNG(40));
+			moved = 0;
 			count_player1++;
 			count_player2++;
 			usleep(SLEEP_TIME*1000);

@@ -530,7 +530,7 @@ int main(){
 				play_sound();
 				draw_winner(game_winner);
 				usleep(SLEEP_TIME*250000);
-				wait_for_continue();
+				//wait_for_continue();
 				break;
 			}
 

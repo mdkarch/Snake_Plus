@@ -252,9 +252,9 @@ void draw_P2_wins(){
 
 void draw_tie(){
 	short y = 10;
-	//addTilePiece(I_CODE, 19, y);
+	addTilePiece(T_CODE, 19, y);
 	addTilePiece(I_CODE, 20, y);
-	//addTilePiece(W_CODE, 21, y);
+	addTilePiece(E_CODE, 21, y);
 	addTilePiece(EXC_CODE, 22, y);
 }
 

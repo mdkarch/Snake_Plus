@@ -136,7 +136,7 @@ architecture rtl of de2_vga_raster is
 	signal edwards_t, edwards_br, edwards_bl, edwards_p, ed_b_eye, ed_w_eye	: std_logic;
 	signal speed, growth_y, growth_r, freeze									: std_logic;
 	signal wall																			: std_logic;
-	signal P, one, two, W, I, N, S, exclam										: std_logic;
+	signal P, one, two, W, I, N, S, T, E, exclam								: std_logic;
 	signal pause, play																: std_logic;
 	signal splash_snake_black, splash_snake_yellow, 
 				splash_snake_green, splash_snake_red							: std_logic;
@@ -243,6 +243,8 @@ architecture rtl of de2_vga_raster is
 	signal sprite_I				: array_type_16x16;
 	signal sprite_N				: array_type_16x16;
 	signal sprite_S				: array_type_16x16;
+	signal sprite_T				: array_type_16x16;
+	signal sprite_E				: array_type_16x16;
 	signal sprite_exclam			: array_type_16x16;
 	
 	-- pause and play colorings
@@ -1074,6 +1076,52 @@ begin
 		end if;		
   end process LetterSGen;
   
+   -- Letter T generation
+	LetterTGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				T <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = T_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_T(sprite_v_pos)(sprite_h_pos) = '1' then
+					T <= '1';
+				 else
+					T <= '0';
+				 end if;
+			else
+				T <= '0';
+			end if;
+		end if;		
+  end process LetterTGen;
+  
+   -- Letter E generation
+	LetterEGen : process (clk)
+	  variable sprite_h_pos, sprite_v_pos : integer;
+	  begin
+		if rising_edge(clk) then	
+			if reset = '1' then
+				E <= '0';
+			elsif sprite_select(7) = '1' and sprite_select(4 downto 0) = E_CODE then
+				 
+					sprite_h_pos := inner_tile_h_pos; 
+					sprite_v_pos := inner_tile_v_pos;
+					
+				 if sprite_E(sprite_v_pos)(sprite_h_pos) = '1' then
+					E <= '1';
+				 else
+					E <= '0';
+				 end if;
+			else
+				E <= '0';
+			end if;
+		end if;		
+  end process LetterEGen;
+  
    -- Exclamation point generation
 	ExclamGen : process (clk)
 	  variable sprite_h_pos, sprite_v_pos : integer;
@@ -1281,7 +1329,7 @@ begin
 		  VGA_B <= "0000000000";
 		elsif white = '1' or rabbit_w = '1' or snake_body_white = '1' or snake_turn_white = '1'
 								or one = '1' or P = '1' or two = '1' 
-								or I = '1' or N = '1' or S = '1' 
+								or I = '1' or N = '1' or S = '1' or T = '1' or E = '1'
 								or exclam = '1' or pause = '1' or ed_w_eye = '1'
 								or play = '1'  or W = '1' or mouse_w_eye = '1' then
 		  VGA_R <= "1111111111";
@@ -2661,6 +2709,42 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	sprite_S(13) 	   	<=	"0001110011100000";
 	sprite_S(14) 	  		<=	"0000111111000000";
 	sprite_S(15)			<=	"0000011110000000";
+	
+	-- sprite letter T
+	sprite_T(0) 			<=	"0000000000000000";
+	sprite_T(1) 			<=	"0011111111111100";
+	sprite_T(2) 			<=	"0011111111111100";
+	sprite_T(3) 			<=	"0000000110000000";
+	sprite_T(4) 			<=	"0000000110000000";
+	sprite_T(5) 			<=	"0000000110000000";
+	sprite_T(6) 			<=	"0000000110000000";
+	sprite_T(7) 			<=	"0000000110000000";
+	sprite_T(8) 			<=	"0000000110000000";
+	sprite_T(9) 			<=	"0000000110000000";
+	sprite_T(10) 			<=	"0000000110000000";
+	sprite_T(11) 			<=	"0000000110000000";
+	sprite_T(12) 	  		<=	"0000000110000000";
+	sprite_T(13) 	   	<=	"0000000110000000";
+	sprite_T(14) 	  		<=	"0000000110000000";
+	sprite_T(15)			<=	"0000000000000000";
+	
+	-- sprite letter E
+	sprite_E(0) 			<=	"0000000000000000";
+	sprite_E(1) 			<=	"0011111111111100";
+	sprite_E(2) 			<=	"0011111111111100";
+	sprite_E(3) 			<=	"0011000000000000";
+	sprite_E(4) 			<=	"0011000000000000";
+	sprite_E(5) 			<=	"0011000000000000";
+	sprite_E(6) 			<=	"0011000000000000";
+	sprite_E(7) 			<=	"0011111111111100";
+	sprite_E(8) 			<=	"0011111111111100";
+	sprite_E(9) 			<=	"0011000000000000";
+	sprite_E(10) 			<=	"0011000000000000";
+	sprite_E(11) 			<=	"0011000000000000";
+	sprite_E(12) 	  		<=	"0011000000000000";
+	sprite_E(13) 	   	<=	"0011111111111100";
+	sprite_E(14) 	  		<=	"0011111111111100";
+	sprite_E(15)			<=	"0000000000000000";
 
 	-- sprite exclamation point
 	sprite_exclam(0) 			<=	"0000000110000000";

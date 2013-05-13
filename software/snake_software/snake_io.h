@@ -81,6 +81,8 @@ const char EXC_CODE					= 15;
 const char PLAY_CODE 				= 16;
 const char PAUSE_CODE				= 17;
 const char SPLASH_SNAKE_CODE		= 18;
+const char T_CODE					= 19;
+const char E_CODE					= 20;
 
 /* Segment codes */
 const char SEG_HEAD					= 0;

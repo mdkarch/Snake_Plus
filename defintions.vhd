@@ -68,5 +68,7 @@ package DEFINITIONS is
 		constant PLAY_CODE 			: STD_LOGIC_VECTOR(4 downto 0) 	:= "10000";
 		constant PAUSE_CODE 			: STD_LOGIC_VECTOR(4 downto 0) 	:= "10001";
 		constant SPLASH_SNAKE_CODE : STD_LOGIC_VECTOR(4 downto 0) 	:= "10010";
+		constant T_CODE				: STD_LOGIC_VECTOR(4 downto 0)	:= "10011";
+		constant E_CODE				: STD_LOGIC_VECTOR(4 downto 0)	:= "10100";
 							
 end package DEFINITIONS;

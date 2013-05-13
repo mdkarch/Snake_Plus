@@ -1295,11 +1295,12 @@ begin
       VGA_G <= "0000000000";
       VGA_B <= "0000000000";
     elsif clk'event and clk = '1' then
-		if blue = '1' or rabbit_b = '1'  or freeze = '1' 
+		
+		if blue = '1' or rabbit_b = '1' 
 							or mouse_b_eye = '1' then
-		  VGA_R <= "0011100000";
-		  VGA_G <= "0010100000";
-		  VGA_B <= "1111111111";
+		  VGA_R <= "0000000000";
+		  VGA_G <= "1011001000";
+		  VGA_B <= "1110111000";
 		 
 		--This got changed to orange, was green, now its orange
 		elsif green = '1' or ed_b_eye = '1' or
@@ -1309,6 +1310,10 @@ begin
 		  VGA_R <= "1111111111";
 		  VGA_G <= "0010100000";
 		  VGA_B <= "0000000000";
+		elsif freeze = '1' then
+		  VGA_R <= "1110000000";
+		  VGA_G <= "1111111111";
+		  VGA_B <= "1111111111";
 		elsif (player_select = '1' and (snake_body_orange = '1' or snake_head_orange = '1' or snake_turn_orange = '1'or snake_tail_orange = '1')) or
 				splash_snake_green = '1' then
 			VGA_R <= "0000000000";
@@ -2295,12 +2300,12 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 
   -- sprite rabbit gray body coloring
   sprite_food_rabbit_y(0) 		<=	"0000100000010000";
-  sprite_food_rabbit_y(1) 		<=	"0000110000110000";
-  sprite_food_rabbit_y(2) 		<=	"0000111001110000";
-  sprite_food_rabbit_y(3) 		<=	"0000101001010000";
-  sprite_food_rabbit_y(4) 		<=	"0000101001010000";
-  sprite_food_rabbit_y(5) 		<=	"0000101001010000";
-  sprite_food_rabbit_y(6) 		<=	"0000111111110000";
+  sprite_food_rabbit_y(1) 		<=	"0001110000111000";
+  sprite_food_rabbit_y(2) 		<=	"0001011001101000";
+  sprite_food_rabbit_y(3) 		<=	"0001001001001000";
+  sprite_food_rabbit_y(4) 		<=	"0001001001001000";
+  sprite_food_rabbit_y(5) 		<=	"0001001001001000";
+  sprite_food_rabbit_y(6) 		<=	"0001111111111000";
   sprite_food_rabbit_y(7) 		<=	"0001100110011000";
   sprite_food_rabbit_y(8) 		<=	"0001100110011000";
   sprite_food_rabbit_y(9) 		<=	"0001100110011000";
@@ -2332,10 +2337,10 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
   -- sprite rabbit pink nose coloring
   sprite_food_rabbit_p(0) 			<=	"0000000000000000";
   sprite_food_rabbit_p(1) 			<=	"0000000000000000";
-  sprite_food_rabbit_p(2) 			<=	"0000010000100000";
-  sprite_food_rabbit_p(3) 			<=	"0000010000100000";
-  sprite_food_rabbit_p(4) 			<=	"0000010000100000";
-  sprite_food_rabbit_p(5) 			<=	"0000000000000000";
+  sprite_food_rabbit_p(2) 			<=	"0000100000010000";
+  sprite_food_rabbit_p(3) 			<=	"0000110000110000";
+  sprite_food_rabbit_p(4) 			<=	"0000110000110000";
+  sprite_food_rabbit_p(5) 			<=	"0000110000110000";
   sprite_food_rabbit_p(6) 			<=	"0000000000000000";
   sprite_food_rabbit_p(7) 			<=	"0000000000000000";
   sprite_food_rabbit_p(8) 			<=	"0000000000000000";
@@ -2366,14 +2371,14 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
   sprite_food_rabbit_w(15) 	   <=	"0000000000000000";
   
   -- sprite mouse gray body coloring
-	sprite_food_mouse_y(0) 			<=	"0000100000010000";
-	sprite_food_mouse_y(1) 			<=	"0001110000111000";
-	sprite_food_mouse_y(2) 			<=	"0011111001111100";
-	sprite_food_mouse_y(3) 			<=	"0110001001000110";
-	sprite_food_mouse_y(4) 			<=	"0110001001000110";
-	sprite_food_mouse_y(5) 			<=	"0110001001000110";
+	sprite_food_mouse_y(0) 			<=	"0001100000011000";
+	sprite_food_mouse_y(1) 			<=	"0011110000111100";
+	sprite_food_mouse_y(2) 			<=	"0110011001100110";
+	sprite_food_mouse_y(3) 			<=	"0100001001000010";
+	sprite_food_mouse_y(4) 			<=	"0100001001000010";
+	sprite_food_mouse_y(5) 			<=	"0110001001000010";
 	sprite_food_mouse_y(6) 			<=	"0011111111111100";
-	sprite_food_mouse_y(7) 			<=	"0011100110011000";
+	sprite_food_mouse_y(7) 			<=	"0001100110011000";
 	sprite_food_mouse_y(8) 			<=	"0001100110011000";
 	sprite_food_mouse_y(9) 			<=	"0001100110011000";
 	sprite_food_mouse_y(10) 		<=	"0001111111111000";
@@ -2386,10 +2391,10 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	-- sprite mouse pink coloring
 	sprite_food_mouse_p(0) 			<=	"0000000000000000";
 	sprite_food_mouse_p(1) 			<=	"0000000000000000";
-	sprite_food_mouse_p(2) 			<=	"0000000000000000";
-	sprite_food_mouse_p(3) 			<=	"0001110000111000";
-	sprite_food_mouse_p(4) 			<=	"0001110000111000";
-	sprite_food_mouse_p(5) 			<=	"0001110000111000";
+	sprite_food_mouse_p(2) 			<=	"0001100000011000";
+	sprite_food_mouse_p(3) 			<=	"0011110000111100";
+	sprite_food_mouse_p(4) 			<=	"0011110000111100";
+	sprite_food_mouse_p(5) 			<=	"0011110000111100";
 	sprite_food_mouse_p(6) 			<=	"0000000000000000";
 	sprite_food_mouse_p(7) 			<=	"0000000000000000";
 	sprite_food_mouse_p(8) 			<=	"0000000000000000";
@@ -2548,19 +2553,19 @@ sprite_tail_up_yellow(15)			<=      "0000000000000000";
 	sprite_powup_speed(15)			<=	"0001100000000000";
 
 	-- sprite ice freeze coloring
-	sprite_powup_freeze(0) 			<=	"1100001000100011";
-	sprite_powup_freeze(1) 			<=	"0110011000110110";
-	sprite_powup_freeze(2) 			<=	"0011110000011100";
-	sprite_powup_freeze(3) 			<=	"0001100000011110";
-	sprite_powup_freeze(4) 			<=	"0011110000110011";
-	sprite_powup_freeze(5) 			<=	"0110011001100000";
-	sprite_powup_freeze(6) 			<=	"1100001111000000";
-	sprite_powup_freeze(7) 			<=	"0000000110000000";
-	sprite_powup_freeze(8) 			<=	"0000000110000000";
-	sprite_powup_freeze(9) 			<=	"0000001111000000";
-	sprite_powup_freeze(10) 		<=	"0000011001100000";
-	sprite_powup_freeze(11) 		<=	"1100110000110011";
-	sprite_powup_freeze(12) 	  	<=	"0111100000011110";
+	sprite_powup_freeze(0) 			<=	"1100010000010011";
+	sprite_powup_freeze(1) 			<=	"0110110000010110";
+	sprite_powup_freeze(2) 			<=	"0011100101011100";
+	sprite_powup_freeze(3) 			<=	"0111100010011110";
+	sprite_powup_freeze(4) 			<=	"1100110010110011";
+	sprite_powup_freeze(5) 			<=	"0000011011100000";
+	sprite_powup_freeze(6) 			<=	"0010001111000100";
+	sprite_powup_freeze(7) 			<=	"0001000110001000";
+	sprite_powup_freeze(8) 			<=	"0111111111111110";
+	sprite_powup_freeze(9) 			<=	"0001001111001000";
+	sprite_powup_freeze(10) 		<=	"0010011011100100";
+	sprite_powup_freeze(11) 		<=	"0000110010110000";
+	sprite_powup_freeze(12) 	  	<=	"1111100101011111";
 	sprite_powup_freeze(13) 	   <=	"0011100000011100";
 	sprite_powup_freeze(14) 	  	<=	"0110110000110110";
 	sprite_powup_freeze(15)			<=	"1100010000100011";

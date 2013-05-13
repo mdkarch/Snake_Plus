@@ -246,7 +246,7 @@ void draw_P2_wins(){
 	addTilePiece(W_CODE, 19, y);
 	addTilePiece(I_CODE, 20, y);
 	addTilePiece(N_CODE, 21, y);
-	addTilePiece(S_CODE, 22, y);
+	addTilePiece(S_CODE - 32, 22, y);
 	addTilePiece(EXC_CODE, 23,y);
 }
 
@@ -444,8 +444,9 @@ int main(){
 
 		if(!set){
 			wait_for_continue();
-			set = 0;
 		}
+
+		set = 0;
 
 		int paused = 0;
 

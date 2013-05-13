@@ -98,8 +98,8 @@ architecture rtl of de2_vga_raster is
 	
 	signal inner_tile_h_pos			: integer;
 	signal inner_tile_v_pos			: integer;
-	signal tiles_h_pos				: integer;
-	signal tiles_v_pos				: integer;
+	signal tiles_h_pos				: unsigned(5 downto 0);
+	signal tiles_v_pos				: unsigned(4 downto 0);
 	signal splash_sprite_h_pos		: unsigned(9 downto 0);
 	signal splash_sprite_v_pos		: unsigned(9 downto 0);
 	
@@ -115,6 +115,7 @@ architecture rtl of de2_vga_raster is
 	signal y_32				: std_logic_vector(10 downto 0);
 	signal y_8				: std_logic_vector(10 downto 0);
 	signal x_11				: std_logic_vector(10 downto 0);
+	signal out_bounds		: std_logic 	:= '0';
 	
 	signal sprite_select				: std_logic_vector(7 downto 0);
 	signal snake_select				: std_logic_vector(7 downto 0);
@@ -371,17 +372,19 @@ begin
 		if rising_edge(clk) then
 			if reset = '1' then
 				inner_tile_h_pos <= 0;
-				tiles_h_pos <= 0;
+				tiles_h_pos <= (others => '0');
 			elsif HCount >= HSYNC + HBACK_PORCH + HACTIVE then
 				inner_tile_h_pos <= 0;
-				tiles_h_pos <= 50; -- random > 1200
+				tiles_h_pos <= "111111"; -- random > 1200
+				out_bounds <= '1';
 			elsif HCount = HSYNC + HBACK_PORCH then
-				tiles_h_pos <= 0;
+				tiles_h_pos <= "000000";
+				out_bounds <= '0';
 			elsif 	HCount > HSYNC + HBACK_PORCH and 
-						HCount < HSYNC + HBACK_PORCH + HACTIVE  then
+						HCount < HSYNC + HBACK_PORCH + HACTIVE then
 				inner_tile_h_pos <= inner_tile_h_pos + 1;
 				if inner_tile_h_pos >= 15 then -- 0-15 should be used
-					inner_tile_h_pos <= 0;
+					inner_tile_h_pos <= 0;										
 					tiles_h_pos <= tiles_h_pos + 1;
 				end if;--end inner_tile_h_pos
 			end if; -- reset/endofline/hcount
@@ -394,14 +397,14 @@ begin
 		if rising_edge(clk) then
 			if reset = '1' then
 				inner_tile_v_pos <= 0;
-				tiles_v_pos <= 0;
+				tiles_v_pos <= (others => '0');
 			elsif VCount >= VSYNC + VBACK_PORCH + VACTIVE - 1 then
 				inner_tile_v_pos <= 0;
-				tiles_v_pos <= 50; -- random > 1200
+				tiles_v_pos <= "11111"; -- random > 39
 			elsif VCount = VSYNC + VBACK_PORCH - 1 then
-				tiles_v_pos <= 0;
+				tiles_v_pos <= "00000";
 			elsif 	VCount > VSYNC + VBACK_PORCH - 1 and 
-						VCount < VSYNC + VBACK_PORCH + VACTIVE and
+						VCount < VSYNC + VBACK_PORCH + VACTIVE - 1 and
 						EndOfLine = '1' then
 				inner_tile_v_pos <= inner_tile_v_pos + 1;
 				if inner_tile_v_pos >= 15 then -- 0-15 should be used
@@ -415,13 +418,13 @@ begin
   --TILES_IN(tiles_h_pos,tiles_v_pos);
  --SNAKE_IN(tiles_h_pos,tiles_v_pos);
  
-	y_32				<= "0" & std_logic_vector(to_unsigned(tiles_v_pos,5)) & "00000";
-	y_8				<= "000" & std_logic_vector(to_unsigned(tiles_v_pos,5)) & "000";
-	x_11				<= "00000" & std_logic_vector(to_unsigned(tiles_h_pos,6));
+	y_32				<= "0" & std_logic_vector(tiles_v_pos) & "00000";
+	y_8				<= "000" & std_logic_vector(tiles_v_pos) & "000";
+	x_11				<= "00000" & std_logic_vector(tiles_h_pos);
   
-	tiles_address	<= std_logic_vector( unsigned(y_32) + unsigned(y_8) + unsigned(x_11));
+	tiles_address	<= std_logic_vector( unsigned(y_32) + unsigned(y_8) + unsigned(x_11)) when out_bounds = '0' else "11111111111";
 	sprite_select 	<= tiles_data;
-	snake_address	<=	std_logic_vector( unsigned(y_32) + unsigned(y_8) + unsigned(x_11));
+	snake_address	<=	std_logic_vector( unsigned(y_32) + unsigned(y_8) + unsigned(x_11)) when out_bounds = '0' else "11111111111";
 	snake_select	<= snake_data;
 
   ---------------------------------------------------------------

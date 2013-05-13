@@ -40,7 +40,7 @@ END COMPONENT;
 COMPONENT powerup_sound_rom IS
 	PORT
 	(
-		address		: IN STD_LOGIC_VECTOR (10 DOWNTO 0);
+		address		: IN STD_LOGIC_VECTOR (8 DOWNTO 0);
 		clock			: IN STD_LOGIC  := '1';
 		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
 	);
@@ -58,7 +58,7 @@ END COMPONENT;
 COMPONENT snakePlus_sound_rom IS
 	PORT
 	(
-		address		: IN STD_LOGIC_VECTOR (12 DOWNTO 0);
+		address		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
 		clock			: IN STD_LOGIC  := '1';
 		q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
 	);
@@ -91,11 +91,13 @@ signal sound2_out	: std_logic_vector(15 downto 0);
 signal sound3_out	: std_logic_vector(15 downto 0);
 
 signal counter0 	: unsigned(8 downto 0);
-signal counter1	: unsigned(10 downto 0);
+signal counter1	: unsigned(8 downto 0);
 signal counter2	: unsigned(11 downto 0);
-signal counter3	: unsigned(12 downto 0);
+signal counter3	: unsigned(11 downto 0);
+signal reset_counters : std_logic := '0';
+signal unset		: std_logic := '0';
  
-signal shift_out	: std_logic_vector(15 downto 0);
+signal shift_out	: std_logic_vector(15 downto 0) := (others => '0');
 
 --constant divider : integer := 561;
 --signal divider : unsigned(31 downto 0) := X"00000823";
@@ -106,22 +108,21 @@ begin
 	  
 	-- LRCK divider 
 	-- Audio chip main clock is 25MHz / Sample rate 12KHz
-	-- Divider is 25 MHz / 47KHz = 532 (X"214")
+	-- Divider is 25 MHz / 8KHz = 3125s (X"C34")
 	-- Left justify mode set by I2C controller
-
-	leds(13) <= sound_on;
-	leds(3 downto 0) <= sound;
-	--leds(10 downto 0) <= std_logic_vector(counter1);
-	--leds(11 downto 0) <= std_logic_vector(divider)(12 downto 0);
 
 	
 	process(clk)
 	begin
 		if rising_edge(clk) then
 			if reset_n = '0' then
-				divider <= X"00000214";
+				divider <= X"00000C34";
+				leds(5) <= '0';
 			elsif change_divider_enable = '1' then
 				divider <= unsigned(divider_in);
+				leds(5) <= '1';
+			else
+				leds(5) <= '0';
 			end if;
 		end if;
 	end process;
@@ -221,10 +222,17 @@ begin
 				leds(15) <= '0';
 				leds(14) <= '0';
 				sound <= X"0";
+				reset_counters <= '0';
+				unset <= '0';
 			elsif start_sound = '1' then
 				sound_on <= '1';
 				leds(15 downto 14) <= "10";
 				sound <= select_sound;
+				reset_counters <= '1';
+				unset <= '1';
+			elsif unset = '1' then
+				reset_counters <= '0';
+				unset <= '0';
 			elsif (sound_end0 or sound_end1 or sound_end2 or sound_end3) = '1' then
 				sound_on <= '0';
 				leds(15 downto 14) <= "01";
@@ -242,9 +250,11 @@ begin
 				counter0 <= (others => '0');
 				sound_end0 <= '0';
 				leds(12 downto 10) <= "000";
+			elsif reset_counters = '1' then
+				counter0 <= (others => '0');
 			elsif lrck_lat = '1' and lrck = '0'  then 	
 				if sound_on = '1' and sound = X"0" then				
-					if (counter0 < X"5DA") then 
+					if (counter0 < X"1F9") then 
 						leds(11 downto 10) <= "10";
 						counter0 <= counter0 + 1;
 					else
@@ -267,9 +277,11 @@ begin
 			if reset_n = '0' then 
 				counter1 <= (others => '0');
 				sound_end1 <= '0';
+			elsif reset_counters = '1' then
+				counter1 <= (others => '0');
 			elsif lrck_lat = '1' and lrck = '0'  then 	
 				if sound_on = '1' and sound = X"1" then
-					if (counter1 < X"B27") then 
+					if (counter1 < X"199") then 
 						counter1 <= counter1 + 1;
 					else
 						counter1 <= (others => '0');
@@ -289,9 +301,11 @@ begin
 			if reset_n = '0' then 
 				counter2 <= (others => '0');
 				sound_end2 <= '0';
+			elsif reset_counters = '1' then
+				counter2 <= (others => '0');
 			elsif lrck_lat = '1' and lrck = '0'  then 	
 				if sound_on = '1' and sound = X"2" then				
-					if (counter2 < X"104C") then 
+					if (counter2 < X"82A") then 
 						counter2 <= counter2 + 1;
 					else
 						counter2 <= (others => '0');
@@ -311,9 +325,11 @@ begin
 			if reset_n = '0' then 
 				counter3 <= (others => '0');
 				sound_end3 <= '0';
+			elsif reset_counters = '1' then
+				counter3 <= (others => '0');
 			elsif lrck_lat = '1' and lrck = '0'  then 	
 				if sound_on = '1' and sound = X"3" then				
-					if (counter3 < X"12BA") then 
+					if (counter3 < X"961") then 
 						counter3 <= counter3 + 1;
 					else
 						counter3 <= (others => '0');

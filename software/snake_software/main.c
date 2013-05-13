@@ -94,7 +94,7 @@ int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		xCoor+= 1;//16;
 		if(xCoor > RIGHT_BOUND - 2/**col_offset*/){
 			//printf("Collision with right boundary!\n");
-			return 0;
+			return 1;
 		}
 		updateSnake(snake, xCoor, yCoor, right_dir, old_dir, player, info);
 		dir_arg = right_dir;
@@ -103,7 +103,7 @@ int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		xCoor-=1;//16;
 		if(xCoor < (LEFT_BOUND+1)){//16
 			//printf("Collision with left boundary!\n");
-			return 0;
+			return 1;
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, left_dir, old_dir, player, info);
@@ -113,7 +113,7 @@ int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		yCoor-=1;//16;
 		if(yCoor < (TOP_BOUND + 1)){//16
 			//printf("Collision with top boundary!\n");
-			return 0;
+			return 1;
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, up_dir, old_dir,player, info);
@@ -123,7 +123,7 @@ int movement(alt_u8 key, struct Snake snake[], int dir_array [],
 		yCoor+=1;//16;
 		if(yCoor > BOT_BOUND - 2/**col_offset*/){
 			//printf("Collision with bottom boundary!\n");
-			return 0;
+			return 1;
 			//collision
 		}
 		updateSnake(snake, xCoor, yCoor, down_dir, old_dir,player, info);
@@ -251,12 +251,11 @@ void draw_P2_wins(){
 }
 
 void draw_tie(){
-	/*short y = 10;
-	addTilePiece(D_CODE, 17, y);
-	addTilePiece(R_CODE, 19, y);
-	addTilePiece(A_CODE, 20, y);
-	addTilePiece(W_CODE, 21, y);
-	addTilePiece(EXC_CODE, 22, y);*/
+	short y = 10;
+	//addTilePiece(I_CODE, 19, y);
+	addTilePiece(I_CODE, 20, y);
+	//addTilePiece(W_CODE, 21, y);
+	addTilePiece(EXC_CODE, 22, y);
 }
 
 void draw_winner(int winner_id){
@@ -396,6 +395,9 @@ int main(){
 			fancy_splash();
 			enable_splash_screen();
 		}
+
+		play_splash_sound();
+		play_sound();
 		//printf("Press any button to start!\n");
 
 		if(set){
@@ -403,7 +405,6 @@ int main(){
 			disable_splash_screen();
 
 		}
-
 
 		/* init border */
 		//initPowBoard(board, seed);
@@ -478,6 +479,8 @@ int main(){
 			/* Move player 1 */
 			if(count_player1 >= PLAYER1_SLEEP_CYCLES && !paused ){
 				p1_move_collision = movement(code, snake_player1, player1_dir, pressed_player1, PLAYER1, &info1);
+				if(p1_move_collision)
+					game_winner = 2;
 				check_powerup_col(snake_player1, snake_player2, player1_dir, PLAYER1, &info1);
 				//movement(code, snake_player2, player2_dir, food, pressed_player1, PLAYER2);
 				check_powerup_buttons(pressed_player1, snake_player1, snake_player2, freeze, PLAYER1, &info1);
@@ -490,6 +493,8 @@ int main(){
 			/* Move player 2 */
 			if(count_player2 >= PLAYER2_SLEEP_CYCLES && !paused){
 				p2_move_collision = movement(code, snake_player2, player2_dir, pressed_player2, PLAYER2, &info2);
+				if(p2_move_collision)
+					game_winner = 1;
 				check_powerup_col(snake_player2, snake_player1, player2_dir, PLAYER2, &info2);
 				check_powerup_buttons(pressed_player2, snake_player2, snake_player1,freeze, PLAYER2, &info2);
 				count_player2 = 0;
@@ -521,7 +526,10 @@ int main(){
 			if (collision || p1_move_collision || p2_move_collision){
 				//printf("breaking");
 				play_gameover_sound();
+				play_sound();
 				draw_winner(game_winner);
+				usleep(SLEEP_TIME*250000);
+				wait_for_continue();
 				break;
 			}
 
@@ -534,6 +542,8 @@ int main(){
 			usleep(SLEEP_TIME*1000);
 		}
 		//printf("New Game starting\n");
+
+
 	}
 
 	//printf("GAME OVER\n");

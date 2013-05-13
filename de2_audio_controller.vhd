@@ -90,12 +90,12 @@ begin
 				start <= '0';
 				change_en <= '0';
 			elsif chipselect = '1' then
-				if read = '1' then
-					start <= '1';
-					change_en <= '0';
-				elsif write = '1' then
+				if write = '1' then
 					change_en <= '1';
 					start <= '0';
+				elsif read = '1' then
+					start <= '1';
+					change_en <= '0';
 				else
 					start <= '0';
 					change_en <= '0';
